@@ -1,0 +1,15 @@
+{
+  "name": "pr-review-queue-backend",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Local Supabase schema and authorization checks",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node tool/start.cjs",
+    "stop": "supabase stop",
+    "reset": "supabase db reset --local",
+    "lint": "supabase db lint --local --schema public,private --level warning --fail-on warning",
+    "test": "node --test --test-concurrency=1 tests/authorization.test.cjs"
+  },
+  "devDependencies": { "supabase": "2.117.0" }
+}

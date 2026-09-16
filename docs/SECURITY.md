@@ -1,8 +1,19 @@
 # Security design and launch evidence
 
-Last updated: 2026-09-14. This is a design and validation checklist, **not a claim that controls are implemented**.
+Last updated: 2026-09-16. P03 implements and locally tests the database authorization foundation described below. Remaining sign-in, email, browser, lifecycle, and launch controls are still a design checklist, not implemented controls.
 
-P02 contains only public fictional presentation fixtures. It has no Auth client, fake signed-in identity, role switch, tokens, backend calls, or company URLs. Theme preference is the only stored app value. Browser navigation between demo teams is not an authorization test; all team isolation and denial tests remain P03+ work. The release build is a local demo, not a production authentication path.
+P02 contains only public fictional presentation fixtures. It has no Auth client, fake signed-in identity, role switch, tokens, backend calls, or company URLs. Theme preference is the only stored app value. Browser navigation between demo teams is not an authorization test. P03 SQL-role/Data API denial tests run separately against local Supabase. The release build remains a local demo, not a production authentication path.
+
+## P03 implemented evidence and limits
+
+- Explicit table/function grants and RLS protect profiles, teams, memberships, invitations, entries, comments, and reviews. Direct writes are denied to all client roles. Private audit/email tables are not exposed. Function defaults revoke global PUBLIC execution as well as schema-specific grants.
+- Live membership controls every team read. Profile access allows self or shared active teammates; emails are absent from profiles. A user's own profile remains accessible after team revocation, without revealing their old team's data or other teams' memberships.
+- Only a live team admin may call `set_member_access` for an existing membership. It rechecks authority after acquiring the team lock, audits changes, increments data revision, and revokes pending invitations on removal. Triggers protect immutable ownership and last-admin invariants even on operator SQL writes; composite keys prevent cross-team child rows.
+- Operator bootstrap requires privileged SQL and an existing verified Auth identity. It creates a team/admin/audit transactionally. No API role can invoke it. Teams cannot commit without an initial admin.
+- SQL-role and real Data API tests use fictional fixtures and short-lived synthetic JWTs signed with the local development key. The runner refuses linked projects, remote Docker targets, other checkouts' containers, and non-loopback API addresses. Fixtures are outside migrations and configured seeds; no fake login is shipped in Flutter.
+- Startup requests loopback binding using a dedicated Docker network, but this Windows Docker Desktop still reports all-interface publishes. The wrapper reports that concrete limitation; use a trusted development network/host firewall and stop the stack after use. Signup is disabled and mail remains local capture only. Real Auth login, invitation claiming, email budgets/CAPTCHA, enterprise URL validation, mutation rate limits, and hosted configuration are still later items. P03 grants no usable queue mutation path and makes no production-security claim.
+
+Commands and scope are in the [backend README](../backend/README.md); actual results are in [STATUS](STATUS.md).
 
 ## Boundaries
 

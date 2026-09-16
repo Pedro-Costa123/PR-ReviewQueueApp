@@ -19,12 +19,13 @@ The repository documents are the shared source of context. A planning conversati
 
 ```text
 Work in the existing PR-ReviewQueueApp repository. Read AGENTS.md and the
-project docs, especially STATUS.md and NEXT.md. P02 is complete; review
-its local shell before proceeding. Implement only P03: project-local
-Supabase tooling, schema migrations, team authorization, fictional test
-fixtures, and explicit operator bootstrap. Follow P03's denial-test criteria.
+project docs, especially STATUS.md and NEXT.md. P03 is complete; review
+its local backend foundation before proceeding. Implement only P04:
+local magic-link integration, guarded email hook with invitation checks,
+atomic budgets/idempotency, mocked delivery, and callback/session validation.
+Follow P04's acceptance criteria and preserve P03's authorization tests.
 Update STATUS.md and NEXT.md with what actually works and the checks run.
-Stop after P03 for review. Do not start real email or cloud setup yet.
+Stop after P04 for review. Do not start real email or cloud setup yet.
 ```
 
 ## Prompt for any later item
@@ -47,4 +48,4 @@ The final reply should name the completed item, give the useful result/link, sum
 
 ## Current handoff
 
-P00/P01/P02 are complete locally. The web shell has passed analysis, nine tests, a release build, and browser checks; verified commands are in the frontend README. P03 is next after shell review and has not started. There is no backend or deployment. Work remains uncommitted/unpushed. Review product defaults at the relevant future step instead of re-asking the already answered core questions.
+P00-P03 are complete locally. P03 passed clean local resets, 19 SQL-role/Data API/concurrency tests, and SQL lint. The local stack is stopped; startup instructions and the Windows port-binding limitation are in the backend README. The frontend remains the P02 demo, whose earlier Flutter/build/browser checks are recorded in STATUS. P04 is next after P03 review and has not started. No working magic-link delivery, hosted setup, or deployment exists. P02/planning are tracked in `39e9d5d`; P03 changes are uncommitted and were not pushed. Review product defaults at the relevant future step instead of re-asking the already answered core questions.

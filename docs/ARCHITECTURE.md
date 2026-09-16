@@ -1,6 +1,6 @@
 # Architecture
 
-Last researched: 2026-09-14. Status: P02 local frontend shell implemented; backend and deployment design remains proposed. No components deployed.
+Updated: 2026-09-16. P02 local frontend and P03 local database/authorization foundation are implemented. Authentication delivery, queue behavior, and deployment remain planned. No components deployed.
 
 ## Design
 
@@ -47,7 +47,7 @@ Paths share an origin with the portfolio and PassGen. They are not separate brow
 
 P02 implementation: feature folders under `frontend/lib/`, a small read-only `QueueRepository` with fictional display models, Material themes, `go_router` 18.0.1 using its default hash strategy, and `shared_preferences` 2.5.5 through `SharedPreferencesAsync`. The lockfile is pinned. Theme preference is loaded before first rendering, defaults to dark independently of OS theme, and reports unavailable storage without blocking the app. No state-management or auth client package is installed yet.
 
-Routes are `/`, `/teams/:teamId`, `/teams/:teamId/archive`, and `/teams/:teamId/profiles/:profileId`; unknown routes/IDs show a recovery screen. There is no signed-in demo identity or authentication bypass. The fictional profiles and entries are public static presentation data, not protected team records. All server permissions remain P03+ work. The local release preview serves the required base path without rewrites; this does not verify the actual Pages publishing arrangement.
+Routes are `/`, `/teams/:teamId`, `/teams/:teamId/archive`, and `/teams/:teamId/profiles/:profileId`; unknown routes/IDs show a recovery screen. There is no signed-in demo identity or authentication bypass. The fictional profiles and entries are public static presentation data, not protected team records. The local P03 database boundary is implemented separately; this shell does not use it. The local release preview serves the required base path without rewrites; this does not verify the actual Pages publishing arrangement.
 
 - Flutter Web only; Material components, responsive queue, dark default and saved light preference.
 - Start with feature folders: `auth`, `teams`, `queue`, `archive`, `profiles`, and small shared UI/services.
@@ -59,7 +59,15 @@ Routes are `/`, `/teams/:teamId`, `/teams/:teamId/archive`, and `/teams/:teamId/
 
 ## Backend organization
 
-Planned directories, to be created only by their backlog items:
+P03 now provides project-local Supabase CLI 2.117.0, Docker config, the initial migration, local SQL-role/Data API tests, fictional test fixtures, and an operator bootstrap script. The frontend is not connected. `private` is excluded from the exposed API schemas. Public reads use explicit grants and live-membership RLS; all direct writes are denied. Global and schema-scoped function default grants are revoked, including PostgreSQL's default PUBLIC execution. Helpers use fixed search paths and derive identity from `auth.uid()`.
+
+The only exposed P03 mutation is `set_member_access`, restricted to live team admins and existing memberships. It serializes on the team, rechecks authority after locking, updates data revision, revokes pending invitations on removal, and audits the change. Triggers also serialize operator membership writes and protect the last admin; a deferred team constraint requires the initial admin at commit. `private.bootstrap_team` is operator-only, requires an existing verified Auth identity, and creates the team/admin/audit atomically. All queue behavior and email functions remain later work.
+
+Own profiles remain readable without team membership; other profiles require a shared active team. Profile rows contain no email. Revocation removes team data access immediately but does not delete the person's own profile or unrelated team memberships. Direct owner/admin queue deletion is intentionally unavailable until P07.
+
+Tests and fixtures live outside migrations and configured seeds, require an empty local database, and refuse linked/remote targets. Synthetic local JWTs exercise PostgREST authorization without implementing login. Setup, verification, and operator commands are in the [backend README](../backend/README.md).
+
+Directory plan (functions and integration tests are still future work):
 
 ```text
 backend/
@@ -69,6 +77,8 @@ backend/
     functions/            invite-member and guarded send-auth-email
     tests/                authorization and database behavior
   tests/                  Edge Function behavior and email-provider stubs
+                          P03 currently contains Node authorization tests/helpers
+  operator/               explicit bootstrap SQL (implemented in P03)
   README.md
 frontend/
   lib/                    Dart app/features
@@ -127,7 +137,7 @@ P04-P05 must prove that server-provisioned identities can receive magic links wi
 
 ## Environments and operations
 
-Use Docker-backed local Supabase and a local email inbox/stub initially. Never send real mail in automated tests. Check the Supabase CLI and Edge Function tooling requirements during P03; Node is present but its installed version is not assumed supported by every tool.
+Use Docker-backed local Supabase and a local email inbox/stub initially. Never send real mail in automated tests. P03 verified CLI 2.117.0 with Node 26.5.0/npm 11.17.0 and Docker's Linux engine; the CLI requires Node 20+. Edge Function tooling remains a P04 check. Default local reset applies schema only; fixtures are explicit test-runner input.
 
 Use one hosted Free project for the developer trial/pilot if eligible; local development avoids an extra hosted staging bill. Choose an available EU region as the default, without claiming that every vendor's logs/auth/email remain in the EU. Avoid a paid Supabase custom domain: the required frontend address does not require one.
 

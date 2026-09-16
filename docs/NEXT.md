@@ -1,6 +1,6 @@
 # Ordered implementation backlog
 
-Updated: 2026-09-14. **Execute one selected item, verify it, update the docs, and stop.** Do not turn this file into a single full-app implementation prompt.
+Updated: 2026-09-16. **Execute one selected item, verify it, update the docs, and stop.** Do not turn this file into a single full-app implementation prompt.
 
 `Complete` means the item's actual deliverable exists. `Ready` means the next item can start when requested. Later items remain planned, not authorized as a batch. Smaller UI/product defaults can be settled at the item that needs them.
 
@@ -9,8 +9,8 @@ Updated: 2026-09-14. **Execute one selected item, verify it, update the docs, an
 | P00 | Repository inspection, research, persistent project plan | Complete | — |
 | P01 | Resolve core product, authentication, budget, and hosting questions | Complete | P00 |
 | P02 | Local Flutter app shell | Complete; ready for owner review | P01 |
-| **P03** | **Local Supabase schema and team authorization** | **Ready; next implementation item after shell review** | P02 |
-| P04 | Magic-link flow and guarded email delivery locally | Planned | P03 |
+| P03 | Local Supabase schema and team authorization | Complete; ready for owner review | P02 |
+| **P04** | **Magic-link flow and guarded email delivery locally** | **Ready; next implementation item after P03 review** | P03 |
 | P05 | Small hosted authentication/cost validation | Planned | P04 |
 | P06 | Admin invitations, teams, and profiles | Planned | P05 |
 | P07 | Create/read/edit queue entries and protected deletion | Planned | P06 |
@@ -29,7 +29,7 @@ Updated: 2026-09-14. **Execute one selected item, verify it, update the docs, an
 
 **Boundary:** No Supabase project, real login, backend schema, provider signup, production deployment, or full feature implementation. Review the shell before P03.
 
-**Completed 2026-09-14:** Web-only shell, read-only fictional Atlas/Orbit queues, sign-in/profile/archive placeholders, hash navigation, dark default and persisted light preference. Nine Flutter tests, analysis, release build, and browser/keyboard checks passed. Details and verified commands are in [STATUS](STATUS.md) and the [frontend README](../frontend/README.md). P03 has not started.
+**Completed 2026-09-14:** Web-only shell, read-only fictional Atlas/Orbit queues, sign-in/profile/archive placeholders, hash navigation, dark default and persisted light preference. Nine Flutter tests, analysis, release build, and browser/keyboard checks passed. Details and verified commands are in [STATUS](STATUS.md) and the [frontend README](../frontend/README.md). P03 was subsequently selected by the owner on 2026-09-16.
 
 ## P03 — Local Supabase schema and team authorization
 
@@ -38,6 +38,8 @@ Updated: 2026-09-14. **Execute one selected item, verify it, update the docs, an
 **Acceptance:** A clean local reset reproduces the schema; direct Data API/SQL role tests deny anonymous and cross-team access, forged ownership, and role escalation. Revoked members lose access with a still-valid token. Last-admin and child-team invariants hold. No public privileged functions or mutable membership tables bypass the rules.
 
 **Boundary:** Identity comes from local test fixtures; no real emails. Keep behavioral functions limited to what this authorization foundation needs.
+
+**Completed 2026-09-16:** Pinned local Supabase CLI, Docker startup with binding diagnostics, schema migrations, explicit grants/RLS, guarded existing-member access changes, immutable identities, last-admin serialization, private operational tables, test-only fixtures, and operator bootstrap. Clean local reset, 19 SQL-role/Data API/concurrency tests, and SQL lint passed. Setup and test commands are in the [backend README](../backend/README.md); local network-binding limitations are recorded in [STATUS](STATUS.md). No frontend integration, real email, hosted setup, or queue behavior was added. P04 remains unstarted.
 
 ## P04 — Magic-link flow and guarded email delivery locally
 

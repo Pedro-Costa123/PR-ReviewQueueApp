@@ -1,0 +1,77 @@
+﻿# Local development only. Hosted configuration is a separate P05 deliverable.
+project_id = "pr-review-queue"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 200
+auto_expose_new_tables = false
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 17
+health_timeout = "3m"
+
+[db.migrations]
+enabled = true
+schema_paths = []
+
+# Fixtures are never applied by reset/push; the local test runner loads them.
+[db.seed]
+enabled = false
+sql_paths = []
+
+[db.pooler]
+enabled = false
+
+[realtime]
+enabled = false
+
+[studio]
+enabled = false
+
+# Capture mail locally. No outbound SMTP provider is configured.
+[local_smtp]
+enabled = true
+port = 54324
+
+[storage]
+enabled = false
+
+[storage.s3_protocol]
+enabled = false
+
+[storage.vector]
+enabled = false
+
+[auth]
+enabled = true
+site_url = "http://127.0.0.1:4173/PR-Review-App-Queue/"
+additional_redirect_urls = []
+jwt_expiry = 3600
+enable_signup = false
+enable_anonymous_sign_ins = false
+enable_manual_linking = false
+enable_refresh_token_rotation = true
+refresh_token_reuse_interval = 10
+minimum_password_length = 12
+
+[auth.email]
+enable_signup = false
+enable_confirmations = true
+double_confirm_changes = true
+secure_password_change = true
+max_frequency = "60s"
+otp_expiry = 900
+
+[auth.sms]
+enable_signup = false
+
+[edge_runtime]
+enabled = false
+
+[analytics]
+enabled = false

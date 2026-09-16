@@ -4,6 +4,8 @@ Checked: **2026-09-14** using official provider documentation. Prices below are 
 
 ## Recommendation for the confirmed requirements
 
+P03 local implementation note, 2026-09-16: project-local Supabase CLI 2.117.0 and a Docker development stack were added. No provider account, hosted project, subscription, DNS, billing, or email-delivery configuration changed. The estimates and provider assumptions below remain the 2026-09-14 research, to recheck at P05/P12. [Current local CLI requirements](https://supabase.com/docs/guides/local-development/cli/getting-started) were checked for tooling compatibility; this is not a fresh verification of hosted pricing.
+
 **GitHub Pages + Supabase Free + Resend Free**, with Cloudflare Turnstile for CAPTCHA. Keep Namecheap DNS. No Cloudflare DNS migration, Cloudflare Access, Workers, D1, VPS, or production Docker service is required by this final proposal.
 
 Supabase supplies Postgres, authentication, row-level security, and small Edge Functions. A guarded Send Email Hook delivers provider-generated magic links through Resend. This keeps email budgets enforceable even when someone calls the public Auth endpoint directly. The hook is available on Free. [Supabase Auth Hooks](https://supabase.com/docs/guides/auth/auth-hooks)

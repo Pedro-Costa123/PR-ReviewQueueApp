@@ -1,6 +1,6 @@
 # Decisions
 
-Updated: 2026-09-14. **Confirmed** means specified/answered by the owner. **Proposed** means a researched design choice for staged validation. **Deferred** means deliberately outside current work.
+Updated: 2026-09-16. **Confirmed** means specified/answered by the owner. **Proposed** means a researched design choice for staged validation. **Deferred** means deliberately outside current work.
 
 | ID | Status | Decision and reasoning |
 | --- | --- | --- |
@@ -24,6 +24,8 @@ Updated: 2026-09-14. **Confirmed** means specified/answered by the owner. **Prop
 | D18 | Proposed | Keep theme locally, minimize session persistence, and review sibling apps. A path shares an origin; document the residual risk rather than promise subdomain-level isolation. |
 | D19 | Deferred | Paid subscriptions, automatic provider integration, notifications, attachments, AI review, and self-service organization creation. |
 | D20 | Implemented in P02, 2026-09-14 | Use `go_router` 18.0.1 and `shared_preferences` 2.5.5 with a pinned lockfile; no extra state-management package. Theme uses the async preferences API. The shell has public fictional presentation fixtures and no fake identity or login bypass. This realizes the local shell without granting or simulating server access. |
+| D21 | Implemented in P03, 2026-09-16 | Pin project-local Supabase CLI 2.117.0; run the minimal Docker stack on a dedicated bridge requesting loopback binding. Actual all-interface bindings on this Docker Desktop are reported, not treated as isolation; stop the stack after verification. Reset applies migrations without fixtures. Node built-in tests and Docker `psql` verify SQL roles, the Data API, and concurrency; test identities/JWTs are isolated from migrations, deployment seeds, and Flutter. |
+| D22 | Implemented in P03, 2026-09-16 | Expose authenticated reads under live-membership RLS and only the guarded `set_member_access` RPC. Deny direct writes, including owner/admin queue writes until their backlog items. Keep private operational tables and operator bootstrap out of the API. Global and schema function defaults are explicitly revoked. Team-row serialization, post-lock authorization checks, and database triggers protect last-admin changes. This implements the local authorization foundation, not hosted authentication or approval of remaining product defaults. |
 
 ## Alternatives evaluated
 

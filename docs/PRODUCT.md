@@ -1,6 +1,6 @@
 # Product
 
-Last updated: 2026-09-14. Owner: Pedro Costa. Stage: local shell implemented for review; core questions answered, smaller defaults recorded for later steps. Demo content illustrates proposals without confirming them.
+Last updated: 2026-09-16. Owner: Pedro Costa. Stage: P02 local shell and P03 local database/authorization foundation implemented; the shell remains disconnected. Core questions are answered, with smaller defaults recorded for later steps. Demo content and preparatory schema fields illustrate proposals without confirming them.
 
 ## Problem and outcome
 

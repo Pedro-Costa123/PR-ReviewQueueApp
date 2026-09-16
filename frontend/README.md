@@ -41,4 +41,4 @@ Only `pr_review_queue.theme` is stored locally. Storage failures keep the app us
 
 The generated Flutter favicon/app icons remain temporary. The SDK emits a missing Cupertino font-family warning during icon tree shaking; this shell uses Material icons, which render correctly in the inspected browser. No native-platform tooling is needed.
 
-Product behavior is in [Product](../docs/PRODUCT.md), architecture in [Architecture](../docs/ARCHITECTURE.md), and the next item is **P03**, after review of this shell.
+Product behavior is in [Product](../docs/PRODUCT.md) and architecture in [Architecture](../docs/ARCHITECTURE.md). P03's local backend foundation is now implemented separately; this frontend remains unchanged and disconnected. The next item is **P04**, after P03 review.

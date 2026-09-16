@@ -2,7 +2,7 @@
 
 A private team queue that keeps pull requests visible, makes sprint priorities clear, and records review feedback and archived work.
 
-**Current stage: P02 local Flutter shell complete, ready for review.** A runnable demo exists with fictional data and theme/navigation support. There is no backend, working authentication, or deployment. Work proceeds one backlog item at a time.
+**Current stage: P03 local database and team authorization complete, ready for review.** The Flutter demo remains separate from the tested local Supabase foundation. Working magic-link authentication, queue mutations, and deployment are still future work. Work proceeds one backlog item at a time.
 
 ## Project documentation
 
@@ -32,7 +32,7 @@ Flutter Web, magic links, the URL path, Namecheap DNS, GitHub Pages, manual upda
 
 ```text
 frontend/          Flutter Web shell, fictional fixtures, tests, local preview
-backend/           API and database migrations (currently a planning README)
+backend/           Local Supabase schema, authorization tests, operator bootstrap
 docs/              Persistent product and implementation context
 AGENTS.md          Instructions for agents working in this repository
 .gitignore         Generated files and local secrets
@@ -41,7 +41,7 @@ LICENSE            Existing MIT license
 
 ## Start the next step
 
-Read [Status](docs/STATUS.md), then [Next](docs/NEXT.md). Review the local shell using the [verified frontend commands](frontend/README.md). The next implementation item is **P03: local Supabase schema and team authorization**. The [handoff instructions](docs/HANDOFF.md) include a prompt for continuing in Codex.
+Read [Status](docs/STATUS.md), then [Next](docs/NEXT.md). Review P03 using the [verified backend commands](backend/README.md); the [frontend demo commands](frontend/README.md) remain available. The next implementation item is **P04: magic-link flow and guarded email delivery locally**. The [handoff instructions](docs/HANDOFF.md) include a prompt for continuing in Codex.
 
 Do not run the entire backlog in one task. Complete the selected item, verify its acceptance criteria, update the docs, and stop at its review boundary.
 
@@ -49,7 +49,7 @@ Do not run the entire backlog in one task. Complete the selected item, verify it
 
 On the initial machine, Flutter is at `C:\Users\pedro\flutter` and is on PowerShell's PATH. Git, Node.js, npm, and Docker are available. Exact observed versions are in [Status](docs/STATUS.md).
 
-The proposed stack needs no Java server or Docker container in production. Docker will be useful for local Supabase development. Project-local backend tools will be selected during P03. Verified local app build/preview commands are in [frontend/README.md](frontend/README.md).
+The proposed stack needs no Java server or Docker container in production. P03 uses Docker for local Supabase development with CLI 2.117.0 pinned under `backend/`. Setup, tests, and the observed Windows port-binding limitation are in [backend/README.md](backend/README.md). Verified local app build/preview commands are in [frontend/README.md](frontend/README.md).
 
 ## License
 
