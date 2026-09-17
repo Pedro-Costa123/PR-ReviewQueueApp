@@ -2,7 +2,7 @@
 
 A private team queue that keeps pull requests visible, makes sprint priorities clear, and records review feedback and archived work.
 
-**Current stage: P03 local database and team authorization complete, ready for review.** The Flutter demo remains separate from the tested local Supabase foundation. Working magic-link authentication, queue mutations, and deployment are still future work. Work proceeds one backlog item at a time.
+**Current stage: P04 local authentication and guarded mail complete, ready for review.** The Flutter sign-in screen connects to local Supabase; the queue remains fictional. Real email, hosted setup, queue mutations and deployment remain future work. Work proceeds one backlog item at a time.
 
 ## Project documentation
 
@@ -15,6 +15,7 @@ A private team queue that keeps pull requests visible, makes sprint priorities c
 | [Next](docs/NEXT.md) | Ordered, individually reviewable implementation steps |
 | [Costs](docs/COSTS.md) | Hosting/authentication comparison, quotas, estimates, and sources |
 | [Security](docs/SECURITY.md) | Access rules, abuse controls, and launch checks |
+| [Local authentication](docs/AUTH.md) | P04 runbook, provider corrections, sessions, email guards and CAPTCHA design |
 | [Handoff](docs/HANDOFF.md) | How to continue the project across planning and implementation tasks |
 
 ## Proposed stack
@@ -41,7 +42,7 @@ LICENSE            Existing MIT license
 
 ## Start the next step
 
-Read [Status](docs/STATUS.md), then [Next](docs/NEXT.md). Review P03 using the [verified backend commands](backend/README.md); the [frontend demo commands](frontend/README.md) remain available. The next implementation item is **P04: magic-link flow and guarded email delivery locally**. The [handoff instructions](docs/HANDOFF.md) include a prompt for continuing in Codex.
+Read [Status](docs/STATUS.md), then [Next](docs/NEXT.md). Review P04 using the [local authentication runbook](docs/AUTH.md); the [frontend demo commands](frontend/README.md) remain available. The next implementation item is **P05: small hosted authentication/cost validation**. The [handoff instructions](docs/HANDOFF.md) include a prompt for continuing in Codex.
 
 Do not run the entire backlog in one task. Complete the selected item, verify its acceptance criteria, update the docs, and stop at its review boundary.
 

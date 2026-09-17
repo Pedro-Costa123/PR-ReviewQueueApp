@@ -1,56 +1,106 @@
 # Current status
 
-Updated: 2026-09-16.
+Updated: 2026-09-17.
 
-## What exists
+## Current implementation
 
-- Original Git repository and MIT license preserved.
-- Root README, `.gitignore`, and `AGENTS.md` for incremental implementation and documentation updates.
-- Web-only Flutter application under `frontend/`, organized into auth, teams, queue, archive, profiles, and shared code. The frontend remains the P02 demo and is not connected to the backend.
-- P03 backend under `backend/`: pinned project-local Supabase tooling, Docker startup/config, migration for profiles/teams/memberships/invitations/entries/comments/reviews and private audit/email tables, explicit grants/RLS, immutable ownership/child-team constraints, guarded membership access changes, and operator bootstrap.
-- Nineteen local backend tests cover SQL roles, direct Data API requests, fictional disjoint/multi-team fixtures, JWT/ownership/role forgery, live revocation, private/default grants, initial/last-admin protection, and concurrent membership changes. Fixtures are outside migrations and configured seeds.
-- P02 read-only fictional queue for Atlas, empty Orbit team, sign-in/profile/archive placeholders, desktop sidebar and narrow drawer navigation, dark default and saved light preference.
-- Frontend dependency/lock files, nine tests, and a loopback-only Node release preview at the required base path. Theme preference is the frontend's only persisted value.
-- Product, architecture, decisions, current status, ordered backlog, costs, security, and handoff documents.
-- Official-source research on Flutter/static hosting, GitHub Pages, magic-link delivery, backend quotas, and abuse controls.
-- Owner's answers recorded: GitHub Enterprise/Jira Enterprise links only; manual updates/archiving; invited work email magic links; €0 target; Namecheap DNS and GitHub Pages at the exact path; sprint/priority group ordering; multiple teams; external hosting allowed.
+P00-P04 are complete locally. **P04 is ready for review; P05 is next.** The
+Flutter queue remains fictional and read-only, while its sign-in screen can now
+authenticate against the local Supabase stack. No hosted project or production
+deployment exists. See [AUTH](AUTH.md) for the complete local runbook and decisions.
 
-## What does not exist yet
+- P02 shell: desktop/narrow navigation, Atlas/Orbit fixtures, profile/archive
+  placeholders, dark default and saved theme preference.
+- P03 database: profiles, teams, memberships, invitations, entries, comments,
+  reviews, private operational tables, explicit grants/RLS, guarded existing-member
+  access changes, immutable ownership/child-team rules and operator bootstrap.
+- P04 frontend: pinned supabase_flutter 2.17.2, small auth repository/controller,
+  generic link request, explicit Continue sign-in/cancel, session display/sign-out,
+  early callback URL cleanup and sessionStorage with memory fallback.
+- P04 backend: signed local Edge Function, exact identity/email/invitation checks,
+  service-only quota reservation/completion RPCs, atomic recipient/global rolling
+  budgets, digest-bound event idempotency and conservative unknown outcomes.
+- Mail goes only to local Mailpit and fictional @example.test recipients. The
+  frontend and sender have explicit local-only gates. Test provisioning is outside
+  migrations/application builds; no fake application identity or token generator.
 
-No frontend login/backend integration, real queue CRUD/reordering/comments/reviews/archive operations, invitation provisioning/claiming UI, guarded email hook/budgets, hosted project, external mail configuration, CI workflow, combined-site release, or production app. The only exposed mutation is the P03 existing-member access RPC. Local Auth and mail capture run as tooling, not as a validated magic-link flow. No cloud accounts/subscriptions, DNS, existing website, or real email delivery changes were made.
+Not implemented: hosted login/Resend/Turnstile widget, invitation admin/provisioning
+UI or claiming, real queue CRUD/reorder/comments/reviews/archive, CI, combined-site
+artifact or deployment. P04 verifies identities but creates no team membership.
+P05 requires the owner to select the hosted trial and supply provider access/secrets
+through secret storage; no cloud, billing, DNS or real-email changes were made.
 
-P02 and the planning files are tracked in commit `39e9d5d` (`P02 | Local Flutter app shell`). P03 began with a clean worktree; local `main` and the cached `origin/main` reference pointed at that commit. P03 changes are currently uncommitted; this task did not fetch, commit, push, or deploy. Another checkout needs the resulting changes to use this context.
+## Verified P04 behavior and corrections
 
-## Repository observations
+- Global signup remains disabled. The local CLI's email provider flag must be
+  enabled. GoTrue v2.196.0 rejects /otp for unconfirmed identities when signup is
+  disabled; the SDK falls back only on signup_disabled to confirmation resend for
+  the existing identity. After verification, ordinary OTP requests succeed.
+- Provider-issued links are single-use, expire after 15 minutes, and point at the
+  actual entry document with a token-hash fragment. Opening/rendering the page
+  does not consume the link; explicit confirmation does. The URL is cleaned before
+  Flutter starts. Refresh before confirmation drops the pending in-memory value.
+- Session persistence uses sessionStorage, never auth localStorage. Browser testing
+  found SDK auth broadcasts synchronize already-open app tabs. This reduces durable
+  persistence but does not isolate tabs or protect against compromised sibling apps.
+- Direct Auth responses can reveal identity state despite generic UI acknowledgement.
+  A previously-issued link may verify after invite revocation, but gains no team
+  access. P06 must recheck eligibility when claiming invitations.
+- CAPTCHA design uses provider enforcement and fresh single-use challenges for
+  both /otp and the possible /resend fallback; SDK contract tests verify this.
+  Actual Turnstile enforcement, delivery and advanced scanners remain P05 checks.
+- Database reset/function serving must use the startup Docker network. The initial
+  regression run exposed a DNS failure without that flag; corrected commands pass.
+  The previously documented all-interface Docker port binding remains a local limit.
 
-- Workspace: `C:\Users\pedro\Projects\PR-ReviewQueueApp`.
-- Branch inspected: `main`, tracking `origin/main`; initial worktree clean.
-- Remote: `git@github.com:Pedro-Costa123/PR-ReviewQueueApp.git`.
-- Initial planning commit was `7fa6224` (`Add MIT License to the project`); P03 baseline is `39e9d5d`.
-- The repository name differs from the desired Pages path. Publishing through the existing site needs inspection; do not assume a new project Pages toggle gives the exact URL.
-- The existing portfolio's source/deployment workflow and repository visibility have not been inspected.
+## Verification on 2026-09-17
 
-## Local environment observed
+- Clean local reset applies both migrations without fixtures.
+- npm test: **19 P03 authorization/Data API/concurrency tests passed**.
+- npm run test:auth: **15 tests passed**, covering real unconfirmed/confirmed Auth,
+  disabled signup, denied uninvited/revoked/expired requests, verification replay and
+  expiry, refresh, no automatic team access, signed duplicate delivery, signature
+  failures, service grants, forged identity/email pairs, stale-snapshot rejection,
+  recipient/global concurrent caps and failure accounting.
+- npm run lint: public/private schemas passed, no errors or warnings.
+- The final backend sequence passed after a clean reset. An intervening P03
+  rerun correctly refused the already-populated test database; reset is required
+  before repeating that suite, as documented in AUTH.
+- flutter analyze: passed; flutter test: **15 passed**, including SDK request
+  contracts with fresh CAPTCHA tokens, controller states and sign-in widgets.
+- node --test test/auth_callback.test.cjs: **3 passed** for immediate cleanup,
+  one-time handoff, rejected query/access-token callbacks and unchanged hash routes.
+- Release web build at /PR-Review-App-Queue/ with local bundled rendering resources
+  passed, including Wasm dry run. The existing unused Cupertino-font warning remains.
+- Chrome local release: email request via Tab/Enter, captured link in a new tab,
+  clean callback URL before confirmation, keyboard confirmation, signed-in screen,
+  reload persistence, cross-tab SDK synchronization and sign-out inspected.
+  Desktop 1920 × 855 and narrow 390 × 844 layouts, both themes and narrow keyboard
+  validation were inspected. The demo banner was corrected to describe only queue data.
+- Final tracked/new-source review and git diff --check passed. Content checks
+  covered 57 text files and 51 relative Markdown links; lockfile pins/engines match.
+  Local environment files remain ignored. The fictional preview recipient was
+  restored after the final reset. The preview/function processes and this project's
+  Supabase stack were stopped, preserving its fictional database.
 
-| Tool | Observation |
-| --- | --- |
-| Flutter | `flutter --version` verified 3.47.4 stable at `C:\Users\pedro\flutter`; framework revision `9584c6713b` |
-| Dart | `flutter --version` verified 3.13.3 |
-| Node.js / npm | Version commands returned v26.5.0 / 11.17.0 |
-| Git | Available on PATH |
-| Docker | Desktop 4.91.0 / Linux engine 29.8.0 verified in P03; local stack starts, resets, tests, and stops |
-| Java | Owner provided JDK 21 path; not needed by the proposed web/backend stack, not tested |
-| Supabase CLI | Project-local 2.117.0, pinned in `backend/package.json` and lockfile; Postgres image 17.6.1.167 |
+## Repository and environment
 
-P02 verified the web environment using `flutter doctor -v`, analysis, tests, and release builds. Doctor's only failed category was missing Visual Studio for native Windows development, outside this web-only project. Flutter commands required SDK-cache access outside the workspace. P03 verified the installed Node version against the CLI's documented Node 20+ requirement. CLI cache access, dependency downloads, and Docker operations required sandbox permission; no global Supabase installation or manual system-tool upgrade was performed.
+Workspace: C:\Users\pedro\Projects\PR-ReviewQueueApp. Branch: main. P03 is
+committed as c2b44c8, correcting its older handoff's uncommitted note. P04 began with
+a clean worktree and remains uncommitted; no fetch, push or deployment was performed.
+Cached origin/main matched c2b44c8 at inspection; this is not a fresh remote check.
 
-## Decisions still proposed
+Tooling remains Flutter 3.47.4/Dart 3.13.3, Node 26.5.0/npm 11.17.0, Supabase CLI
+2.117.0 and Postgres 17.6.1.167. P04 also exercised local Edge Runtime 1.74.3
+(Deno 2.1.4), GoTrue 2.196.0 and Mailpit 1.30.2. Docker Desktop's Linux engine was
+started for verification. No global tool upgrade or new hosted service was added.
 
-Supabase/Resend implementation details, title and priority labels, profile email visibility, self-review restriction, edit/archive privileges beyond deletion, operator-created teams, session persistence, and retention defaults. The final hosting choice is confirmed; its exact Pages publishing integration is not yet verified.
+Remaining product defaults are still proposed: title/priority labels, profile email
+visibility, self-review, edit/archive privileges, operator-created teams and retention.
+Exact enterprise hostnames are needed for P07; the existing Pages workflow and shared
+origin must be inspected before publishing. These do not block local P04 completion.
 
-Need exact enterprise hostnames before live link validation, and the existing Pages source/workflow before publishing. These do not block P04's local auth work. Existing proposed title/priority/lifecycle schema fields and the operator bootstrap implementation do not promote unrelated product defaults to confirmed requirements.
-
-## Verification
+## Historical verification
 
 P03 verification on 2026-09-16:
 
@@ -83,4 +133,5 @@ No backend tests were applicable during P02; P03 results are above. No productio
 
 ## Next
 
-P00-P03 are complete locally. **P03 is ready for review. P04 is next: magic-link flow and guarded email delivery locally**, including mocked delivery and callback/session validation. P04 has not started. See [NEXT](NEXT.md) for its acceptance criteria and stop boundary, and the [backend README](../backend/README.md) for verified commands.
+Review P04, then select **P05: small hosted authentication/cost validation**.
+Follow [NEXT](NEXT.md); do not advance to onboarding or queue mutations in this item.

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import 'features/archive/archive_page.dart';
 import 'features/auth/sign_in_page.dart';
+import 'features/auth/auth_controller.dart';
 import 'features/profiles/profile_page.dart';
 import 'features/queue/queue_page.dart';
 import 'features/queue/queue_repository.dart';
@@ -15,10 +16,12 @@ class ReviewQueueApp extends StatefulWidget {
     required this.theme,
     this.repository = const DemoQueueRepository(),
     this.initialLocation,
+    this.auth,
   });
   final ThemeController theme;
   final QueueRepository repository;
   final String? initialLocation;
+  final AuthController? auth;
   @override
   State<ReviewQueueApp> createState() => _ReviewQueueAppState();
 }
@@ -36,7 +39,10 @@ class _ReviewQueueAppState extends State<ReviewQueueApp> {
           child: child,
         ),
         routes: [
-          GoRoute(path: '/', builder: (context, state) => const SignInPage()),
+          GoRoute(
+            path: '/',
+            builder: (context, state) => SignInPage(auth: widget.auth),
+          ),
           GoRoute(
             path: '/teams/:teamId',
             builder: (context, state) {

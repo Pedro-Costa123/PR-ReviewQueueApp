@@ -60,7 +60,9 @@ refresh_token_reuse_interval = 10
 minimum_password_length = 12
 
 [auth.email]
-enable_signup = false
+# This CLI flag enables the email provider. Global auth.enable_signup above
+# still disables public account creation; turning both off also blocks login.
+enable_signup = true
 enable_confirmations = true
 double_confirm_changes = true
 secure_password_change = true
@@ -70,8 +72,16 @@ otp_expiry = 900
 [auth.sms]
 enable_signup = false
 
+[auth.hook.send_email]
+enabled = true
+uri = "http://host.docker.internal:54321/functions/v1/send-auth-email"
+secrets = "env(SEND_EMAIL_HOOK_SECRET)"
+
 [edge_runtime]
-enabled = false
+enabled = true
+
+[functions.send-auth-email]
+verify_jwt = false
 
 [analytics]
 enabled = false

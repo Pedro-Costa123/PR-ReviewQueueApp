@@ -67,7 +67,7 @@ class WorkspaceShell extends StatelessWidget {
                     ),
                     color: Theme.of(context).colorScheme.surfaceContainerHigh,
                     child: const Text(
-                      'DEMO · Fictional data only. Sign-in and saving are not connected.',
+                      'DEMO QUEUES · Fictional entries. Queue saving is not connected.',
                       style: TextStyle(fontSize: 12),
                     ),
                   ),

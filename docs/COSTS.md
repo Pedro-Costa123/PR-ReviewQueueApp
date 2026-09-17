@@ -2,6 +2,21 @@
 
 Checked: **2026-09-14** using official provider documentation. Prices below are provider-listed USD, before applicable tax or currency conversion. €0 means zero additional service charges on the selected free plans, not free domain renewal or a guarantee of permanent pricing.
 
+## P04 recheck (2026-09-17)
+
+Official pages rechecked before authentication implementation: [Supabase pricing](https://supabase.com/pricing),
+[Auth Hooks](https://supabase.com/docs/guides/auth/auth-hooks), [Resend pricing](https://resend.com/pricing),
+and [Turnstile plans](https://developers.cloudflare.com/turnstile/plans/). Send Email
+Hooks remain available on Free; Supabase lists 500,000 free Edge invocations;
+Resend Free lists 3,000 emails/month and 100/day. The proposed free-plan architecture
+and zero-additional-service-cost target are unchanged. No account, subscription,
+billing, DNS or real mail setup was performed. Account eligibility/consumption must
+still be verified at P05.
+
+P04 enforces conservative rolling windows of 24 hours and 31 days for the daily
+and monthly application budgets below, including unknown failures. The tested
+sender is local Mailpit only; no Resend API calls or hosted costs occurred.
+
 ## Recommendation for the confirmed requirements
 
 P03 local implementation note, 2026-09-16: project-local Supabase CLI 2.117.0 and a Docker development stack were added. No provider account, hosted project, subscription, DNS, billing, or email-delivery configuration changed. The estimates and provider assumptions below remain the 2026-09-14 research, to recheck at P05/P12. [Current local CLI requirements](https://supabase.com/docs/guides/local-development/cli/getting-started) were checked for tooling compatibility; this is not a fresh verification of hosted pricing.

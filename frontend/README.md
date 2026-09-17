@@ -1,6 +1,6 @@
 # Frontend
 
-P02 is implemented: a Flutter Web shell with read-only fictional data, a sign-in placeholder, two demo teams, profile/archive placeholders, responsive navigation, and a saved theme preference. No authentication session, backend, or queue writes exist.
+P02 is implemented: a Flutter Web shell with read-only fictional data, a sign-in placeholder, two demo teams, profile/archive placeholders, responsive navigation, and a saved theme preference. P04 adds optional local Supabase authentication; queue writes remain unavailable. Follow [the P04 runbook](../docs/AUTH.md) to build the authentication preview.
 
 Verified SDK: **Flutter 3.47.4 stable / Dart 3.13.3** on Windows. Only the web platform is scaffolded. Application dependencies and the lockfile are pinned; no global backend tooling is required.
 
@@ -25,9 +25,10 @@ dart format --output=none --set-exit-if-changed lib test
 flutter analyze
 flutter test
 node --check tool/serve.cjs
+node --test test/auth_callback.test.cjs
 ```
 
-Nine tests cover theme default/restoration/storage failure, demo navigation, and narrow/direct/unknown routes. Browser checks covered desktop and narrow layouts, both themes, reload persistence, keyboard activation and team selection, drawer navigation, and browser Back. See [Status](../docs/STATUS.md) for results and limitations.
+Fifteen Flutter tests and three JavaScript callback tests cover authentication and the existing shell. The original nine tests cover theme default/restoration/storage failure, demo navigation, and narrow/direct/unknown routes. Browser checks covered desktop and narrow layouts, both themes, reload persistence, keyboard activation and team selection, drawer navigation, and browser Back. See [Status](../docs/STATUS.md) for results and limitations.
 
 ## Structure and boundaries
 
@@ -37,8 +38,8 @@ Nine tests cover theme default/restoration/storage failure, demo navigation, and
 - `lib/shared/`: reusable UI and theme persistence using `SharedPreferencesAsync`.
 - `test/`: shell behavior and layout tests; no real identities or mail.
 
-Only `pr_review_queue.theme` is stored locally. Storage failures keep the app usable and show a warning. There is no fake login, user token, role switch, or backend authorization bypass in any build; demo profiles are public fictional display data. The release artifact is still a demo and is not authorized for publishing.
+The default demo stores only `pr_review_queue.theme`. The configured P04 preview also persists auth in sessionStorage with memory fallback; SDK cross-tab behavior is documented in AUTH. Theme-storage failures show a warning; unavailable auth storage falls back to memory. There is no fake login, role switch, or backend authorization bypass in any build; demo profiles are public fictional display data. The release artifact is still a demo and is not authorized for publishing.
 
 The generated Flutter favicon/app icons remain temporary. The SDK emits a missing Cupertino font-family warning during icon tree shaking; this shell uses Material icons, which render correctly in the inspected browser. No native-platform tooling is needed.
 
-Product behavior is in [Product](../docs/PRODUCT.md) and architecture in [Architecture](../docs/ARCHITECTURE.md). P03's local backend foundation is now implemented separately; this frontend remains unchanged and disconnected. The next item is **P04**, after P03 review.
+Product behavior is in [Product](../docs/PRODUCT.md) and architecture in [Architecture](../docs/ARCHITECTURE.md). P04 connects only local authentication; the demo queue is unchanged. The next item is **P05**, after P04 review.

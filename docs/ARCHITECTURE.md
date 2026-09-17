@@ -1,6 +1,6 @@
 # Architecture
 
-Updated: 2026-09-16. P02 local frontend and P03 local database/authorization foundation are implemented. Authentication delivery, queue behavior, and deployment remain planned. No components deployed.
+Updated: 2026-09-17. P04 local authentication, signed hook and mocked delivery are implemented. Real delivery, queue behavior and deployment remain planned. No components deployed. [AUTH](AUTH.md) documents the tested callback, session, provider corrections and runbook.
 
 ## Design
 
@@ -45,29 +45,29 @@ Paths share an origin with the portfolio and PassGen. They are not separate brow
 
 ## Frontend
 
-P02 implementation: feature folders under `frontend/lib/`, a small read-only `QueueRepository` with fictional display models, Material themes, `go_router` 18.0.1 using its default hash strategy, and `shared_preferences` 2.5.5 through `SharedPreferencesAsync`. The lockfile is pinned. Theme preference is loaded before first rendering, defaults to dark independently of OS theme, and reports unavailable storage without blocking the app. No state-management or auth client package is installed yet.
+P02 implementation: feature folders under `frontend/lib/`, a small read-only `QueueRepository` with fictional display models, Material themes, `go_router` 18.0.1 using its default hash strategy, and `shared_preferences` 2.5.5 through `SharedPreferencesAsync`. The lockfile is pinned. Theme preference is loaded before first rendering, defaults to dark independently of OS theme, and reports unavailable storage without blocking the app. P04 adds pinned supabase_flutter 2.17.2 behind a small repository/controller; no extra state-management package.
 
-Routes are `/`, `/teams/:teamId`, `/teams/:teamId/archive`, and `/teams/:teamId/profiles/:profileId`; unknown routes/IDs show a recovery screen. There is no signed-in demo identity or authentication bypass. The fictional profiles and entries are public static presentation data, not protected team records. The local P03 database boundary is implemented separately; this shell does not use it. The local release preview serves the required base path without rewrites; this does not verify the actual Pages publishing arrangement.
+Routes are `/`, `/teams/:teamId`, `/teams/:teamId/archive`, and `/teams/:teamId/profiles/:profileId`; unknown routes/IDs show a recovery screen. There is no signed-in demo identity or authentication bypass. The fictional profiles and entries are public static presentation data, not protected team records. The local P03 database boundary is implemented separately; the queue shell does not use it. P04 connects only authentication in the exact-loopback preview. The local release preview serves the required base path without rewrites; this does not verify the actual Pages publishing arrangement.
 
 - Flutter Web only; Material components, responsive queue, dark default and saved light preference.
 - Start with feature folders: `auth`, `teams`, `queue`, `archive`, `profiles`, and small shared UI/services.
-- Use the pinned routing package for deep links; verify real auth callback compatibility in P04. Keep state management minimal until multiple screens justify a package.
+- Use the pinned routing package for deep links; P04 verified local auth callback compatibility. Keep state management minimal until multiple screens justify a package.
 - Use the maintained Supabase Flutter client behind a small repository interface; fake repositories support the local shell. Domain models should not import widget code.
-- Auth session storage decision is part of P04: prefer tab-scoped persistence, avoiding indefinite shared localStorage sessions. Verify SDK support and refresh/callback behavior; do not silently accept the SDK's persistence defaults.
+- P04 uses a custom sessionStorage adapter with memory fallback. The SDK synchronizes already-open same-origin app tabs through BroadcastChannel; this is not per-tab isolation. Auth localStorage persistence is disabled. See AUTH for limits.
 - No tokens in URLs after callback processing, no auth data in analytics, and no offline caching of team data.
 - No Realtime subscription in version 1. Refresh after successful writes, on tab return, manually, and at most once per 60 seconds while visible.
 
 ## Backend organization
 
-P03 now provides project-local Supabase CLI 2.117.0, Docker config, the initial migration, local SQL-role/Data API tests, fictional test fixtures, and an operator bootstrap script. The frontend is not connected. `private` is excluded from the exposed API schemas. Public reads use explicit grants and live-membership RLS; all direct writes are denied. Global and schema-scoped function default grants are revoked, including PostgreSQL's default PUBLIC execution. Helpers use fixed search paths and derive identity from `auth.uid()`.
+P03 now provides project-local Supabase CLI 2.117.0, Docker config, the initial migration, local SQL-role/Data API tests, fictional test fixtures, and an operator bootstrap script. The queue frontend remains disconnected; the local sign-in screen is connected in P04. `private` is excluded from the exposed API schemas. Public reads use explicit grants and live-membership RLS; all direct writes are denied. Global and schema-scoped function default grants are revoked, including PostgreSQL's default PUBLIC execution. Helpers use fixed search paths and derive identity from `auth.uid()`.
 
-The only exposed P03 mutation is `set_member_access`, restricted to live team admins and existing memberships. It serializes on the team, rechecks authority after locking, updates data revision, revokes pending invitations on removal, and audits the change. Triggers also serialize operator membership writes and protect the last admin; a deferred team constraint requires the initial admin at commit. `private.bootstrap_team` is operator-only, requires an existing verified Auth identity, and creates the team/admin/audit atomically. All queue behavior and email functions remain later work.
+The only exposed P03 mutation is `set_member_access`, restricted to live team admins and existing memberships. It serializes on the team, rechecks authority after locking, updates data revision, revokes pending invitations on removal, and audits the change. Triggers also serialize operator membership writes and protect the last admin; a deferred team constraint requires the initial admin at commit. `private.bootstrap_team` is operator-only, requires an existing verified Auth identity, and creates the team/admin/audit atomically. Queue behavior remains later work. P04 adds service-role-only reserve_auth_email/finish_auth_email functions and a signed local email hook.
 
 Own profiles remain readable without team membership; other profiles require a shared active team. Profile rows contain no email. Revocation removes team data access immediately but does not delete the person's own profile or unrelated team memberships. Direct owner/admin queue deletion is intentionally unavailable until P07.
 
 Tests and fixtures live outside migrations and configured seeds, require an empty local database, and refuse linked/remote targets. Synthetic local JWTs exercise PostgREST authorization without implementing login. Setup, verification, and operator commands are in the [backend README](../backend/README.md).
 
-Directory plan (functions and integration tests are still future work):
+Directory organization (P04 implements send-auth-email and Auth integration tests; invite-member remains future work):
 
 ```text
 backend/
@@ -116,14 +116,14 @@ Avoid a globally readable email column in profiles. If team admins need a roster
 
 1. An authenticated team admin requests an invite for an exact email and role. The server rechecks live admin membership; it never trusts a role in the request body or user-editable metadata.
 2. Persist a pending invitation before provisioning Auth. Provision an unconfirmed email identity if absent, without creating a password or granting membership. Use server-only Auth admin capabilities. Repeated requests reconcile the same identity/invite instead of duplicating them.
-3. An invited user requests a magic link with a valid CAPTCHA. Disable public signup in Supabase settings and pass `shouldCreateUser: false`. These are separate protections: client options alone are insufficient. [Auth settings](https://supabase.com/docs/guides/auth/general-configuration), [passwordless sign-in](https://supabase.com/docs/guides/auth/auth-email-passwordless)
+3. An invited user requests a magic link with a valid CAPTCHA (live widget/enforcement is P05). P04 validated a required correction: unconfirmed existing users receive a confirmation link through SDK resend(type: signup), after /otp returns signup_disabled; confirmed users use /otp. Each attempt requires a fresh CAPTCHA token when enforcement is enabled. Disable public signup in Supabase settings and pass `shouldCreateUser: false`. These are separate protections: client options alone are insufficient. [Auth settings](https://supabase.com/docs/guides/auth/general-configuration), [passwordless sign-in](https://supabase.com/docs/guides/auth/auth-email-passwordless)
 4. Supabase creates the login material and calls a signed Send Email Hook. The hook verifies signature/timestamp, checks active membership or a valid invite, atomically reserves email budget, and sends through Resend. Do not build a custom token generator.
-5. The callback verifies the provider-issued material through the supported flow and claims pending team invitations for the authenticated, verified email in a transaction. Auth record existence alone never grants team access. Profile completion follows.
+5. The P04 callback removes the token-hash fragment before Flutter starts and verifies provider material only after explicit confirmation. P06 will claim pending team invitations for the authenticated, verified email in a transaction. Auth record existence alone never grants team access. Profile completion follows.
 6. Removing membership is effective for every database request even while a JWT remains valid. Revoke pending invitations too; another team's membership must remain intact.
 
 The hook is important because direct calls to the public Auth API can bypass this Flutter UI. Budget and invitation checks must still run for every supported email action. Unsupported email actions fail closed. The hook is available on Supabase Free. [Auth Hooks](https://supabase.com/docs/guides/auth/auth-hooks), [Send Email Hook](https://supabase.com/docs/guides/auth/auth-hooks/send-email-hook)
 
-P04-P05 must prove that server-provisioned identities can receive magic links with signup disabled, including expired/revoked invitations and email-scanner behavior. If a provider flow needs adjustment, record a small decision change before queue implementation. Initial app-invite expiry and short-lived sign-in-token expiry are different clocks.
+P04 proved server-provisioned identities can receive provider-generated links with signup disabled using the confirmation-resend correction. P05 must validate the hosted equivalent, CAPTCHA and real mail-scanner behavior. If a provider flow needs adjustment, record a small decision change before queue implementation. Initial app-invite expiry and short-lived sign-in-token expiry are different clocks.
 
 ## Mutations and consistency
 
@@ -137,7 +137,7 @@ P04-P05 must prove that server-provisioned identities can receive magic links wi
 
 ## Environments and operations
 
-Use Docker-backed local Supabase and a local email inbox/stub initially. Never send real mail in automated tests. P03 verified CLI 2.117.0 with Node 26.5.0/npm 11.17.0 and Docker's Linux engine; the CLI requires Node 20+. Edge Function tooling remains a P04 check. Default local reset applies schema only; fixtures are explicit test-runner input.
+Use Docker-backed local Supabase and a local email inbox/stub initially. Never send real mail in automated tests. P03 verified CLI 2.117.0 with Node 26.5.0/npm 11.17.0 and Docker's Linux engine; the CLI requires Node 20+. P04 exercised the local Edge Runtime and Mailpit capture. Default local reset applies schema only; fixtures are explicit test-runner input.
 
 Use one hosted Free project for the developer trial/pilot if eligible; local development avoids an extra hosted staging bill. Choose an available EU region as the default, without claiming that every vendor's logs/auth/email remain in the EU. Avoid a paid Supabase custom domain: the required frontend address does not require one.
 

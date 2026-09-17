@@ -3,7 +3,15 @@
 const assert = require('node:assert/strict');
 const { spawnSync } = require('node:child_process');
 const path = require('node:path');
+const fs = require('node:fs');
+const { randomBytes } = require('node:crypto');
 const root = path.resolve(__dirname, '..');
+const envFile = path.join(root, '.env');
+if (!fs.existsSync(envFile)) {
+  fs.writeFileSync(envFile, `SEND_EMAIL_HOOK_SECRET=v1,whsec_${randomBytes(32).toString('base64')}\nAPP_CALLBACK_URL=http://127.0.0.1:4173/PR-Review-App-Queue/\n`, { flag: 'wx' });
+}
+// CLI loads .env; functions serve uses the same explicit file.
+process.loadEnvFile(envFile);
 const network = 'pr-review-queue-local';
 const binding = 'com.docker.network.bridge.host_binding_ipv4';
 function run(command, args, timeout = 30000) {
@@ -27,7 +35,7 @@ assert.equal(inspected.status, 0, inspected.stderr);
 assert.equal(JSON.parse(inspected.stdout)[0].Options[binding], '127.0.0.1', 'Unexpected network binding; inspect it before starting');
 console.log('Starting local Supabase with loopback binding requested; first start may download Docker images...');
 const started = run(process.execPath, [path.join(root, 'node_modules/supabase/dist/supabase.js'),
-  'start', '--network-id', network, '-x', 'studio,realtime,storage-api,imgproxy,edge-runtime,logflare,vector,supavisor'], 600000);
+  'start', '--network-id', network, '-x', 'studio,realtime,storage-api,imgproxy,logflare,vector,supavisor'], 600000);
 if (started.status !== 0) {
   console.error(started.stderr);
   process.exit(started.status || 1);

@@ -1,8 +1,11 @@
 # Backend
 
-P03 implements the **local database and authorization foundation**. The Flutter
-app remains the P02 demo; it is not connected to this backend. There is no hosted
-project, working magic-link flow, real email sender, or queue mutation API.
+P03 implements the **local database and authorization foundation**. P04 adds local
+magic-link authentication, a signed Edge hook, guarded quotas and Mailpit delivery.
+The Flutter sign-in screen can connect locally; the queue remains fictional.
+There is no hosted project, real email sender or queue mutation API.
+
+Follow [AUTH](../docs/AUTH.md) for the complete P04 setup/test/preview sequence.
 
 The researched proposal is Supabase Postgres/Auth with row-level security, SQL functions, and TypeScript Edge Functions. Resend delivers magic links through a guarded Send Email Hook. GitHub Pages serves the public frontend; it does not replace database authorization.
 
@@ -18,8 +21,9 @@ npm test
 npm run lint
 ```
 
-The CLI is pinned to **2.117.0** in the application lockfile. Its documented Node
-minimum is 20; this project was checked with Node 26.5.0/npm 11.17.0 on Windows.
+The CLI is pinned to **2.117.0** in the application lockfile. P04's TypeScript
+hook tests use Node's built-in type stripping and require Node 22.18+; the CLI
+itself requires Node 20+. This project was checked with Node 26.5.0/npm 11.17.0 on Windows.
 The first start downloads Docker images. The CLI also uses a user cache outside
 the repository; an agent sandbox may need permission to access that cache and
 the Docker engine. No global CLI installation is required.
@@ -27,8 +31,8 @@ the Docker engine. No global CLI installation is required.
 `npm start` creates/validates the dedicated `pr-review-queue-local` Docker bridge,
 requests loopback binding, runs Postgres 17, Auth, the Data API/gateway, and a
 local mail capture service, and reports actual bindings. It suppresses CLI
-credential output. Unused Storage, Realtime, Studio, Edge Runtime, analytics, and pooler
-services are disabled. Public/anonymous signup is disabled. No external SMTP
+credential output. Unused Storage, Realtime, Studio, analytics, and pooler
+services are disabled. Public/anonymous signup is disabled. P04 enables Edge Runtime and routes Auth mail through the signed local hook. No external SMTP
 provider is configured. This config is for local development, not deployment.
 
 **Observed Windows limitation:** Docker Desktop 4.91.0/engine 29.8.0 with CLI
@@ -83,8 +87,8 @@ must continue to declare permissions explicitly and extend the denial tests.
 
 The proposed title/priority/lifecycle columns prepare later items; they do not
 confirm product defaults. Complete enterprise URL validation is P07, self-review
-behavior P09, and retention/purging P10. Email tables have no sending or quota
-reservation behavior until P04. Admin UI/provisioning and mutation rate limits
+behavior P09, and retention/purging P10. P04 adds service-role-only reserve_auth_email/finish_auth_email functions and
+atomic budgets; clients still cannot access operational tables. Admin UI/provisioning and mutation rate limits
 are later work; the P03 RPC is an authorization foundation, not a release.
 
 ## Explicit operator bootstrap
@@ -113,9 +117,10 @@ SQL-role and HTTP tests cover positive reads, anonymous/outsider/cross-team
 denials, forged ownership/direct writes, private schema and function grants,
 revocation with an unchanged valid token, invitation revocation, parent/child
 invariants, duplicate records, operator bootstrap, and concurrent admin changes.
-They do not claim real Auth login, email delivery, or deployed security.
+Those P03 tests do not claim real Auth login or delivery. P04's separate test:auth
+suite checks actual local Auth and captured delivery; neither suite claims deployed security.
 
-Next: **P04**, local magic-link integration and guarded/mock email delivery.
+Next: **P05**, hosted authentication/cost validation after P04 review.
 See [NEXT](../docs/NEXT.md), [STATUS](../docs/STATUS.md),
 [ARCHITECTURE](../docs/ARCHITECTURE.md), and [SECURITY](../docs/SECURITY.md).
 

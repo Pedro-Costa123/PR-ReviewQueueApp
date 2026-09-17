@@ -1,6 +1,6 @@
 # Ordered implementation backlog
 
-Updated: 2026-09-16. **Execute one selected item, verify it, update the docs, and stop.** Do not turn this file into a single full-app implementation prompt.
+Updated: 2026-09-17. **Execute one selected item, verify it, update the docs, and stop.** Do not turn this file into a single full-app implementation prompt.
 
 `Complete` means the item's actual deliverable exists. `Ready` means the next item can start when requested. Later items remain planned, not authorized as a batch. Smaller UI/product defaults can be settled at the item that needs them.
 
@@ -10,8 +10,8 @@ Updated: 2026-09-16. **Execute one selected item, verify it, update the docs, an
 | P01 | Resolve core product, authentication, budget, and hosting questions | Complete | P00 |
 | P02 | Local Flutter app shell | Complete; ready for owner review | P01 |
 | P03 | Local Supabase schema and team authorization | Complete; ready for owner review | P02 |
-| **P04** | **Magic-link flow and guarded email delivery locally** | **Ready; next implementation item after P03 review** | P03 |
-| P05 | Small hosted authentication/cost validation | Planned | P04 |
+| P04 | Magic-link flow and guarded email delivery locally | Complete locally; ready for owner review | P03 |
+| **P05** | **Small hosted authentication/cost validation** | **Ready after P04 review; requires owner-selected hosted trial/account access** | P04 |
 | P06 | Admin invitations, teams, and profiles | Planned | P05 |
 | P07 | Create/read/edit queue entries and protected deletion | Planned | P06 |
 | P08 | Sprint/priority ordering and admin reordering | Planned | P07 |
@@ -39,7 +39,7 @@ Updated: 2026-09-16. **Execute one selected item, verify it, update the docs, an
 
 **Boundary:** Identity comes from local test fixtures; no real emails. Keep behavioral functions limited to what this authorization foundation needs.
 
-**Completed 2026-09-16:** Pinned local Supabase CLI, Docker startup with binding diagnostics, schema migrations, explicit grants/RLS, guarded existing-member access changes, immutable identities, last-admin serialization, private operational tables, test-only fixtures, and operator bootstrap. Clean local reset, 19 SQL-role/Data API/concurrency tests, and SQL lint passed. Setup and test commands are in the [backend README](../backend/README.md); local network-binding limitations are recorded in [STATUS](STATUS.md). No frontend integration, real email, hosted setup, or queue behavior was added. P04 remains unstarted.
+**Completed 2026-09-16:** Pinned local Supabase CLI, Docker startup with binding diagnostics, schema migrations, explicit grants/RLS, guarded existing-member access changes, immutable identities, last-admin serialization, private operational tables, test-only fixtures, and operator bootstrap. Clean local reset, 19 SQL-role/Data API/concurrency tests, and SQL lint passed. Setup and test commands are in the [backend README](../backend/README.md); local network-binding limitations are recorded in [STATUS](STATUS.md). No frontend integration, real email, hosted setup, or queue behavior was added. P04 was subsequently selected on 2026-09-17.
 
 ## P04 — Magic-link flow and guarded email delivery locally
 
@@ -49,9 +49,11 @@ Updated: 2026-09-16. **Execute one selected item, verify it, update the docs, an
 
 **Boundary:** No invented auth tokens or test identity in hosted builds. No paid service or production signup/deployment.
 
+**Completed 2026-09-17:** Maintained Flutter client, explicit token-hash confirmation at the entry document, sessionStorage adapter, signed local Edge hook, atomic service-only quotas, duplicate protection, fictional Mailpit delivery, and real Auth endpoint checks. Feasibility corrected first login to confirmation resend while retaining disabled public signup. CAPTCHA integration design requires a fresh challenge for the fallback. SDK cross-tab broadcasts are documented. See [AUTH](AUTH.md) and [STATUS](STATUS.md). No hosted configuration or real mail was added.
+
 ## P05 — Small hosted authentication/cost validation
 
-**Deliver:** Prepare then configure a Free Supabase project, Resend Free sending domain, and Turnstile for a small developer trial when the owner selects this stage and supplies account access. Use an exact localhost callback initially, with no real company content. Confirm account quotas, sender-domain DNS additions at Namecheap, and no paid add-ons. The owner supplies secrets through secret storage, not docs/chat.
+**Deliver:** Implement the reviewed Resend sender and Turnstile widget, replace P04's explicit local-only gates with validated hosted configuration, and prepare then configure a Free Supabase project, Resend Free sending domain, and Turnstile for a small developer trial when the owner selects this stage and supplies account access. Use an exact localhost callback initially, with no real company content. Confirm account quotas, sender-domain DNS additions at Namecheap, and no paid add-ons. The owner supplies secrets through secret storage, not docs/chat.
 
 **Acceptance:** Controlled developer inboxes receive a single valid magic link; expired/replayed links and email scanners are handled; signup disabled still allows invited login; direct Auth calls enforce CAPTCHA and hook budgets. Capture actual sanitized provider usage/configuration and delivery observations. Generic user acknowledgement does not expose team membership. No load testing of real email.
 

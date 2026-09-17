@@ -19,13 +19,13 @@ The repository documents are the shared source of context. A planning conversati
 
 ```text
 Work in the existing PR-ReviewQueueApp repository. Read AGENTS.md and the
-project docs, especially STATUS.md and NEXT.md. P03 is complete; review
-its local backend foundation before proceeding. Implement only P04:
-local magic-link integration, guarded email hook with invitation checks,
-atomic budgets/idempotency, mocked delivery, and callback/session validation.
-Follow P04's acceptance criteria and preserve P03's authorization tests.
+project docs, especially STATUS.md and NEXT.md. P04 is complete locally; read docs/AUTH.md and review its verified flow.
+Implement only P05 when selected by the owner: prepare the Resend/Turnstile
+hosted trial, preserve signup restrictions and hook budgets, and validate
+actual delivery/CAPTCHA with controlled developer inboxes. Preserve all tests.
 Update STATUS.md and NEXT.md with what actually works and the checks run.
-Stop after P04 for review. Do not start real email or cloud setup yet.
+Stop after P05 for review. Complete independent preparation before identifying
+any specific missing account access; do not deploy the app or begin P06.
 ```
 
 ## Prompt for any later item
@@ -48,4 +48,9 @@ The final reply should name the completed item, give the useful result/link, sum
 
 ## Current handoff
 
-P00-P03 are complete locally. P03 passed clean local resets, 19 SQL-role/Data API/concurrency tests, and SQL lint. The local stack is stopped; startup instructions and the Windows port-binding limitation are in the backend README. The frontend remains the P02 demo, whose earlier Flutter/build/browser checks are recorded in STATUS. P04 is next after P03 review and has not started. No working magic-link delivery, hosted setup, or deployment exists. P02/planning are tracked in `39e9d5d`; P03 changes are uncommitted and were not pushed. Review product defaults at the relevant future step instead of re-asking the already answered core questions.
+P00-P04 are complete locally; P04 is ready for review. See [STATUS](STATUS.md) for
+verification and [AUTH](AUTH.md) for local setup, the first-login resend correction,
+sessionStorage/cross-tab behavior, budget/idempotency rules and CAPTCHA design.
+P05 is next and requires owner-selected hosted setup/provider access. No real mail,
+cloud configuration, DNS changes or deployment occurred. P03 is committed as
+c2b44c8; P04 is uncommitted. Queue behavior and invitation claiming remain later work.

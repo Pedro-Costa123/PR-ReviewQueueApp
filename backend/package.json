@@ -1,15 +1,18 @@
 {
   "name": "pr-review-queue-backend",
   "private": true,
+  "type": "module",
   "version": "0.1.0",
   "description": "Local Supabase schema and authorization checks",
-  "engines": { "node": ">=20" },
+  "engines": { "node": ">=22.18.0" },
   "scripts": {
     "start": "node tool/start.cjs",
+    "functions": "supabase --network-id pr-review-queue-local functions serve --env-file .env",
     "stop": "supabase stop",
-    "reset": "supabase db reset --local",
+    "reset": "supabase --network-id pr-review-queue-local db reset --local",
     "lint": "supabase db lint --local --schema public,private --level warning --fail-on warning",
-    "test": "node --test --test-concurrency=1 tests/authorization.test.cjs"
+    "test": "node --test --test-concurrency=1 tests/authorization.test.cjs",
+    "test:auth": "node --test --test-concurrency=1 tests/email-hook.test.ts tests/auth.test.cjs"
   },
   "devDependencies": { "supabase": "2.117.0" }
 }

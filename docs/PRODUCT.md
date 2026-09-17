@@ -1,6 +1,6 @@
 # Product
 
-Last updated: 2026-09-16. Owner: Pedro Costa. Stage: P02 local shell and P03 local database/authorization foundation implemented; the shell remains disconnected. Core questions are answered, with smaller defaults recorded for later steps. Demo content and preparatory schema fields illustrate proposals without confirming them.
+Last updated: 2026-09-17. Owner: Pedro Costa. Stage: P04 local authentication implemented alongside the P02 fictional queue and P03 database foundation. Queue data remains disconnected. Core questions are answered, with smaller defaults recorded for later steps. Demo content and preparatory schema fields illustrate proposals without confirming them.
 
 ## Problem and outcome
 
