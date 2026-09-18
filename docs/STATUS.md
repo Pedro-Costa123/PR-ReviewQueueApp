@@ -4,7 +4,7 @@ Updated: 2026-09-18.
 
 ## Current implementation
 
-P00-P04 are complete locally. **P04A is next, followed by P05.** The
+P00-P04A are complete locally. **Stop for P04A review; P05 is next.** The
 Flutter queue remains fictional and read-only, while its sign-in screen can now
 authenticate against the local Supabase stack. No hosted project or production
 deployment exists. See [AUTH](AUTH.md) for the complete local runbook and decisions.
@@ -23,27 +23,86 @@ deployment exists. See [AUTH](AUTH.md) for the complete local runbook and decisi
 - Mail goes only to local Mailpit and fictional @example.test recipients. The
   frontend and sender have explicit local-only gates. Test provisioning is outside
   migrations/application builds; no fake application identity or token generator.
+- P04A: root-base preview/frame and build, exact root callbacks in frontend/Auth/
+  sender, secret-preserving local environment migration, expanded callback and
+  preview denial tests, and verified replacement runbook commands.
 
 Not implemented: hosted login/Resend/Turnstile widget, invitation admin/provisioning
-UI or claiming, real queue CRUD/reorder/comments/reviews/archive, root-path
-migration, CI, independent Pages release or deployment. P04 verifies identities
+UI or claiming, real queue CRUD/reorder/comments/reviews/archive,
+CI, independent Pages release or deployment. P04 verifies identities
 but creates no team membership.
 P05 requires the owner to select the hosted trial and supply provider access/secrets
 through secret storage; no cloud, billing, DNS or real-email changes were made.
 
-## Hosting decision update on 2026-09-18
+## P04A verification on 2026-09-18
+
+- Migrated the release preview/frame, JavaScript scrubber, Dart callback/local gate,
+  Supabase Site URL, sender callback guard and startup `.env` helper to `/`.
+  Existing hook secrets survive the exact legacy-setting migration; unrelated
+  callback settings fail closed. No dependency, schema, budget or signup change.
+- `npm start`, `npm run reset`, `npm test`: clean local schema reset and **19 P03
+  authorization/Data API/concurrency tests passed**. The dedicated Docker network
+  remains required. Startup migrated the existing ignored `.env` without printing
+  its secret. Docker still reports the documented all-interface port limitation.
+- `npm run functions`, `npm run test:auth`: local hook serving and **20 tests
+  passed**, including provider signup/OTP/resend, old-path denial with no mail or
+  quota use, external-redirect destination checks, replay/expiry, revoked/uninvited
+  access, signatures, service grants, forged identity, concurrent budgets and
+  idempotency, plus environment migration. `npm run lint` passed without warnings.
+- `node tool/prepare-auth-preview.cjs` provisioned the fictional preview identity
+  and local public config. `flutter pub get` passed without lockfile changes.
+  `flutter analyze` and **16 Flutter tests passed**, including exact root local
+  gates and the SDK's root redirect with fresh CAPTCHA tokens on fallback.
+- `node --test test/auth_callback.test.cjs`: **6 passed**. Coverage includes
+  immediate cleanup, one-time handoff, invalid/mixed/query callbacks, obsolete
+  paths, unexpected origins, normal hash routing and in-page callback rejection.
+- Root release builds with `--base-href / --no-web-resources-cdn` were checked
+  with and without `--dart-define-from-file=.env.local.json`. Wasm dry runs passed;
+  the existing unused Cupertino font warning remains.
+- `node tool/serve.cjs` and `node --test test/preview.test.cjs`: **3 HTTP tests
+  passed** for root/base/early-script ordering, bundled JS/CanvasKit, narrow frame,
+  old prefix and missing-route 404s without redirects, and traversal rejection.
+- Chrome: fictional request with Tab/Enter, local Mailpit link in a separate tab,
+  clean root before confirmation, refresh dropping an unconfirmed link, keyboard
+  Cancel and Continue, successful sign-in, reload persistence and keyboard sign-out.
+  Reopening the used link failed safely after explicit confirmation. The default
+  build without the define file showed no email form or connected login.
+  Root hash-route navigation/refresh and the 390 x 844 root frame were inspected;
+  desktop light and narrow light/dark layouts rendered correctly.
+- Browser QA found same-document callback fragments bypassed the original startup
+  scrubber. Added early popstate/hashchange rejection; rebuilt and verified a clean
+  URL with the request screen unchanged. Normal hash routes still work. Open email
+  links in a new document for confirmation, as documented in AUTH.
+- `dart format lib test --output=none --set-exit-if-changed`: 20 files unchanged.
+  Node syntax checks passed for the scrubber, preview server, startup and callback
+  migration helper. `git diff --check` passed. Markdown checks covered 13 files
+  and 53 relative links, balanced fences and no trailing whitespace. Tracked/new
+  source and stale-prefix references were reviewed; remaining code references to
+  the prefix are migration input or rejection fixtures. Local env files are ignored.
+- Preview/function processes and temporary browser tabs were closed.
+  `npm run stop` passed and preserved the fictional local database. The final
+  generated artifact is the disconnected root demo; use AUTH's define-file build
+  command to rebuild the authentication preview. No commit or push was made.
+
+Node workers and Docker helper access required sandbox escalation; those retries
+passed. An initial combined formatting command stalled in the sandbox and was
+stopped; standalone formatting worked. Analysis initially found two interpolation
+style issues in the new test; they were fixed before the passing run. No provider
+account, DNS, Pages, visibility, real mail or deployment operation was performed.
+P05 has not started. Hosted CAPTCHA/delivery and the real subdomain remain untested.
+
+## Historical hosting decision update on 2026-09-18
 
 The owner selected **`https://reviews.pedro-costa.dev/`**, using this app's own
 GitHub Pages deployment and Namecheap DNS. The app will have a separate browser
 origin from the portfolio and PassGen. The former shared-path and combined
 portfolio artifact plans are superseded; see decision D27 and ARCHITECTURE.
 
-This change updates documentation only. The implementation still uses the local
-`/PR-Review-App-Queue/` prefix. P04A will migrate the preview, build and auth
-callback checks to `/` together and verify them before P05. Existing runbook
-commands and P02-P04 test results remain accurate for the current code; they do
-not prove a root-path build or live subdomain works. No code, DNS, Pages settings,
-repository name/visibility, provider configuration or deployment changed.
+That earlier change updated documentation only, while the implementation still
+used `/PR-Review-App-Queue/`. Its P02-P04 test results described that prefix and
+did not prove root-path or live-subdomain behavior. P04A's replacement evidence is
+recorded above. No code, DNS, Pages settings, repository name/visibility, provider
+configuration or deployment changed during that earlier documentation update.
 
 The root/backend/frontend READMEs and PRODUCT, ARCHITECTURE, DECISIONS, SECURITY,
 COSTS, AUTH, NEXT, STATUS and HANDOFF now reflect this decision. Hosting/domain
@@ -56,8 +115,8 @@ check covered all 13 repository Markdown files: all 54 relative links resolved,
 code fences were balanced, and no trailing whitespace was found.
 `git diff --check` passed; `git diff --name-only` confirmed only documentation
 changed. No application tests, builds or browser checks were rerun because
-application code/configuration did not change. P04A's root-path verification
-and the live subdomain checks remain outstanding.
+application code/configuration did not change. P04A and the live subdomain checks
+were outstanding at that point; only the local P04A work is now complete.
 
 ## Verified P04 behavior and corrections
 
@@ -115,10 +174,9 @@ and the live subdomain checks remain outstanding.
 ## Repository and environment
 
 Workspace: C:\Users\pedro\Projects\PR-ReviewQueueApp. Branch: main. P03 is
-committed as c2b44c8 and P04 as 1ff6c13, correcting the older uncommitted handoff
-notes. The 2026-09-18 documentation update began with a clean worktree at 1ff6c13;
-these documentation changes are uncommitted. No fetch, push, deployment or fresh
-remote-state check was performed for this update.
+committed as c2b44c8 and P04 as 1ff6c13. P04A began from a clean worktree at
+bd8e62c (the hosting-decision documentation commit). P04A changes are uncommitted.
+No fetch, push, deployment or remote-state check was performed.
 
 Tooling remains Flutter 3.47.4/Dart 3.13.3, Node 26.5.0/npm 11.17.0, Supabase CLI
 2.117.0 and Postgres 17.6.1.167. P04 also exercised local Edge Runtime 1.74.3
@@ -129,7 +187,7 @@ Remaining product defaults are still proposed: title/priority labels, profile em
 visibility, self-review, edit/archive privileges, operator-created teams and retention.
 Exact enterprise hostnames are needed for P07; this app's Pages setup, domain
 ownership, DNS and separate browser origin must be checked before publishing.
-These do not block the local P04A migration.
+No unresolved product question blocks completed local P04A verification.
 
 ## Historical verification
 
@@ -160,11 +218,10 @@ Planning verification remains recorded in COSTS and the prior documentation. P02
 - Local HTTP checks: app HTML, JavaScript, bundled CanvasKit Wasm, and narrow preview returned 200; the slashless base redirected to the trailing slash; unrelated/missing paths returned 404. Generated HTML contains the exact base href. These are local preview checks, not claims about GitHub Pages.
 - `dart format --output=none --set-exit-if-changed lib test`: passed, 11 files unchanged. Content checks passed across 33 non-generated text files and 33 relative Markdown links, including balanced code fences and trailing whitespace. `git diff --check` passed for tracked content; new files were also inspected directly/as new-file diffs because the implementation and planning files were untracked at that time. P02 handoff documentation was checked for stale claims.
 
-No backend tests were applicable during P02; P03 results are above. No production checks have been claimed. The SDK's release icon-tree-shaking step warns about an absent Cupertino font family; this app uses Material icons, which rendered correctly in Chrome. Generated Flutter favicon/app icons are still placeholders. These historical frontend checks used the legacy local prefix. Root-path migration, hosted auth callbacks, provider quotas, and the independent Pages/subdomain release remain future checks under the revised hosting plan.
+No backend tests were applicable during P02; P03 results are above. No production checks have been claimed. The SDK's release icon-tree-shaking step warns about an absent Cupertino font family; this app uses Material icons, which rendered correctly in Chrome. Generated Flutter favicon/app icons are still placeholders. These historical frontend checks used the legacy local prefix; root-path verification is now recorded under P04A above. Hosted auth callbacks, provider quotas, and the independent Pages/subdomain release remain future checks.
 
 ## Next
 
-Select **P04A: local root-path and callback migration**. Follow [NEXT](NEXT.md)
-and preserve P04's authentication protections. Stop after its local verification
-for review; P05 hosted validation follows separately. This documentation update
-does not start either implementation item.
+Review **P04A: local root-path and callback migration**. The next item is **P05:
+hosted authentication/cost validation**, requiring owner selection and provider
+access through secret storage. No P05 work is authorized or started by this handoff.

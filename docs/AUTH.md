@@ -1,21 +1,17 @@
-# Local authentication (P04)
+# Local authentication (P04 / P04A)
 
-Implemented and checked 2026-09-17. This is a local feasibility implementation,
+Implemented in P04 and migrated/tested at `/` on 2026-09-18. This is a local feasibility implementation,
 not a hosted authentication deployment. P05 owns real Resend/Turnstile setup.
 
 ## Hosting decision update (2026-09-18)
 
 The confirmed production URL is now **`https://reviews.pedro-costa.dev/`**. This
-document's commands below still describe the implemented and verified P04 local
-prefix; code/configuration were not changed by the documentation update.
-
-**P04A must migrate the local implementation to `http://127.0.0.1:4173/` first.**
-Update the callback path guard/cleanup, Dart URL checks, preview server, Supabase
-Site URL, sender callback guard, helper scripts and affected tests together. Keep
-token fragments out of logs and preserve explicit confirmation and local-only
-mail/auth boundaries. Do not merely change the Flutter build flag and assume
-the existing callback will work. P04A owns the new local evidence and runbook;
-P05 owns hosted origin/Turnstile settings; P13 verifies the real production URL.
+document's commands now use the verified P04A local equivalent,
+**`http://127.0.0.1:4173/`**. The callback scrubber, Dart local gate, preview/frame,
+Supabase Site URL, sender guard, startup helper and tests use the root together.
+Local-only authentication/mail, signup restrictions, explicit confirmation and
+budgets remain enforced. P05 owns hosted origin/Turnstile settings; P13 verifies
+the real production URL. The historical prefix results remain in STATUS.
 
 ## Run and verify
 
@@ -50,7 +46,12 @@ Without that option, this CLI recreates the database on a different network and
 the Data API cannot resolve it. Do not reset while sending mail or using the app.
 
 Startup creates a random hook signing secret in ignored `backend/.env` when
-absent. Never print/commit that file. The preview operator script refuses remote
+absent. It also migrates the exact old loopback callback setting to `/`, preserving
+the existing secret and other settings. An unrelated callback setting fails the
+local-only startup check; it is not silently overwritten. Stop an existing stack
+with `npm run stop` before this migration so Auth reloads the new Site URL, and
+restart `npm run functions` with the updated environment. Never print/commit
+the environment file. The preview operator script refuses remote
 or linked stacks, provisions only `p04-preview@example.test` through local Auth,
 and adds a fictional invitation using P03's fixture admin/team. It does not mark
 that preview identity verified or grant it membership. It writes only the local
@@ -63,15 +64,22 @@ flutter pub get
 flutter analyze
 flutter test
 node --test test/auth_callback.test.cjs
-flutter build web --release --base-href /PR-Review-App-Queue/ --no-web-resources-cdn --dart-define-from-file=.env.local.json
+flutter build web --release --base-href / --no-web-resources-cdn --dart-define-from-file=.env.local.json
 node tool/serve.cjs
 ```
 
-Open `http://127.0.0.1:4173/PR-Review-App-Queue/`, request a link for the preview
-address, and open its message at `http://127.0.0.1:54324/`. Choose **Continue
+Open `http://127.0.0.1:4173/`, request a link for the preview
+address, and open its message at `http://127.0.0.1:54324/`. Open the email link in
+a new tab/document. Choose **Continue
 sign-in** on the app. The queue remains public fictional presentation data.
 Without the define file, the app remains the disconnected demo. The frontend
 enables authentication only for the exact local API and loopback preview origin.
+
+With the preview server running, run `node --test test/preview.test.cjs` in
+another frontend terminal. This checks the root base, bundled resources, narrow
+frame, old-path/missing-route 404s without redirects, and traversal rejection.
+Use `/#/teams/atlas` for hash-route refresh checks. The obsolete prefix has no
+redirect, and no login tokens are forwarded to another path or origin.
 
 Stop the preview/function terminals with Ctrl+C, then `npm run stop` in
 `backend/`. Docker's known all-interface published-port limitation remains;
@@ -135,11 +143,22 @@ implement provider idempotency; the database prevents repeated calls.
 
 ## Callback, sessions and scanners
 
-The current P04 local email points to the `/PR-Review-App-Queue/` entry document with the
+The P04A local email points to the `/` entry document with the
 provider's token hash in its fragment. `auth_callback.js` removes callback
 material with `history.replaceState` before Flutter/router initialization and
 holds it in memory for one read. Query-token and implicit access/refresh-token
 callbacks are scrubbed and rejected. No clean-path server rewrite is assumed.
+Only the exact loopback root accepts a token hash; old paths, other origins,
+duplicate/mixed parameters and query callbacks fail closed. The production
+hostname is deliberately still disabled. Callback-like in-page history/hash
+navigation is scrubbed and rejected before the router handles it; it cannot
+initiate sign-in. Open email links in a new document for the supported handoff.
+
+The signed hook rejects any nonexact `redirect_to` before quota reservation.
+Direct Auth tests prove the obsolete same-origin prefix is denied without mail
+or quota use. GoTrue may substitute Site URL for a disallowed external redirect
+before the hook runs; the integration check allows either rejection or delivery
+only to the exact root callback. No callback to that external origin is accepted.
 
 Automatic SDK URL session detection is disabled. Explicit confirmation calls
 `verifyOTP(tokenHash: ..., type: email)`; the provider creates and verifies the

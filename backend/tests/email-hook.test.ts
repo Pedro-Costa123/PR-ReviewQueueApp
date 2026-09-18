@@ -4,7 +4,7 @@ import { createHmac, randomBytes } from 'node:crypto';
 import { createHandler } from '../supabase/functions/send-auth-email/handler.ts';
 
 const secret = randomBytes(32).toString('base64');
-const callback = 'http://127.0.0.1:4173/PR-Review-App-Queue/';
+const callback = 'http://127.0.0.1:4173/';
 const payload = { user: { id: '10000000-0000-4000-8000-000000000001', email: 'fixture@example.test' },
   email_data: { email_action_type: 'magiclink', token_hash: 'a'.repeat(64), redirect_to: callback } };
 function request(body = JSON.stringify(payload), time = Math.floor(Date.now() / 1000), signature?: string) {
@@ -16,10 +16,21 @@ test('signed raw payload accepted; link contains only provider token in a fragme
   const calls: string[] = [];
   const handler = createHandler({ secret, callback,
     rpc: async name => { calls.push(name); return { state: 'new' }; },
-    send: async mail => { calls.push('send'); assert.equal(new URL(mail.link).search, ''); assert.match(mail.link, /#token_hash=/); },
+    send: async mail => { calls.push('send'); assert.equal(mail.link, `${callback}#token_hash=${payload.email_data.token_hash}&type=email`); },
   });
   assert.equal((await handler(request())).status, 200);
   assert.deepEqual(calls, ['reserve_auth_email', 'send', 'finish_auth_email']);
+});
+test('obsolete callback paths and unexpected origins cannot reserve budget or send', async () => {
+  const handler = createHandler({ secret, callback, rpc: async () => assert.fail(), send: async () => assert.fail() });
+  for (const redirect_to of [
+    `${callback}PR-Review-App-Queue/`, `${callback}index.html`, `${callback}?next=/`,
+    `${callback}#token_hash=bad`, 'http://localhost:4173/', 'http://127.0.0.1:4174/',
+    'https://reviews.pedro-costa.dev/', 'https://other.example.test/',
+  ]) {
+    const body = JSON.stringify({ ...payload, email_data: { ...payload.email_data, redirect_to } });
+    assert.equal((await handler(request(body))).status, 400);
+  }
 });
 test('invalid, missing, expired and future signatures cannot reserve or send', async () => {
   const handler = createHandler({ secret, callback, rpc: async () => assert.fail(), send: async () => assert.fail() });

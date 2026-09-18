@@ -2,7 +2,7 @@
 
 Updated: 2026-09-18. **Execute one selected item, verify it, update the docs, and stop.** Do not turn this file into a single full-app implementation prompt.
 
-The owner selected `https://reviews.pedro-costa.dev/`. This documentation revision adds P04A before hosted work; it does not implement the migration or reopen completed P04 verification.
+The owner selected `https://reviews.pedro-costa.dev/`. P04A's local root-path migration is complete; hosted work remains a separate owner-selected stage.
 
 `Complete` means the item's actual deliverable exists. `Ready` means the next item can start when requested. Later items remain planned, not authorized as a batch. Smaller UI/product defaults can be settled at the item that needs them.
 
@@ -13,8 +13,8 @@ The owner selected `https://reviews.pedro-costa.dev/`. This documentation revisi
 | P02 | Local Flutter app shell | Complete; ready for owner review | P01 |
 | P03 | Local Supabase schema and team authorization | Complete; ready for owner review | P02 |
 | P04 | Magic-link flow and guarded email delivery locally | Complete locally; ready for owner review | P03 |
-| **P04A** | **Local root-path and callback migration** | **Ready; next implementation item** | P04 |
-| P05 | Small hosted authentication/cost validation | Planned after P04A; requires owner-selected hosted trial/account access | P04A |
+| **P04A** | **Local root-path and callback migration** | **Complete locally; ready for owner review** | P04 |
+| P05 | Small hosted authentication/cost validation | Next after P04A review; requires owner-selected hosted trial/account access | P04A |
 | P06 | Admin invitations, teams, and profiles | Planned | P05 |
 | P07 | Create/read/edit queue entries and protected deletion | Planned | P06 |
 | P08 | Sprint/priority ordering and admin reordering | Planned | P07 |
@@ -61,6 +61,16 @@ The owner selected `https://reviews.pedro-costa.dev/`. This documentation revisi
 **Acceptance:** Relevant Flutter and JavaScript callback tests, local Auth integration checks, and a root-base release build pass. Inspect root/hash-route refresh, link request, fragment cleanup, explicit confirmation, reload and sign-out in the browser. Reject the obsolete callback path and unexpected origins rather than forwarding tokens. Update AUTH/frontend/backend runbooks only after the replacement commands are verified. Record new evidence without rewriting historical P02-P04 test results.
 
 **Boundary:** Local configuration/code only, with fictional data and captured mail. No cloud account, DNS, repository visibility/name, Pages, real email, or paid-service change. Stop for review before P05.
+
+**Completed 2026-09-18:** Root preview/frame and release build, early callback cleanup,
+exact local Dart/sender gates, Supabase Site URL, existing `.env` callback migration,
+SDK callback fixtures and denial regressions. Local verification passed: 19 P03
+tests, 20 auth/hook/environment tests, 16 Flutter tests, six callback-script tests,
+three preview HTTP tests, analysis and SQL lint. Chrome verified captured-mail
+confirmation, cancellation, reload, sign-out, root/hash routes and narrow preview.
+In-page callback navigation found during QA is now scrubbed and rejected; normal
+email confirmation uses a new document. Commands/evidence are in AUTH and STATUS.
+Stop here for review; P05 has not started.
 
 ## P05 — Small hosted authentication/cost validation
 

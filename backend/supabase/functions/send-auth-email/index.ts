@@ -6,7 +6,7 @@ const callback = Deno.env.get('APP_CALLBACK_URL')!;
 const secret = Deno.env.get('SEND_EMAIL_HOOK_SECRET')!;
 // P04 entrypoint is deliberately local-only. P05 adds the reviewed real sender.
 // This cannot silently send login material to an arbitrary configured host.
-if (api !== 'http://kong:8000' || callback !== 'http://127.0.0.1:4173/PR-Review-App-Queue/'
+if (api !== 'http://kong:8000' || callback !== 'http://127.0.0.1:4173/'
   || Deno.env.get('DENO_DEPLOYMENT_ID')) throw new Error('P04 requires local Supabase');
 
 Deno.serve(createHandler({

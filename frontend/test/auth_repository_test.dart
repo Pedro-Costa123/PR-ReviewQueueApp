@@ -36,7 +36,7 @@ void main() {
       var challenges = 0;
       final repository = SupabaseAuthRepository(
         client,
-        'http://localhost/app/',
+        'http://127.0.0.1:4173/',
         requestChallenge: () async => 'challenge-${++challenges}',
       );
       await repository.requestLink(' Member@Example.Test ');
@@ -54,7 +54,7 @@ void main() {
       expect(
         requests.every(
           (r) =>
-              r.url.queryParameters['redirect_to'] == 'http://localhost/app/',
+              r.url.queryParameters['redirect_to'] == 'http://127.0.0.1:4173/',
         ),
         isTrue,
       );
@@ -82,7 +82,7 @@ void main() {
       );
       final repository = SupabaseAuthRepository(
         client,
-        'http://localhost/app/',
+        'http://127.0.0.1:4173/',
       );
       await expectLater(
         repository.requestLink('member@example.test'),

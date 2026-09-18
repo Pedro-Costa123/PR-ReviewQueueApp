@@ -120,10 +120,13 @@ invariants, duplicate records, operator bootstrap, and concurrent admin changes.
 Those P03 tests do not claim real Auth login or delivery. P04's separate test:auth
 suite checks actual local Auth and captured delivery; neither suite claims deployed security.
 
-Next: **P04A**, the local root-path/callback migration for the confirmed
-`https://reviews.pedro-costa.dev/` production address. Current local Auth/sender
-configuration still uses the verified P04 prefix; keep it until P04A updates and
-tests the full flow. **P05** follows with hosted authentication/cost validation.
+P04A is complete locally: Auth Site URL and the sender's exact callback use
+`http://127.0.0.1:4173/`, preparing for `https://reviews.pedro-costa.dev/`.
+`npm start` migrates the known old `.env` callback without rotating the secret;
+stop an already-running stack first and restart the function terminal afterward.
+The full replacement sequence and browser checks are in AUTH/STATUS.
+Stop for P04A review. **P05** hosted authentication/cost validation is next,
+requiring owner selection and provider access.
 The frontend subdomain does not require a paid Supabase custom domain.
 See [NEXT](../docs/NEXT.md), [STATUS](../docs/STATUS.md),
 [ARCHITECTURE](../docs/ARCHITECTURE.md), and [SECURITY](../docs/SECURITY.md).

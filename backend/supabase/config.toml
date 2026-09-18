@@ -49,7 +49,7 @@ enabled = false
 
 [auth]
 enabled = true
-site_url = "http://127.0.0.1:4173/PR-Review-App-Queue/"
+site_url = "http://127.0.0.1:4173/"
 additional_redirect_urls = []
 jwt_expiry = 3600
 enable_signup = false

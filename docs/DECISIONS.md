@@ -52,6 +52,13 @@ Deploy from this app's repository, with base href `/` and an explicit repository
 
 P04A is a bounded local path/callback migration before P05; P12 prepares the independent Pages release and P13 applies/validates the subdomain deployment. Preserve P02-P04's recorded commands and results as history until their replacements are tested. See [Architecture](ARCHITECTURE.md), [Security](SECURITY.md), and the 2026-09-18 hosting recheck in [Costs](COSTS.md).
 
+P04A implemented D27's local preparation on 2026-09-18. The exact loopback root
+replaces the legacy callback throughout preview/client/provider/hook configuration.
+Browser QA also found same-document fragment navigation bypassed the original
+load-time scrubber. History/hash callback events now scrub and reject that input;
+opening the email link in a new document remains the supported confirmation flow.
+No hosted gate was widened and no hosting/provider decision changed.
+
 ## Alternatives evaluated
 
 P02 package references: [go_router](https://pub.dev/packages/go_router), [shared_preferences](https://pub.dev/packages/shared_preferences), checked 2026-09-14. Resolved versions were verified against the installed Flutter 3.47.4 / Dart 3.13.3 SDK. Provider, pricing, and product proposals have not been promoted to confirmed requirements by implementing the shell.

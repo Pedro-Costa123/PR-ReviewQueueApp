@@ -4,20 +4,15 @@ const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
 const root = path.resolve(__dirname, '../build/web');
-const base = '/PR-Review-App-Queue/';
+const base = '/';
 const types = { '.html': 'text/html', '.js': 'text/javascript', '.json': 'application/json', '.wasm': 'application/wasm', '.png': 'image/png', '.svg': 'image/svg+xml', '.ttf': 'font/ttf', '.otf': 'font/otf' };
 http.createServer((req, res) => {
   const url = new URL(req.url, 'http://127.0.0.1:4173');
   res.setHeader('Cache-Control', 'no-store');
   if (url.pathname === '/__preview/narrow') {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    return res.end('<!doctype html><html lang="en"><title>Narrow preview · 390 × 844</title><body style="margin:24px;background:#dce5e1;font-family:system-ui"><p>Local QA viewport · 390 × 844</p><iframe title="Narrow app preview" width="390" height="844" style="border:1px solid #61736c" src="/PR-Review-App-Queue/"></iframe></body></html>');
+    return res.end('<!doctype html><html lang="en"><title>Narrow preview · 390 × 844</title><body style="margin:24px;background:#dce5e1;font-family:system-ui"><p>Local QA viewport · 390 × 844</p><iframe title="Narrow app preview" width="390" height="844" style="border:1px solid #61736c" src="/"></iframe></body></html>');
   }
-  if (url.pathname === base.slice(0, -1)) {
-    res.writeHead(302, { Location: base + url.search });
-    return res.end();
-  }
-  if (!url.pathname.startsWith(base)) { res.writeHead(404); return res.end('Not found'); }
   let relative;
   try { relative = decodeURIComponent(url.pathname.slice(base.length)) || 'index.html'; }
   catch { res.writeHead(400); return res.end('Bad path'); }
@@ -28,4 +23,4 @@ http.createServer((req, res) => {
     res.setHeader('Content-Type', types[path.extname(file)] || 'application/octet-stream');
     res.end(content);
   });
-}).listen(4173, '127.0.0.1', () => console.log('Release preview: http://127.0.0.1:4173/PR-Review-App-Queue/'));
+}).listen(4173, '127.0.0.1', () => console.log('Release preview: http://127.0.0.1:4173/'));

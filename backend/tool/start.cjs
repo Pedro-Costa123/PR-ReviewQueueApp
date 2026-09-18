@@ -5,13 +5,21 @@ const { spawnSync } = require('node:child_process');
 const path = require('node:path');
 const fs = require('node:fs');
 const { randomBytes } = require('node:crypto');
+const { migrateLocalCallback } = require('./local-callback.cjs');
 const root = path.resolve(__dirname, '..');
 const envFile = path.join(root, '.env');
 if (!fs.existsSync(envFile)) {
-  fs.writeFileSync(envFile, `SEND_EMAIL_HOOK_SECRET=v1,whsec_${randomBytes(32).toString('base64')}\nAPP_CALLBACK_URL=http://127.0.0.1:4173/PR-Review-App-Queue/\n`, { flag: 'wx' });
+  fs.writeFileSync(envFile, `SEND_EMAIL_HOOK_SECRET=v1,whsec_${randomBytes(32).toString('base64')}\nAPP_CALLBACK_URL=http://127.0.0.1:4173/\n`, { flag: 'wx' });
+}
+const currentEnv = fs.readFileSync(envFile, 'utf8');
+const migratedEnv = migrateLocalCallback(currentEnv);
+if (currentEnv !== migratedEnv) {
+  fs.writeFileSync(envFile, migratedEnv);
+  console.log('Migrated the local callback to /; existing hook secret preserved.');
 }
 // CLI loads .env; functions serve uses the same explicit file.
 process.loadEnvFile(envFile);
+assert.equal(process.env.APP_CALLBACK_URL, 'http://127.0.0.1:4173/', 'Local callback must use the exact loopback root URL');
 const network = 'pr-review-queue-local';
 const binding = 'com.docker.network.bridge.host_binding_ipv4';
 function run(command, args, timeout = 30000) {

@@ -1,6 +1,6 @@
 # Security design and launch evidence
 
-Last updated: 2026-09-18. P03 database authorization and P04 local sign-in/email guards are implemented and tested. The production subdomain is confirmed; root-path migration, hosted CAPTCHA/mail, lifecycle and launch controls remain planned. [AUTH](AUTH.md) records implemented controls and limits.
+Last updated: 2026-09-18. P03 database authorization, P04 local sign-in/email guards and P04A root-path migration are implemented and tested. The production subdomain is confirmed; hosted CAPTCHA/mail, lifecycle and launch controls remain planned. [AUTH](AUTH.md) records implemented controls and limits.
 
 The queue still contains only public fictional presentation fixtures. P04 adds a real local Auth client and sessionStorage adapter, with SDK cross-tab synchronization. There is no fake signed-in identity, role switch or company URL. Browser navigation between demo teams is not an authorization test. P03 SQL-role/Data API denial tests run separately against local Supabase. The release build remains a local preview, not a production authentication path.
 
@@ -53,7 +53,7 @@ Separate origins under the same parent domain are not separate sites for every b
 
 P04 uses sessionStorage with memory fallback and SDK synchronization across open same-origin app tabs, as documented in AUTH. That synchronization will stay inside the new app origin; the tab-isolation limitation still applies among app tabs. GitHub Pages has limited custom response-header control; use a compatible CSP meta policy where effective and do not claim it supplies every header-based protection.
 
-P04A must migrate callback validation and fragment cleanup to `/` without weakening the local-only gates. P05 must use exact trial/production callback settings and the specific Turnstile hostname; do not allow the old portfolio callback or wildcard redirects. P13 verifies the final hostname, HTTPS, origin separation, and login flow. Never copy or redirect login tokens from the old origin to the new one. Domain verification and removing stale DNS mappings on decommissioning belong in the deployment runbook.
+P04A migrated callback validation and fragment cleanup to `/` with local-only gates intact. Its tests reject old paths, unexpected origins and mixed callback parameters. In-page callback navigation is scrubbed and rejected, while a new-document email link still requires explicit confirmation. P05 must use exact trial/production callback settings and the specific Turnstile hostname; do not allow the old portfolio callback or wildcard redirects. P13 verifies the final hostname, HTTPS, origin separation, and login flow. Never copy or redirect login tokens from the old origin to the new one. Domain verification and removing stale DNS mappings on decommissioning belong in the deployment runbook.
 
 Use plain-text comments/titles, validation on both client and server, and query parameters rather than concatenated SQL. Parse HTTPS links, reject credentials/embedded control characters, and enforce the agreed enterprise hostnames before real use. Do not fetch link metadata. Open links with `noopener`/`noreferrer` behavior and use a no-referrer policy for sensitive navigation.
 

@@ -1,6 +1,6 @@
 # Architecture
 
-Updated: 2026-09-18. P04 local authentication, signed hook and mocked delivery are implemented. The owner selected reviews.pedro-costa.dev; P04A will migrate the local path/callback before hosted work. Real delivery, queue behavior and deployment remain planned. No components deployed. [AUTH](AUTH.md) documents the tested callback, session, provider corrections and runbook.
+Updated: 2026-09-18. P04 local authentication, signed hook and mocked delivery are implemented. P04A migrated and verified the local path/callback at `/`, preparing for reviews.pedro-costa.dev. Real delivery, queue behavior and deployment remain planned. No components deployed. [AUTH](AUTH.md) documents the tested callback, session, provider corrections and runbook.
 
 ## Design
 
@@ -37,7 +37,7 @@ Planned P12/P13 setup, not performed by this documentation update:
 
 Sources: [GitHub custom-domain setup](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site), [Namecheap subdomain setup](https://www.namecheap.com/support/knowledgebase/article.aspx/9776/2237/how-to-create-a-subdomain-for-my-domain/).
 
-The current implementation still hardcodes `/PR-Review-App-Queue/` in local preview/auth paths. P04A must update the build/preview, early callback handler, client callback checks, Supabase local Site URL, sender callback validation, helper scripts and affected tests together, then verify root-path login locally. Until then, the existing commands in AUTH/frontend README remain the verified commands. This is not yet a working subdomain build.
+P04A now uses `http://127.0.0.1:4173/` consistently for the build/preview, early callback handler, client gate, Supabase local Site URL, sender validation, startup environment and tests. The old preview prefix returns 404 without a redirect; callback guards reject old paths and other origins. AUTH/frontend README contain tested replacement commands. This is a working local root build, not a deployed or hosted-auth-enabled subdomain.
 
 P05 will prepare the exact production Site URL/callback `https://reviews.pedro-costa.dev/`, approved local trial URLs, and Turnstile hostname. Validate the live production callback in P13. Do not accept wildcard redirects or leave the old portfolio URL authorized. Do not forward login fragments or sessions through the old origin.
 
@@ -49,7 +49,7 @@ The subdomain creates a distinct browser origin from the portfolio and PassGen. 
 
 P02 implementation: feature folders under `frontend/lib/`, a small read-only `QueueRepository` with fictional display models, Material themes, `go_router` 18.0.1 using its default hash strategy, and `shared_preferences` 2.5.5 through `SharedPreferencesAsync`. The lockfile is pinned. Theme preference is loaded before first rendering, defaults to dark independently of OS theme, and reports unavailable storage without blocking the app. P04 adds pinned supabase_flutter 2.17.2 behind a small repository/controller; no extra state-management package.
 
-Routes are `/`, `/teams/:teamId`, `/teams/:teamId/archive`, and `/teams/:teamId/profiles/:profileId`; unknown routes/IDs show a recovery screen. There is no signed-in demo identity or authentication bypass. The fictional profiles and entries are public static presentation data, not protected team records. The local P03 database boundary is implemented separately; the queue shell does not use it. P04 connects only authentication in the exact-loopback preview. The verified local preview still serves the former path; root-path compatibility awaits P04A and hosted Pages compatibility awaits rollout.
+Routes are `/`, `/teams/:teamId`, `/teams/:teamId/archive`, and `/teams/:teamId/profiles/:profileId`; unknown routes/IDs show a recovery screen. There is no signed-in demo identity or authentication bypass. The fictional profiles and entries are public static presentation data, not protected team records. The local P03 database boundary is implemented separately; the queue shell does not use it. P04 connects only authentication in the exact-loopback preview. P04A verified root/hash-route compatibility; hosted Pages compatibility awaits rollout.
 
 - Flutter Web only; Material components, responsive queue, dark default and saved light preference.
 - Start with feature folders: `auth`, `teams`, `queue`, `archive`, `profiles`, and small shared UI/services.

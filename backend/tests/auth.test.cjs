@@ -4,7 +4,7 @@ const { randomUUID, createHmac } = require('node:crypto');
 const { readFileSync } = require('node:fs');
 const { localStack, scalar, sql, roleSql } = require('./local.cjs');
 let stack, team, admin;
-const callback = 'http://127.0.0.1:4173/PR-Review-App-Queue/';
+const callback = 'http://127.0.0.1:4173/';
 async function auth(route, body, privileged = false, method = 'POST') {
   const key = privileged ? stack.SERVICE_ROLE_KEY : stack.ANON_KEY;
   const response = await fetch(`${stack.API_URL}/auth/v1/${route}`, { method,
@@ -31,7 +31,7 @@ async function linkFor(email) {
   const inbox = await messages(email);
   assert.equal(inbox.length, 1, 'exactly one captured message');
   const message = await (await fetch(`http://127.0.0.1:54324/api/v1/message/${inbox[0].ID}`)).json();
-  return message.Text.match(/http:\/\/127\.0\.0\.1:4173\/PR-Review-App-Queue\/#[^\s]+/)[0];
+  return message.Text.match(/http:\/\/127\.0\.0\.1:4173\/#[^\s]+/)[0];
 }
 before(async () => {
   stack = localStack();
@@ -45,6 +45,30 @@ test('public signup denied and unknown addresses cannot be provisioned through O
   assert.ok((await auth('signup', { email, password: 'Fictional-test-password-293!' })).status >= 400);
   assert.ok((await auth('otp', { email, create_user: true })).status >= 400);
   assert.equal(scalar(`select count(*) from auth.users where email='${email}'`), '0');
+});
+
+test('obsolete same-origin callback path is rejected without delivery or quota use', async () => {
+  const user = await provision();
+  const redirect = `${callback}PR-Review-App-Queue/`;
+  const result = await auth(`resend?redirect_to=${encodeURIComponent(redirect)}`, { email: user.email, type: 'signup' });
+  assert.ok(result.status >= 400);
+  assert.equal((await messages(user.email)).length, 0);
+  assert.equal(scalar(`select count(*) from private.email_quota_reservations where recipient='${user.email}'`), '0');
+});
+
+test('Auth never delivers a link to an unexpected origin', async () => {
+  const user = await provision();
+  const result = await auth('resend?redirect_to=https%3A%2F%2Fother.example.test%2F', { email: user.email, type: 'signup' });
+  // GoTrue may replace a disallowed redirect with Site URL before calling the
+  // hook. If it accepts the request, only the exact root may reach the inbox.
+  if (result.status === 200) {
+    const link = new URL(await linkFor(user.email));
+    assert.equal(link.origin + link.pathname, callback);
+    assert.equal(link.search, '');
+  } else {
+    assert.ok(result.status >= 400);
+    assert.equal((await messages(user.email)).length, 0);
+  }
 });
 test('unconfirmed invited identity receives provider link, verifies once and gains no team automatically', async () => {
   const user = await provision();

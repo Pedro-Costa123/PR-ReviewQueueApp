@@ -2,7 +2,7 @@
 
 A private team queue that keeps pull requests visible, makes sprint priorities clear, and records review feedback and archived work.
 
-**Current stage: P04 local authentication and guarded mail complete, ready for review.** The Flutter sign-in screen connects to local Supabase; the queue remains fictional. Real email, hosted setup, queue mutations and deployment remain future work. Work proceeds one backlog item at a time.
+**Current stage: P04A local root-path authentication migration complete, ready for review.** The Flutter sign-in screen connects to local Supabase; the queue remains fictional. Real email, hosted setup, queue mutations and deployment remain future work. Work proceeds one backlog item at a time.
 
 ## Project documentation
 
@@ -29,7 +29,7 @@ A private team queue that keeps pull requests visible, makes sprint priorities c
 
 Flutter Web, magic links, the dedicated subdomain, Namecheap DNS, GitHub Pages, manual updates, sprint-first ordering, and multiple team membership are confirmed. The owner selected the subdomain on 2026-09-18 to separate the app's browser origin from the portfolio and PassGen. Supabase + Resend remains the researched backend recommendation. The estimated additional service cost is **€0/month within free-plan limits**; existing domain renewal is separate. Read [Costs](docs/COSTS.md) for limits and [Security](docs/SECURITY.md) for the origin boundary.
 
-The current P04 code still uses the old local `/PR-Review-App-Queue/` path. P04A will migrate it to `/` before hosted sign-in work. This documentation change did not alter code, DNS, repository visibility, or deployment settings.
+P04A migrated and verified the local preview/build and authentication callbacks at `/`. Local authentication and captured mail remain restricted to the loopback development stack. No DNS, Pages, repository visibility or deployment setting changed.
 
 ## Repository layout
 
@@ -44,7 +44,7 @@ LICENSE            Existing MIT license
 
 ## Start the next step
 
-Read [Status](docs/STATUS.md), then [Next](docs/NEXT.md). Review P04 using the [local authentication runbook](docs/AUTH.md); the [frontend demo commands](frontend/README.md) remain available. The next implementation item is **P04A: local root-path and callback migration**, followed by P05's hosted authentication/cost validation. The [handoff instructions](docs/HANDOFF.md) include a prompt for continuing in Codex.
+Read [Status](docs/STATUS.md), then [Next](docs/NEXT.md). Review P04A using the [local authentication runbook](docs/AUTH.md); the [frontend demo commands](frontend/README.md) remain available. **P05's hosted authentication/cost validation** is next after review and requires owner selection and provider access. The [handoff instructions](docs/HANDOFF.md) describe that boundary.
 
 Do not run the entire backlog in one task. Complete the selected item, verify its acceptance criteria, update the docs, and stop at its review boundary.
 

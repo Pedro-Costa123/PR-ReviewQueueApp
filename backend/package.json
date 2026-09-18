@@ -12,7 +12,7 @@
     "reset": "supabase --network-id pr-review-queue-local db reset --local",
     "lint": "supabase db lint --local --schema public,private --level warning --fail-on warning",
     "test": "node --test --test-concurrency=1 tests/authorization.test.cjs",
-    "test:auth": "node --test --test-concurrency=1 tests/email-hook.test.ts tests/auth.test.cjs"
+    "test:auth": "node --test --test-concurrency=1 tests/local-callback.test.cjs tests/email-hook.test.ts tests/auth.test.cjs"
   },
   "devDependencies": { "supabase": "2.117.0" }
 }

@@ -2,18 +2,31 @@
 // router state. GET/prefetch alone does not redeem a link.
 (() => {
   let pending = null;
-  const url = new URL(location.href);
-  const fragment = new URLSearchParams(url.hash.slice(1));
   const keys = ['token_hash', 'type', 'access_token', 'refresh_token', 'code', 'error', 'error_description', 'error_code'];
-  if (keys.some(key => fragment.has(key) || url.searchParams.has(key))) {
+  function scrub(allowHandoff, href = location.href) {
+    const url = new URL(href);
+    const fragment = new URLSearchParams(url.hash.slice(1));
+    if (!keys.some(key => fragment.has(key) || url.searchParams.has(key))) return false;
     const hash = fragment.get('token_hash');
-    if (url.pathname === '/PR-Review-App-Queue/' && fragment.get('type') === 'email'
+    if (allowHandoff && url.origin === 'http://127.0.0.1:4173' && !url.username && !url.password
+        && url.pathname === '/' && fragment.get('type') === 'email'
+        && [...fragment.keys()].length === 2
         && /^[a-zA-Z0-9_-]{32,256}$/.test(hash ?? '') && !url.search) {
       pending = hash;
     } else {
       pending = 'invalid';
     }
-    history.replaceState(null, '', '/PR-Review-App-Queue/');
+    history.replaceState(null, '', '/');
+    return true;
+  }
+  scrub(true);
+  // A hash-only navigation does not reload this script or Flutter. Reject it
+  // and prevent callback material from reaching the already-running router.
+  // Reopen the email link in a new document for the confirmation handoff.
+  for (const name of ['popstate', 'hashchange']) {
+    window.addEventListener(name, event => {
+      if (scrub(false, event.newURL ?? location.href)) event.stopImmediatePropagation();
+    });
   }
   window.takeAuthCallback = () => { const result = pending; pending = null; return result; };
 })();
