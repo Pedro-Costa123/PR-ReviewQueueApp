@@ -3,6 +3,20 @@
 Implemented and checked 2026-09-17. This is a local feasibility implementation,
 not a hosted authentication deployment. P05 owns real Resend/Turnstile setup.
 
+## Hosting decision update (2026-09-18)
+
+The confirmed production URL is now **`https://reviews.pedro-costa.dev/`**. This
+document's commands below still describe the implemented and verified P04 local
+prefix; code/configuration were not changed by the documentation update.
+
+**P04A must migrate the local implementation to `http://127.0.0.1:4173/` first.**
+Update the callback path guard/cleanup, Dart URL checks, preview server, Supabase
+Site URL, sender callback guard, helper scripts and affected tests together. Keep
+token fragments out of logs and preserve explicit confirmation and local-only
+mail/auth boundaries. Do not merely change the Flutter build flag and assume
+the existing callback will work. P04A owns the new local evidence and runbook;
+P05 owns hosted origin/Turnstile settings; P13 verifies the real production URL.
+
 ## Run and verify
 
 From `backend/`, with Docker Desktop's Linux engine running:
@@ -121,7 +135,7 @@ implement provider idempotency; the database prevents repeated calls.
 
 ## Callback, sessions and scanners
 
-The email points to the actual `/PR-Review-App-Queue/` entry document with the
+The current P04 local email points to the `/PR-Review-App-Queue/` entry document with the
 provider's token hash in its fragment. `auth_callback.js` removes callback
 material with `history.replaceState` before Flutter/router initialization and
 holds it in memory for one read. Query-token and implicit access/refresh-token
@@ -143,7 +157,9 @@ also broadcasts auth events to already-open same-origin app tabs: browser
 testing observed those tabs become signed in and signed out together. This is
 tab-lifetime **storage**, not isolated sessions per tab. Browser tab duplication
 or session restoration can also preserve sessionStorage. There is no indefinite
-auth localStorage value. Same-origin portfolio/PassGen risk remains a P12 review.
+auth localStorage value. The selected production subdomain separates the app's
+origin from the portfolio/PassGen; P12/P13 must verify the deployment preserves
+that boundary. SDK synchronization among tabs on the app's own origin remains.
 
 ## CAPTCHA integration design and P05 gate
 

@@ -19,13 +19,17 @@ The repository documents are the shared source of context. A planning conversati
 
 ```text
 Work in the existing PR-ReviewQueueApp repository. Read AGENTS.md and the
-project docs, especially STATUS.md and NEXT.md. P04 is complete locally; read docs/AUTH.md and review its verified flow.
-Implement only P05 when selected by the owner: prepare the Resend/Turnstile
-hosted trial, preserve signup restrictions and hook budgets, and validate
-actual delivery/CAPTCHA with controlled developer inboxes. Preserve all tests.
+project docs, especially STATUS.md and NEXT.md. P04 is complete locally;
+read docs/AUTH.md and review its verified flow. Implement only P04A:
+migrate the local preview/build and all auth callback checks from the old
+path prefix to /, preparing for https://reviews.pedro-costa.dev/.
+Preserve local-only gates, early URL cleanup, explicit confirmation,
+signup restrictions and hook budgets. Verify the root-path flow with
+fictional identities and local captured mail; update the runbook only
+after testing the replacement commands.
 Update STATUS.md and NEXT.md with what actually works and the checks run.
-Stop after P05 for review. Complete independent preparation before identifying
-any specific missing account access; do not deploy the app or begin P06.
+Stop after P04A for review. Do not begin P05, configure hosted services,
+change DNS/Pages/repository visibility, send real email or deploy the app.
 ```
 
 ## Prompt for any later item
@@ -36,8 +40,8 @@ Check its dependencies and identify any material unanswered question.
 Complete that item's deliverables and relevant verification, update the
 durable docs, and stop at its review boundary. Preserve the confirmed
 requirements: Flutter Web, invited-email magic links, manual enterprise
-links, Namecheap DNS, GitHub Pages, and the exact URL path. Do not execute
-the rest of the backlog automatically.
+links, Namecheap DNS, GitHub Pages, and https://reviews.pedro-costa.dev/.
+Do not execute the rest of the backlog automatically.
 ```
 
 ## End-of-item record
@@ -48,9 +52,16 @@ The final reply should name the completed item, give the useful result/link, sum
 
 ## Current handoff
 
-P00-P04 are complete locally; P04 is ready for review. See [STATUS](STATUS.md) for
+P00-P04 are complete locally. See [STATUS](STATUS.md) for
 verification and [AUTH](AUTH.md) for local setup, the first-login resend correction,
 sessionStorage/cross-tab behavior, budget/idempotency rules and CAPTCHA design.
-P05 is next and requires owner-selected hosted setup/provider access. No real mail,
-cloud configuration, DNS changes or deployment occurred. P03 is committed as
-c2b44c8; P04 is uncommitted. Queue behavior and invitation claiming remain later work.
+The owner selected `https://reviews.pedro-costa.dev/` on 2026-09-18. P04A is next:
+a local root-path/callback migration before P05's hosted trial. The current
+runbook still uses the implemented legacy local prefix; the subdomain change
+is documentation only. No real mail, cloud configuration, DNS/Pages settings,
+repository visibility/name changes or deployment occurred.
+
+P03 is committed as c2b44c8 and P04 as 1ff6c13. This documentation update began
+with a clean worktree and is uncommitted; no fresh remote check was made.
+P05 requires owner-selected hosted setup/provider access. Queue behavior and
+invitation claiming remain later work.

@@ -17,6 +17,12 @@ P04 enforces conservative rolling windows of 24 hours and 31 days for the daily
 and monthly application budgets below, including unknown failures. The tested
 sender is local Mailpit only; no Resend API calls or hosted costs occurred.
 
+## Hosting recheck (2026-09-18)
+
+The owner selected **`https://reviews.pedro-costa.dev/`**, hosted independently from this app's repository on GitHub Pages with Namecheap DNS. The €0 additional-service target is unchanged: this uses the existing domain and a subdomain record, not a new domain or paid Supabase custom domain. GitHub Free supports Pages from public repositories; check the actual account/repository eligibility before publishing. A visibility change is future work. [GitHub custom-domain eligibility](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/about-custom-domains-and-github-pages), [Namecheap subdomains](https://www.namecheap.com/support/knowledgebase/article.aspx/9776/2237/how-to-create-a-subdomain-for-my-domain/)
+
+The combined portfolio artifact and repository-name/path workaround are superseded. The additional implementation work is a local root-path/callback migration (P04A), followed by the planned hosted setup and independent Pages release. This recheck covers hosting/domain assumptions only; backend/email quotas retain their dated research above. No subscription, DNS, repository visibility, or deployment setting changed.
+
 ## Recommendation for the confirmed requirements
 
 P03 local implementation note, 2026-09-16: project-local Supabase CLI 2.117.0 and a Docker development stack were added. No provider account, hosted project, subscription, DNS, billing, or email-delivery configuration changed. The estimates and provider assumptions below remain the 2026-09-14 research, to recheck at P05/P12. [Current local CLI requirements](https://supabase.com/docs/guides/local-development/cli/getting-started) were checked for tooling compatibility; this is not a fresh verification of hosted pricing.
@@ -27,11 +33,11 @@ Supabase supplies Postgres, authentication, row-level security, and small Edge F
 
 | Component | Expected starting cost | Relevant limitation |
 | --- | --- | --- |
-| Existing GitHub Pages hosting | $0 additional, subject to the account/site's eligibility | Static frontend only; exact path requires integration with the current Pages publishing setup |
+| App-specific GitHub Pages hosting | $0 additional, subject to the account/repository's eligibility | Static frontend at reviews.pedro-costa.dev; publish this app independently |
 | Supabase Free | $0 | 500 MB database, 50,000 monthly active users, 5 GB egress, 500,000 Edge Function invocations; check actual project/organization usage |
 | Resend Free | $0 | 3,000 emails/month and 100/day; use a dedicated sending domain and budget |
 | Turnstile Free | $0 | Managed bot challenge; integration and provider-side enforcement still need testing |
-| Namecheap domain | Existing renewal | No new domain required; renewal cost is not included in this estimate |
+| Namecheap domain/subdomain | Existing renewal | Use the existing domain's reviews CNAME; no additional domain purchase proposed; renewal is excluded |
 | Builds and backups | No new paid service proposed | Local builds/exports initially; CI must stay within the existing account allowance |
 
 Supabase Free can pause after one week of inactivity and does not include automatic backups. These are real operational compromises for a team app. Its paid entry tier starts at $25/month; it is not an incidental €5 upgrade. [Supabase pricing](https://supabase.com/pricing)
@@ -82,8 +88,8 @@ This protects the budget but cannot guarantee uninterrupted service under attack
 
 ## Hosting constraints and upgrade triggers
 
-Flutter builds static web files suitable for static hosting. GitHub Pages is compatible with that output; it cannot run a backend. The exact requested path is not the current source repository name: follow the publishing design in [Architecture](ARCHITECTURE.md). [Flutter web deployment](https://docs.flutter.dev/deployment/web), [GitHub Pages overview](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages)
+Flutter builds static web files suitable for static hosting. GitHub Pages is compatible with that output; it cannot run a backend. The selected custom subdomain serves the app at `/` independently of the repository name; follow the publishing design in [Architecture](ARCHITECTURE.md). [Flutter web deployment](https://docs.flutter.dev/deployment/web), [GitHub Pages overview](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages)
 
 GitHub Pages is not permitted as free hosting for commercial SaaS and cautions against sensitive transactions. The planned use is an internal team utility with authentication handled by Supabase; that is an architectural interpretation, not a guarantee of policy eligibility. If the use becomes commercial or the site's policy fit is uncertain at deployment, resolve it before launch. [GitHub Pages limits](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits)
 
-Revisit the architecture if inactivity pauses are unacceptable, quotas are routinely tight, automatic managed backups/support become required, or the common browser origin is unsuitable. Present a current priced alternative before changing subscriptions. Recheck all free-plan eligibility, existing account consumption, email domain verification, and pricing at P05 and P12.
+Revisit the architecture if inactivity pauses are unacceptable, quotas are routinely tight, or automatic managed backups/support become required. The former shared-origin concern is addressed by the selected dedicated subdomain, subject to implementation and launch checks. Present a current priced alternative before changing subscriptions. Recheck all free-plan eligibility, existing account consumption, email domain verification, and pricing at P05 and P12.

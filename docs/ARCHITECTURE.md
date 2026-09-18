@@ -1,16 +1,15 @@
 # Architecture
 
-Updated: 2026-09-17. P04 local authentication, signed hook and mocked delivery are implemented. Real delivery, queue behavior and deployment remain planned. No components deployed. [AUTH](AUTH.md) documents the tested callback, session, provider corrections and runbook.
+Updated: 2026-09-18. P04 local authentication, signed hook and mocked delivery are implemented. The owner selected reviews.pedro-costa.dev; P04A will migrate the local path/callback before hosted work. Real delivery, queue behavior and deployment remain planned. No components deployed. [AUTH](AUTH.md) documents the tested callback, session, provider corrections and runbook.
 
 ## Design
 
-Use Flutter Web with Supabase for authentication, relational data, and server-side authorization. Deliver magic links through Resend. Keep Namecheap DNS and GitHub Pages as requested; publish the app's static files under the exact path on the existing site.
+Use Flutter Web with Supabase for authentication, relational data, and server-side authorization. Deliver magic links through Resend. Publish this repository's Flutter build as its own GitHub Pages site at `https://reviews.pedro-costa.dev/`, with DNS at Namecheap. The portfolio and PassGen remain separate deployments on the existing hostname.
 
 ```mermaid
 flowchart TD
-    U[Team member's browser] -->|Namecheap DNS| GH[GitHub Pages: pedro-costa.dev]
-    GH --> APP[/PR-Review-App-Queue/: Flutter static files]
-    GH --> OTHER[Existing portfolio and PassGen]
+    U[Team member's browser] -->|Namecheap DNS| APP[GitHub Pages: reviews.pedro-costa.dev - Flutter app]
+    U -->|Separate browser origin| OTHER[GitHub Pages: pedro-costa.dev - portfolio and PassGen]
     U -->|Magic-link sign-in + CAPTCHA| AU[Supabase Auth]
     AU --> EH[Signed Send Email Hook]
     EH -->|Allowlist + atomic send budget| RE[Resend]
@@ -24,30 +23,33 @@ flowchart TD
 
 The browser never receives database admin credentials or Resend credentials. No backend request goes to GitHub Enterprise or Jira. The public HTML/Flutter bundle is not confidential; team data requires authorization.
 
-## Hosting at the requested path
+## Hosting on the dedicated subdomain
 
-Required production base path: `/PR-Review-App-Queue/`, preserving case and a trailing slash. Flutter supports a non-root base path. Use hash routing initially, such as `/PR-Review-App-Queue/#/teams/<id>`, so refreshing an app screen does not need server rewrites. [Flutter URL configuration](https://docs.flutter.dev/ui/navigation/url-strategies)
+Confirmed 2026-09-18: **`https://reviews.pedro-costa.dev/`**, with production base href `/`. Keep hash routes, such as `/#/teams/<id>`, so screen refreshes need no Pages rewrites. The root entry document is also the magic-link callback, retaining P04's fragment cleanup and explicit confirmation. [Flutter URL configuration](https://docs.flutter.dev/ui/navigation/url-strategies)
 
-The source repository is `Pedro-Costa123/PR-ReviewQueueApp`. Its name does **not** match the requested path. Enabling project Pages on this repo does not automatically publish at `/PR-Review-App-Queue/`. GitHub Pages project paths normally follow repository names; DNS cannot route by URL path. [GitHub Pages overview](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages)
+Publish this app's `frontend/build/web` artifact through its own repository's Pages workflow. Configure the repository-specific custom domain to override any inherited account domain. No combined portfolio artifact, new organization, or repository rename is needed. A rename or visibility change remains a separate action; verify free Pages eligibility before publication. [GitHub custom domains](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/about-custom-domains-and-github-pages)
 
-- Preferred publishing arrangement: include the Flutter build as the `PR-Review-App-Queue/` directory in the **complete artifact of the existing domain's Pages site**. Inspect that site's repository and publishing workflow in P12 before making changes. This project remains the source of the app; the existing site is only its publishing destination.
-- Never upload an app-only artifact as the root site's entire deployment: that could remove the portfolio. Preserve the full current site artifact, CNAME, existing files and project-site routing.
-- Build Flutter with the matching base href. Include `.nojekyll` where the chosen Pages publishing mode needs it.
-- Put the magic-link callback at the existing app entry document, using the provider-supported query/fragment format validated in P04. Do not configure a nonexistent clean `/auth/callback` path and assume GitHub rewrites it.
-- Test slashless/trailing-slash URLs, hash routes, query callbacks, browser refresh, assets, root portfolio, and `/PassGen/` on the actual Pages arrangement.
-- Keep all hosted callback origins explicitly allowlisted. Do not enable arbitrary preview callbacks.
+Planned P12/P13 setup, not performed by this documentation update:
 
-If the current site workflow cannot include the directory safely, present a concrete publishing alternative before changes: for example, a Pages publishing repository named exactly `PR-Review-App-Queue`. Do not rename this repository or create another one silently. A CNAME or Flutter base href alone cannot fix the repository/path mismatch.
+1. Verify domain ownership with GitHub and configure this repository's Pages custom domain as `reviews.pedro-costa.dev` before adding the DNS record.
+2. At Namecheap, add a **CNAME** with Host **`reviews`** and target **`Pedro-Costa123.github.io`**, matching the current repository owner. The target has no scheme, repository path, or trailing URL path. Recheck the owner if the repo moves. Preserve existing apex/www and mail records; use no wildcard or URL forwarding.
+3. For branch publishing, maintain the required `CNAME` file. For a custom GitHub Actions Pages workflow, use the Pages setting; GitHub does not require that file. Validate DNS and enable HTTPS after certificate issuance.
+
+Sources: [GitHub custom-domain setup](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site), [Namecheap subdomain setup](https://www.namecheap.com/support/knowledgebase/article.aspx/9776/2237/how-to-create-a-subdomain-for-my-domain/).
+
+The current implementation still hardcodes `/PR-Review-App-Queue/` in local preview/auth paths. P04A must update the build/preview, early callback handler, client callback checks, Supabase local Site URL, sender callback validation, helper scripts and affected tests together, then verify root-path login locally. Until then, the existing commands in AUTH/frontend README remain the verified commands. This is not yet a working subdomain build.
+
+P05 will prepare the exact production Site URL/callback `https://reviews.pedro-costa.dev/`, approved local trial URLs, and Turnstile hostname. Validate the live production callback in P13. Do not accept wildcard redirects or leave the old portfolio URL authorized. Do not forward login fragments or sessions through the old origin.
 
 GitHub Pages serves static files and does not run Supabase/backend code. It has restrictions on commercial SaaS and sensitive transactions. This plan is for the requested internal utility, not a commercial SaaS launch; revisit hosting if the use changes. See [GitHub Pages limits](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits).
 
-Paths share an origin with the portfolio and PassGen. They are not separate browser security boundaries. Session storage, root-scoped service workers, and scripts on sibling apps require review; details in [Security](SECURITY.md). The path is retained as requested. A subdomain would be a future option only if the owner changes this constraint.
+The subdomain creates a distinct browser origin from the portfolio and PassGen. Its app storage and service workers are origin-scoped. Keep this hostname dedicated to the PR app and retain backend authorization; different origins under one parent domain are still same-site for some browser rules. See [Security](SECURITY.md).
 
 ## Frontend
 
 P02 implementation: feature folders under `frontend/lib/`, a small read-only `QueueRepository` with fictional display models, Material themes, `go_router` 18.0.1 using its default hash strategy, and `shared_preferences` 2.5.5 through `SharedPreferencesAsync`. The lockfile is pinned. Theme preference is loaded before first rendering, defaults to dark independently of OS theme, and reports unavailable storage without blocking the app. P04 adds pinned supabase_flutter 2.17.2 behind a small repository/controller; no extra state-management package.
 
-Routes are `/`, `/teams/:teamId`, `/teams/:teamId/archive`, and `/teams/:teamId/profiles/:profileId`; unknown routes/IDs show a recovery screen. There is no signed-in demo identity or authentication bypass. The fictional profiles and entries are public static presentation data, not protected team records. The local P03 database boundary is implemented separately; the queue shell does not use it. P04 connects only authentication in the exact-loopback preview. The local release preview serves the required base path without rewrites; this does not verify the actual Pages publishing arrangement.
+Routes are `/`, `/teams/:teamId`, `/teams/:teamId/archive`, and `/teams/:teamId/profiles/:profileId`; unknown routes/IDs show a recovery screen. There is no signed-in demo identity or authentication bypass. The fictional profiles and entries are public static presentation data, not protected team records. The local P03 database boundary is implemented separately; the queue shell does not use it. P04 connects only authentication in the exact-loopback preview. The verified local preview still serves the former path; root-path compatibility awaits P04A and hosted Pages compatibility awaits rollout.
 
 - Flutter Web only; Material components, responsive queue, dark default and saved light preference.
 - Start with feature folders: `auth`, `teams`, `queue`, `archive`, `profiles`, and small shared UI/services.

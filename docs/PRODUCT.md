@@ -1,6 +1,6 @@
 # Product
 
-Last updated: 2026-09-17. Owner: Pedro Costa. Stage: P04 local authentication implemented alongside the P02 fictional queue and P03 database foundation. Queue data remains disconnected. Core questions are answered, with smaller defaults recorded for later steps. Demo content and preparatory schema fields illustrate proposals without confirming them.
+Last updated: 2026-09-18. Owner: Pedro Costa. Stage: P04 local authentication implemented alongside the P02 fictional queue and P03 database foundation. Queue data remains disconnected. The dedicated production subdomain is confirmed; its code/configuration migration is pending P04A. Demo content and preparatory schema fields illustrate proposals without confirming them.
 
 ## Problem and outcome
 
@@ -27,8 +27,8 @@ Build a small private web app for approximately 5-20 users, organized by team. I
 The owner additionally confirmed:
 
 - Work email invitations with **magic links**.
-- Aim for **€0/month** and keep `https://pedro-costa.dev/PR-Review-App-Queue/`.
-- DNS is on Namecheap; the portfolio and PassGen are hosted on GitHub Pages. The owner explicitly chose to keep this setup (correcting an earlier Cloudflare answer).
+- Aim for **€0/month** and publish at **`https://reviews.pedro-costa.dev/`**. On 2026-09-18, the owner replaced the original shared-path requirement with this dedicated subdomain for browser-origin isolation.
+- DNS stays on Namecheap; the app gets its own GitHub Pages deployment. The portfolio and PassGen keep their existing hosting. A repository rename or new GitHub organization is not needed for this URL.
 - PRs are on GitHub Enterprise and tasks on Jira Enterprise. The app must not fetch their contents or status; users update entries and archive them manually.
 - Sprint-goal entries first, then priority; admins reorder within those groups. Multiple teams per user are allowed.
 - External hosting of the specified company data is allowed. Exact retention/region requirements have not been specified.
@@ -108,7 +108,7 @@ Native mobile/desktop apps, payments, attachments/avatar uploads, Teams messages
 | --- | --- | --- |
 | Q01 answered | PR/task source and synchronization? | GitHub Enterprise and Jira Enterprise; links only, entirely manual updates. Exact allowed hostnames are needed before live use, not for the fictional prototype. |
 | Q02 answered | Invitation identity and sign-in? | Exact work email + magic link. |
-| Q03 answered | Budget and hosting address? | Aim for €0; retain the path, Namecheap DNS, and GitHub Pages. Inspect the existing Pages publishing arrangement before rollout. |
+| Q03 answered, revised 2026-09-18 | Budget and hosting address? | Aim for €0; use reviews.pedro-costa.dev at `/`, with Namecheap DNS and this app's own GitHub Pages deployment. The prior shared-path/combined-site plan is superseded. |
 | Q04 answered | Ordering and teams? | Sprint first, then priority, admin reorder within groups; multiple teams allowed. |
 | Q05 answered | External hosting permission? | Owner says allowed. Region/retention remain unspecified; select an available EU project region unless a different requirement emerges. |
 | Q06 | Who creates teams and appoints initial admins? | Deployment operator bootstraps them. Team admins manage their own members. |

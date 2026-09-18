@@ -1,6 +1,8 @@
 # Ordered implementation backlog
 
-Updated: 2026-09-17. **Execute one selected item, verify it, update the docs, and stop.** Do not turn this file into a single full-app implementation prompt.
+Updated: 2026-09-18. **Execute one selected item, verify it, update the docs, and stop.** Do not turn this file into a single full-app implementation prompt.
+
+The owner selected `https://reviews.pedro-costa.dev/`. This documentation revision adds P04A before hosted work; it does not implement the migration or reopen completed P04 verification.
 
 `Complete` means the item's actual deliverable exists. `Ready` means the next item can start when requested. Later items remain planned, not authorized as a batch. Smaller UI/product defaults can be settled at the item that needs them.
 
@@ -11,19 +13,20 @@ Updated: 2026-09-17. **Execute one selected item, verify it, update the docs, an
 | P02 | Local Flutter app shell | Complete; ready for owner review | P01 |
 | P03 | Local Supabase schema and team authorization | Complete; ready for owner review | P02 |
 | P04 | Magic-link flow and guarded email delivery locally | Complete locally; ready for owner review | P03 |
-| **P05** | **Small hosted authentication/cost validation** | **Ready after P04 review; requires owner-selected hosted trial/account access** | P04 |
+| **P04A** | **Local root-path and callback migration** | **Ready; next implementation item** | P04 |
+| P05 | Small hosted authentication/cost validation | Planned after P04A; requires owner-selected hosted trial/account access | P04A |
 | P06 | Admin invitations, teams, and profiles | Planned | P05 |
 | P07 | Create/read/edit queue entries and protected deletion | Planned | P06 |
 | P08 | Sprint/priority ordering and admin reordering | Planned | P07 |
 | P09 | Comments and per-user review signals | Planned | P08 |
 | P10 | Archive, restore, and data lifecycle | Planned | P09 |
 | P11 | Refresh, filtering, responsive UI, and accessibility | Planned | P10 |
-| P12 | Release checks and exact-path publishing preparation | Planned | P11 |
+| P12 | Release checks and subdomain publishing preparation | Planned | P11 |
 | P13 | Deploy the prepared release and run a small pilot | Planned | P12 |
 
 ## P02 — Local Flutter app shell
 
-**Deliver:** Scaffold only Flutter Web under `frontend/`, retaining the license and docs. Create a sign-in placeholder, team/queue shell, fake entries, navigation, dark default, and a persistent light-mode toggle. Use fictional data and the required base path/hash-routing strategy.
+**Deliver:** Scaffold only Flutter Web under `frontend/`, retaining the license and docs. Create a sign-in placeholder, team/queue shell, fake entries, navigation, dark default, and a persistent light-mode toggle. Use fictional data and the originally specified base path/hash-routing strategy (the path is subsequently revised in P04A).
 
 **Acceptance:** Runs locally; relevant Flutter analysis and release web build pass; inspect desktop/narrow layouts, keyboard navigation, and theme persistence in a browser. The screen clearly uses demo data; there is no fake claim of working authentication. Document verified run/build commands and SDK version.
 
@@ -51,13 +54,21 @@ Updated: 2026-09-17. **Execute one selected item, verify it, update the docs, an
 
 **Completed 2026-09-17:** Maintained Flutter client, explicit token-hash confirmation at the entry document, sessionStorage adapter, signed local Edge hook, atomic service-only quotas, duplicate protection, fictional Mailpit delivery, and real Auth endpoint checks. Feasibility corrected first login to confirmation resend while retaining disabled public signup. CAPTCHA integration design requires a fresh challenge for the fallback. SDK cross-tab broadcasts are documented. See [AUTH](AUTH.md) and [STATUS](STATUS.md). No hosted configuration or real mail was added.
 
+## P04A — Local root-path and callback migration
+
+**Deliver:** Adapt the existing P04 implementation to the app-root path `/`, matching the selected subdomain. Update Flutter's base-href build instructions, local preview server/frame, early callback scrubber and Dart URL checks, Supabase local Site URL, sender callback validation, helper scripts, and relevant fixtures/tests together. Use `http://127.0.0.1:4173/` for the local equivalent. Keep exact-origin checks, explicit confirmation, token cleanup, and local-only authentication/mail gates intact.
+
+**Acceptance:** Relevant Flutter and JavaScript callback tests, local Auth integration checks, and a root-base release build pass. Inspect root/hash-route refresh, link request, fragment cleanup, explicit confirmation, reload and sign-out in the browser. Reject the obsolete callback path and unexpected origins rather than forwarding tokens. Update AUTH/frontend/backend runbooks only after the replacement commands are verified. Record new evidence without rewriting historical P02-P04 test results.
+
+**Boundary:** Local configuration/code only, with fictional data and captured mail. No cloud account, DNS, repository visibility/name, Pages, real email, or paid-service change. Stop for review before P05.
+
 ## P05 — Small hosted authentication/cost validation
 
-**Deliver:** Implement the reviewed Resend sender and Turnstile widget, replace P04's explicit local-only gates with validated hosted configuration, and prepare then configure a Free Supabase project, Resend Free sending domain, and Turnstile for a small developer trial when the owner selects this stage and supplies account access. Use an exact localhost callback initially, with no real company content. Confirm account quotas, sender-domain DNS additions at Namecheap, and no paid add-ons. The owner supplies secrets through secret storage, not docs/chat.
+**Deliver:** Implement the reviewed Resend sender and Turnstile widget, replace P04's explicit local-only gates with validated hosted configuration, and prepare then configure a Free Supabase project, Resend Free sending domain, and Turnstile for a small developer trial when the owner selects this stage and supplies account access. After P04A, use the exact root-path loopback callback initially, with no real company content. Prepare the production Site URL/callback `https://reviews.pedro-costa.dev/` and specific Turnstile hostname for rollout, without wildcard or old portfolio redirects. Keep trial settings distinct from production and validate the live subdomain callback in P13. Confirm account quotas, sender-domain DNS additions at Namecheap, and no paid add-ons. The owner supplies secrets through secret storage, not docs/chat.
 
 **Acceptance:** Controlled developer inboxes receive a single valid magic link; expired/replayed links and email scanners are handled; signup disabled still allows invited login; direct Auth calls enforce CAPTCHA and hook budgets. Capture actual sanitized provider usage/configuration and delivery observations. Generic user acknowledgement does not expose team membership. No load testing of real email.
 
-**Boundary:** If provider setup needs user action, finish the local code/config/runbook first and identify the specific missing action. Do not change nameservers, publish the app to the portfolio, or proceed to queue implementation until this sign-in path works.
+**Boundary:** If provider setup needs user action, finish the local code/config/runbook first and identify the specific missing action. App-subdomain DNS and Pages publication remain P13; email-domain verification is separate. Do not change nameservers or proceed to queue implementation until this sign-in path works.
 
 ## P06 — Invitations, teams, and profiles
 
@@ -101,22 +112,22 @@ Updated: 2026-09-17. **Execute one selected item, verify it, update the docs, an
 
 **Acceptance:** Two sessions see saved changes within the stated refresh window; hidden tabs stop polling; unchanged queues do not download full snapshots; no retry storms; keyboard/screen-reader labels and both themes are usable. Measure payloads and extrapolate usage against COSTS.
 
-## P12 — Release checks and exact-path publishing preparation
+## P12 — Release checks and subdomain publishing preparation
 
-**Deliver:** Inspect the existing portfolio Pages repository/workflow and exact custom-domain arrangement. Prepare a complete combined-site artifact or a concrete reviewed alternative; never replace the portfolio artifact with just this app. Add reproducible build checks, explicit callback configuration, secret handling, backup/export and restore procedure, versioned release instructions, and rollback steps. Review shared-origin scripts/service workers and current hosting terms/quotas.
+**Deliver:** Prepare this repository's independent GitHub Pages workflow and Flutter artifact with base href `/`. Document the app-specific custom domain, domain verification, exact Namecheap record, HTTPS setup, callback/Turnstile configuration, and rollback/decommissioning sequence from ARCHITECTURE. Inspect the actual repo/account's Pages eligibility; if a public repository is required, prepare for that visibility change without performing it here. Add reproducible build checks, secret handling, backup/export and restore procedure, and versioned release instructions. Review scripts/service workers on the app origin and current hosting terms/quotas.
 
-**Acceptance:** Local preview of the full artifact serves the exact base path and hash routes; callback URLs match; root portfolio and PassGen routing are accounted for. Relevant security matrix checks pass; release assets contain no secrets; restore is tested; provider configuration/usage is documented. Resolve any concrete hosting-policy or shared-origin blocker before launch. Existing site deployment details are currently unknown and must be verified here.
+**Acceptance:** Preview of the standalone app artifact serves `/` and hash routes; callback URLs match the confirmed subdomain. Relevant security matrix checks pass; release assets and any history to be published contain no secrets/private fixtures; restore is tested; provider configuration/usage is documented. The deployment targets this app's repository, not the portfolio. DNS changes are limited to the dedicated hostname and necessary verification records. Document how P13 will verify origin separation and preserve the existing sites. Resolve concrete release blockers before launch.
 
-**Boundary:** Prepare a reviewable release and publishing diff. No DNS provider change, automatic billing upgrade, or silent repository rename. If access to the existing site is missing, identify the exact repository/workflow required after completing independent preparation.
+**Boundary:** Prepare a reviewable release and publishing diff; P13 owns applying it. No DNS provider change, automatic billing upgrade, or repository rename is needed. No access to the portfolio's source repository is required for combining builds, because the combined-site plan is superseded.
 
 ## P13 — Deploy and pilot
 
-**Deliver:** When the owner selects this deployment step, deploy the prepared release to the existing Pages publishing arrangement and validate the real domain/callback. Roll back if existing site routes fail. Pilot with 2-3 invited users before adding the rest of the team.
+**Deliver:** When the owner selects this deployment step, publish the prepared release from this app's repository, apply the verified app-specific Pages/Namecheap settings, and enforce HTTPS at `https://reviews.pedro-costa.dev/`. Apply any needed repository visibility change only within the selected publication scope. Validate the live callback and Turnstile hostname, and remove development-only/obsolete callbacks from production configuration. Roll back the app-specific change if rollout fails. Pilot with 2-3 invited users before adding the rest of the team.
 
-**Acceptance:** HTTPS, sign-in, team boundaries, links, queue/reorder/comments/reviews/archive, and both themes work on the production path. Portfolio and PassGen remain reachable. Confirm actual costs/quotas, restore instructions, and revocation. Record the deployed revision, deployment destination, operator, and known limitations.
+**Acceptance:** HTTPS, sign-in, team boundaries, links, queue/reorder/comments/reviews/archive, and both themes work at the production subdomain root. The app does not redirect to the portfolio; portfolio-origin DOM/storage access fails and its service worker cannot control the app. Portfolio and PassGen remain reachable. Confirm actual costs/quotas, restore instructions, and revocation. Record the deployed revision, deployment destination, operator, and known limitations.
 
 **Boundary:** The pilot needs human feedback across real use. Do not claim a multi-day pilot passed in one run or create background monitoring unless requested. Subsequent work follows actual pilot findings.
 
 ## Later ideas (unordered; not part of this implementation)
 
-Email-free company SSO, optional stale-review resets after manual code-update marking, notification preferences, richer analytics, and a dedicated subdomain if the owner later wants browser isolation. GitHub/Jira synchronization remains excluded unless the owner changes the manual-only requirement.
+Email-free company SSO, optional stale-review resets after manual code-update marking, notification preferences, and richer analytics. The dedicated subdomain is now confirmed, not a later idea. GitHub/Jira synchronization remains excluded unless the owner changes the manual-only requirement.

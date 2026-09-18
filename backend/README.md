@@ -120,7 +120,11 @@ invariants, duplicate records, operator bootstrap, and concurrent admin changes.
 Those P03 tests do not claim real Auth login or delivery. P04's separate test:auth
 suite checks actual local Auth and captured delivery; neither suite claims deployed security.
 
-Next: **P05**, hosted authentication/cost validation after P04 review.
+Next: **P04A**, the local root-path/callback migration for the confirmed
+`https://reviews.pedro-costa.dev/` production address. Current local Auth/sender
+configuration still uses the verified P04 prefix; keep it until P04A updates and
+tests the full flow. **P05** follows with hosted authentication/cost validation.
+The frontend subdomain does not require a paid Supabase custom domain.
 See [NEXT](../docs/NEXT.md), [STATUS](../docs/STATUS.md),
 [ARCHITECTURE](../docs/ARCHITECTURE.md), and [SECURITY](../docs/SECURITY.md).
 

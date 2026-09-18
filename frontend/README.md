@@ -6,6 +6,11 @@ Verified SDK: **Flutter 3.47.4 stable / Dart 3.13.3** on Windows. Only the web p
 
 ## Run the verified release preview
 
+The production target is now `https://reviews.pedro-costa.dev/` (confirmed
+2026-09-18), with base href `/`. **P04A has not migrated the code yet.** The
+commands below remain the verified local P04 preview; do not substitute `/`
+until the callback, preview server and Auth configuration are updated together.
+
 From `frontend/` in PowerShell:
 
 ```powershell
@@ -14,7 +19,7 @@ flutter build web --release --base-href /PR-Review-App-Queue/ --no-web-resources
 node tool/serve.cjs
 ```
 
-Open `http://127.0.0.1:4173/PR-Review-App-Queue/`. Stop the server with Ctrl+C. Node uses only built-in modules. It binds to loopback and serves only `build/web` beneath the required path, plus a local QA frame at `http://127.0.0.1:4173/__preview/narrow` (390 × 844). It is not a production server or a combined portfolio artifact.
+Open `http://127.0.0.1:4173/PR-Review-App-Queue/`. Stop the server with Ctrl+C. Node uses only built-in modules. It binds to loopback and serves only `build/web` beneath the implemented legacy local prefix, plus a local QA frame at `http://127.0.0.1:4173/__preview/narrow` (390 × 844). It is not a production server. The final app will publish independently from this repository, without a combined portfolio artifact.
 
 The build flag bundles Flutter rendering resources locally. Hash URLs such as `/PR-Review-App-Queue/#/teams/atlas` require no server route rewrites. Both direct entry and refresh work. The real hosted authentication callback and Pages integration remain later work.
 
@@ -42,4 +47,4 @@ The default demo stores only `pr_review_queue.theme`. The configured P04 preview
 
 The generated Flutter favicon/app icons remain temporary. The SDK emits a missing Cupertino font-family warning during icon tree shaking; this shell uses Material icons, which render correctly in the inspected browser. No native-platform tooling is needed.
 
-Product behavior is in [Product](../docs/PRODUCT.md) and architecture in [Architecture](../docs/ARCHITECTURE.md). P04 connects only local authentication; the demo queue is unchanged. The next item is **P05**, after P04 review.
+Product behavior is in [Product](../docs/PRODUCT.md) and architecture in [Architecture](../docs/ARCHITECTURE.md). P04 connects only local authentication; the demo queue is unchanged. The next item is **P04A**, the local root-path/callback migration, followed by P05's hosted validation.

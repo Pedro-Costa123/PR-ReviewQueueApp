@@ -24,10 +24,12 @@ A private team queue that keeps pull requests visible, makes sprint priorities c
 - Backend: Supabase Postgres, row-level security, transactional database functions, and small TypeScript Edge Functions.
 - Authentication: Supabase magic links, restricted to exact work email invitations.
 - Email: Resend Free, with server-enforced sending budgets.
-- Hosting: GitHub Pages, retaining Namecheap DNS and publishing the app under the existing site's required path.
-- Required address: `https://pedro-costa.dev/PR-Review-App-Queue/`.
+- Hosting: this app's own GitHub Pages deployment, with DNS at Namecheap.
+- Confirmed production address (not deployed): `https://reviews.pedro-costa.dev/`.
 
-Flutter Web, magic links, the URL path, Namecheap DNS, GitHub Pages, manual updates, sprint-first ordering, and multiple team membership are confirmed. Supabase + Resend is the researched backend recommendation, ready for staged validation. The estimated additional service cost is **€0/month within free-plan limits**; existing domain renewal is separate. Read [Costs](docs/COSTS.md) for limits and [Security](docs/SECURITY.md) for the shared-origin tradeoff.
+Flutter Web, magic links, the dedicated subdomain, Namecheap DNS, GitHub Pages, manual updates, sprint-first ordering, and multiple team membership are confirmed. The owner selected the subdomain on 2026-09-18 to separate the app's browser origin from the portfolio and PassGen. Supabase + Resend remains the researched backend recommendation. The estimated additional service cost is **€0/month within free-plan limits**; existing domain renewal is separate. Read [Costs](docs/COSTS.md) for limits and [Security](docs/SECURITY.md) for the origin boundary.
+
+The current P04 code still uses the old local `/PR-Review-App-Queue/` path. P04A will migrate it to `/` before hosted sign-in work. This documentation change did not alter code, DNS, repository visibility, or deployment settings.
 
 ## Repository layout
 
@@ -42,7 +44,7 @@ LICENSE            Existing MIT license
 
 ## Start the next step
 
-Read [Status](docs/STATUS.md), then [Next](docs/NEXT.md). Review P04 using the [local authentication runbook](docs/AUTH.md); the [frontend demo commands](frontend/README.md) remain available. The next implementation item is **P05: small hosted authentication/cost validation**. The [handoff instructions](docs/HANDOFF.md) include a prompt for continuing in Codex.
+Read [Status](docs/STATUS.md), then [Next](docs/NEXT.md). Review P04 using the [local authentication runbook](docs/AUTH.md); the [frontend demo commands](frontend/README.md) remain available. The next implementation item is **P04A: local root-path and callback migration**, followed by P05's hosted authentication/cost validation. The [handoff instructions](docs/HANDOFF.md) include a prompt for continuing in Codex.
 
 Do not run the entire backlog in one task. Complete the selected item, verify its acceptance criteria, update the docs, and stop at its review boundary.
 

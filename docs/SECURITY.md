@@ -1,6 +1,6 @@
 # Security design and launch evidence
 
-Last updated: 2026-09-17. P03 database authorization and P04 local sign-in/email guards are implemented and tested. Hosted CAPTCHA/mail, lifecycle and launch controls remain planned. [AUTH](AUTH.md) records implemented controls and limits.
+Last updated: 2026-09-18. P03 database authorization and P04 local sign-in/email guards are implemented and tested. The production subdomain is confirmed; root-path migration, hosted CAPTCHA/mail, lifecycle and launch controls remain planned. [AUTH](AUTH.md) records implemented controls and limits.
 
 The queue still contains only public fictional presentation fixtures. P04 adds a real local Auth client and sessionStorage adapter, with SDK cross-tab synchronization. There is no fake signed-in identity, role switch or company URL. Browser navigation between demo teams is not an authorization test. P03 SQL-role/Data API denial tests run separately against local Supabase. The release build remains a local preview, not a production authentication path.
 
@@ -47,9 +47,13 @@ Supabase supports magic links and PKCE and provides CAPTCHA and rate controls. T
 
 ## Browser and link safety
 
-The requested portfolio, PassGen, and PR app paths all share `https://pedro-costa.dev`. Browser origins depend on scheme/host/port, not URL path. A compromised sibling app can affect this app; a path-prefixed storage key or cookie is not isolation. [Browser same-origin policy](https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Same-origin_policy)
+The owner replaced the shared-path design on 2026-09-18. The planned PR app origin is **`https://reviews.pedro-costa.dev`**, separate from the portfolio/PassGen origin `https://pedro-costa.dev`. The latter's scripts cannot directly read app-origin storage or DOM, and its service workers cannot control the app origin. Keep the subdomain dedicated to this app. This is a planned browser boundary, not evidence of a deployed or tested configuration. [Browser same-origin policy](https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Same-origin_policy)
 
-Before launch, inspect root service-worker scope, third-party scripts, and same-origin access. P04 uses sessionStorage with memory fallback, avoids indefinite auth localStorage persistence, and documents the SDK's synchronization across open same-origin tabs in AUTH. This reduces persistence but does not solve shared-origin compromise. GitHub Pages has limited custom response-header control; use a compatible CSP meta policy where effective and do not claim it supplies every header-based protection. If review reveals an unacceptable concrete exposure, report it before launch rather than claiming the path can be made fully isolated.
+Separate origins under the same parent domain are not separate sites for every browser rule. Do not use `document.domain`, parent-domain auth cookies, broad credential sharing, or permissive message handlers to reconnect them. RLS, token verification and any future CSRF protection remain necessary. Review third-party scripts loaded by the app itself; code included in the app runs with its privileges.
+
+P04 uses sessionStorage with memory fallback and SDK synchronization across open same-origin app tabs, as documented in AUTH. That synchronization will stay inside the new app origin; the tab-isolation limitation still applies among app tabs. GitHub Pages has limited custom response-header control; use a compatible CSP meta policy where effective and do not claim it supplies every header-based protection.
+
+P04A must migrate callback validation and fragment cleanup to `/` without weakening the local-only gates. P05 must use exact trial/production callback settings and the specific Turnstile hostname; do not allow the old portfolio callback or wildcard redirects. P13 verifies the final hostname, HTTPS, origin separation, and login flow. Never copy or redirect login tokens from the old origin to the new one. Domain verification and removing stale DNS mappings on decommissioning belong in the deployment runbook.
 
 Use plain-text comments/titles, validation on both client and server, and query parameters rather than concatenated SQL. Parse HTTPS links, reject credentials/embedded control characters, and enforce the agreed enterprise hostnames before real use. Do not fetch link metadata. Open links with `noopener`/`noreferrer` behavior and use a no-referrer policy for sensitive navigation.
 
@@ -77,6 +81,7 @@ For an incident: revoke affected memberships/invites and sessions, disable mail 
 | Concurrent admin reorder / last-admin removal | Conflict handled; invariants preserved |
 | Malicious links and HTML-like comments | Rejected or displayed safely; no backend fetch |
 | Quota/provider outage | Clear failure, no unbounded retry, no paid fallback |
-| Static build / sibling routes / shared origin | No embedded secrets; portfolio and PassGen work; residual origin risk documented |
+| Static build / subdomain boundary | No embedded secrets; app remains on reviews.pedro-costa.dev with HTTPS; portfolio-origin DOM/storage access is denied and its service worker does not control the app |
+| Callback / hostname configuration | Only intended app/trial callbacks accepted; fragment cleanup and explicit confirmation work at `/`; no parent-domain session sharing or redirect through the portfolio |
 
 Run synthetic abuse tests locally with mocked mail first. Hosted checks use a small controlled set of developer accounts, not load tests against real inboxes.
