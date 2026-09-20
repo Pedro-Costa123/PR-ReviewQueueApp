@@ -1,5 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'challenge.dart';
+
 abstract interface class AuthRepository {
   String? get email;
   Stream<void> get changes;
@@ -15,20 +17,37 @@ class SupabaseAuthRepository implements AuthRepository {
   // P05 supplies a new Turnstile challenge for EACH provider request. A token
   // consumed by /otp must never be reused by the first-login /resend fallback.
   final Future<String?> Function()? requestChallenge;
+  int _generation = 0;
+  void cancelRequest() => _generation++;
+  Future<String?> _challenge(String? supplied) async {
+    if (requestChallenge == null) return supplied;
+    final token = await requestChallenge!();
+    if (token == null || token.isEmpty || token.length > 2048) {
+      throw const ChallengeException();
+    }
+    return token;
+  }
+
   @override
   String? get email => client.auth.currentUser?.email;
   @override
   Stream<void> get changes => client.auth.onAuthStateChange.map((_) {});
   @override
   Future<void> requestLink(String email, {String? captchaToken}) async {
+    final generation = _generation;
+    Future<String?> challenge(String? supplied) async {
+      if (generation != _generation) throw const ChallengeException();
+      final token = await _challenge(supplied);
+      if (generation != _generation) throw const ChallengeException();
+      return token;
+    }
+
     try {
       await client.auth.signInWithOtp(
         email: email.trim().toLowerCase(),
         shouldCreateUser: false,
         emailRedirectTo: callback,
-        captchaToken: requestChallenge == null
-            ? captchaToken
-            : await requestChallenge!(),
+        captchaToken: await challenge(captchaToken),
       );
     } on AuthException catch (error) {
       if (error.code != 'signup_disabled') rethrow;
@@ -43,7 +62,7 @@ class SupabaseAuthRepository implements AuthRepository {
         type: OtpType.signup,
         email: email.trim().toLowerCase(),
         emailRedirectTo: callback,
-        captchaToken: await requestChallenge?.call(),
+        captchaToken: await challenge(null),
       );
     }
   }

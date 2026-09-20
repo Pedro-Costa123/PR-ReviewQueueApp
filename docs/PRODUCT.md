@@ -1,6 +1,10 @@
 # Product
 
-Last updated: 2026-09-18. Owner: Pedro Costa. Stage: P04 local authentication and P04A root-path migration implemented alongside the P02 fictional queue and P03 database foundation. Queue data remains disconnected. The dedicated production subdomain is confirmed; only its local root-path equivalent is verified. Demo content and preparatory schema fields illustrate proposals without confirming them.
+Last updated: 2026-09-20. Owner: Pedro Costa. Stage: P05 controlled hosted
+authentication trial complete, ready for review. P06 invitations/teams/profiles is
+next when selected. Inbox placement remains a release follow-up. Queue data
+remains fictional and disconnected. The production subdomain is confirmed but
+not published. Demo content and preparatory schema fields remain proposals.
 
 ## Problem and outcome
 

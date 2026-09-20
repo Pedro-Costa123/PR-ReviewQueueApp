@@ -16,6 +16,7 @@ class _SignInPageState extends State<SignInPage> {
   final _form = GlobalKey<FormState>();
   @override
   void dispose() {
+    widget.auth?.cancelChallenge?.call();
     _email.dispose();
     super.dispose();
   }
@@ -56,8 +57,10 @@ class _SignInPageState extends State<SignInPage> {
               child: const Text('Sign out'),
             ),
           ] else ...[
-            const Text(
-              'Local authentication preview. Use a provisioned @example.test address; links appear in the local inbox.',
+            Text(
+              auth.hostedTrial
+                  ? 'Developer sign-in trial. Use an invited trial email. Complete verification when prompted to request your link.'
+                  : 'Local authentication preview. Use a provisioned @example.test address; links appear in the local inbox.',
             ),
             const SizedBox(height: 16),
             TextFormField(
@@ -144,6 +147,8 @@ class _SignInPageState extends State<SignInPage> {
           Text(
             widget.auth == null
                 ? 'Fictional people and entries. No account or authentication session is created.'
+                : widget.auth!.hostedTrial
+                ? 'Controlled developer trial. Team onboarding and queue actions are not available yet.'
                 : 'Local mail only. Team invitations and queue actions are coming in later steps.',
             style: TextStyle(fontSize: 12),
           ),

@@ -3,9 +3,15 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 import 'auth_repository.dart';
+import 'challenge.dart';
 
 class AuthController extends ChangeNotifier {
-  AuthController(this.repository, {String? callback}) : _pending = callback {
+  AuthController(
+    this.repository, {
+    String? callback,
+    this.hostedTrial = false,
+    this.cancelChallenge,
+  }) : _pending = callback {
     _subscription = repository.changes.listen(
       (_) => notifyListeners(),
       onError: (Object error) {
@@ -19,10 +25,18 @@ class AuthController extends ChangeNotifier {
     }
   }
   final AuthRepository repository;
+  final bool hostedTrial;
+  final void Function()? cancelChallenge;
   late final StreamSubscription<void> _subscription;
   String? _pending;
   String? message;
   bool busy = false;
+  bool _disposed = false;
+  @override
+  void notifyListeners() {
+    if (!_disposed) super.notifyListeners();
+  }
+
   bool get hasPendingLink => _pending != null;
   String? get email => repository.email;
   static const acknowledgement =
@@ -35,11 +49,13 @@ class AuthController extends ChangeNotifier {
     notifyListeners();
     try {
       await repository.requestLink(email, captchaToken: captchaToken);
+      message = acknowledgement;
+    } on ChallengeException {
+      message = 'Verification did not complete. Choose Send sign-in link to try again.';
     } catch (_) {
-      /* Same acknowledgement for provider eligibility/rate errors. */
+      message = acknowledgement;
     } finally {
       busy = false;
-      message = acknowledgement;
       notifyListeners();
     }
   }
@@ -84,6 +100,8 @@ class AuthController extends ChangeNotifier {
 
   @override
   void dispose() {
+    _disposed = true;
+    cancelChallenge?.call();
     _subscription.cancel();
     super.dispose();
   }

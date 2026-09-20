@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pr_review_queue/features/auth/auth_controller.dart';
 import 'package:pr_review_queue/features/auth/auth_repository.dart';
 import 'package:pr_review_queue/features/auth/sign_in_page.dart';
+import 'package:pr_review_queue/features/auth/challenge.dart';
 
 class FakeAuth implements AuthRepository {
   @override
@@ -14,9 +15,11 @@ class FakeAuth implements AuthRepository {
   Stream<void> get changes => events.stream;
   int requests = 0, confirmations = 0;
   bool fail = false;
+  bool challengeFails = false;
   @override
   Future<void> requestLink(String email, {String? captchaToken}) async {
     requests++;
+    if (challengeFails) throw const ChallengeException();
     if (fail) throw StateError('private provider detail');
   }
 
@@ -36,6 +39,21 @@ class FakeAuth implements AuthRepository {
 }
 
 void main() {
+  test(
+    'verification failure has a recoverable message and allows another request',
+    () async {
+      final repository = FakeAuth()..challengeFails = true;
+      final controller = AuthController(repository, hostedTrial: true);
+      await controller.requestLink('member@example.test');
+      expect(controller.message, contains('Verification did not complete'));
+      expect(controller.busy, isFalse);
+      repository.challengeFails = false;
+      await controller.requestLink('member@example.test');
+      expect(controller.message, AuthController.acknowledgement);
+      controller.dispose();
+      await repository.events.close();
+    },
+  );
   test(
     'link waits for user confirmation, is consumed once and can be cancelled',
     () async {

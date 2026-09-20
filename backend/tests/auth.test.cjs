@@ -46,6 +46,45 @@ test('public signup denied and unknown addresses cannot be provisioned through O
   assert.ok((await auth('otp', { email, create_user: true })).status >= 400);
   assert.equal(scalar(`select count(*) from auth.users where email='${email}'`), '0');
 });
+test('operator trial admission verifies the first identity without any team or pre-confirmation', async () => {
+  const user = await provision('uninvited');
+  scalar(`insert into private.auth_trial_admissions(slot,user_id,email) values(1,'${user.id}','${user.email}')`);
+  assert.equal((await auth(`resend?redirect_to=${encodeURIComponent(callback)}`, { email: user.email, type: 'signup' })).status, 200);
+  assert.equal(scalar(`select email_confirmed_at is null from auth.users where id='${user.id}'`), 't');
+  const token_hash = new URLSearchParams(new URL(await linkFor(user.email)).hash.slice(1)).get('token_hash');
+  const verified = await auth('verify', { token_hash, type: 'email' });
+  assert.equal(verified.status, 200);
+  assert.equal(scalar(`select count(*) from public.team_memberships where user_id='${user.id}'`), '0');
+  const response = await fetch(`${stack.API_URL}/rest/v1/teams?select=id`, {
+    headers: { apikey: stack.ANON_KEY, Authorization: `Bearer ${verified.data.access_token}` } });
+  assert.deepEqual(await response.json(), []);
+  scalar(`update private.auth_trial_admissions set revoked_at=now() where slot=1`);
+  const budget = scalar(`select count(*) from private.email_quota_reservations where recipient='${user.email}'`);
+  assert.ok((await auth(`otp?redirect_to=${encodeURIComponent(callback)}`, { email: user.email, create_user: false })).status >= 400);
+  assert.equal(scalar(`select count(*) from private.email_quota_reservations where recipient='${user.email}'`), budget);
+  scalar('delete from private.auth_trial_admissions');
+});
+test('trial admissions deny client access, expiry, forged email and previously revoked memberships', async () => {
+  const user = await provision('uninvited');
+  for (const role of ['anon','authenticated','service_role']) {
+    for (const command of ['select * from private.auth_trial_admissions',
+      `insert into private.auth_trial_admissions(slot,user_id,email) values(1,'${user.id}','${user.email}')`]) {
+      assert.notEqual(roleSql(role, user.id, command).status, 0);
+    }
+  }
+  const reserve = () => roleSql('service_role', user.id, `select public.reserve_auth_email('${randomUUID()}','${'a'.repeat(64)}','${user.id}','${user.email}','signup')`);
+  scalar(`insert into private.auth_trial_admissions(slot,user_id,email,created_at,expires_at)
+    values(1,'${user.id}','${user.email}',now()-interval '2 days',now()-interval '1 day')`);
+  assert.notEqual(reserve().status, 0);
+  scalar(`update private.auth_trial_admissions set created_at=now(),expires_at=now()+interval '1 hour',email='forged@example.test' where slot=1`);
+  assert.notEqual(reserve().status, 0);
+  scalar(`update private.auth_trial_admissions set email='${user.email}' where slot=1;
+    insert into public.team_memberships(team_id,user_id,role,active) values('${team}','${user.id}','member',false)`);
+  assert.notEqual(reserve().status, 0);
+  assert.equal(scalar(`select count(*) from private.email_quota_reservations where recipient='${user.email}'`), '0');
+  assert.notEqual(sql(`insert into private.auth_trial_admissions(slot,user_id,email) values(4,'${user.id}','${user.email}')`).status, 0);
+  scalar('delete from private.auth_trial_admissions');
+});
 
 test('obsolete same-origin callback path is rejected without delivery or quota use', async () => {
   const user = await provision();

@@ -1,8 +1,8 @@
 # Ordered implementation backlog
 
-Updated: 2026-09-18. **Execute one selected item, verify it, update the docs, and stop.** Do not turn this file into a single full-app implementation prompt.
+Updated: 2026-09-20. **Execute one selected item, verify it, update the docs, and stop.** Do not turn this file into a single full-app implementation prompt.
 
-The owner selected `https://reviews.pedro-costa.dev/`. P04A's local root-path migration is complete; hosted work remains a separate owner-selected stage.
+The owner selected `https://reviews.pedro-costa.dev/` and subsequently authorized P05's hosted trial. P05 is complete for the controlled trial, with delivery limitations recorded. Stop for review; P06 is next when selected.
 
 `Complete` means the item's actual deliverable exists. `Ready` means the next item can start when requested. Later items remain planned, not authorized as a batch. Smaller UI/product defaults can be settled at the item that needs them.
 
@@ -14,8 +14,8 @@ The owner selected `https://reviews.pedro-costa.dev/`. P04A's local root-path mi
 | P03 | Local Supabase schema and team authorization | Complete; ready for owner review | P02 |
 | P04 | Magic-link flow and guarded email delivery locally | Complete locally; ready for owner review | P03 |
 | **P04A** | **Local root-path and callback migration** | **Complete locally; ready for owner review** | P04 |
-| P05 | Small hosted authentication/cost validation | Next after P04A review; requires owner-selected hosted trial/account access | P04A |
-| P06 | Admin invitations, teams, and profiles | Planned | P05 |
+| **P05** | **Small hosted authentication/cost validation** | **Complete for controlled trial; ready for owner review** | P04A |
+| P06 | Admin invitations, teams, and profiles | Ready; not started | P05 |
 | P07 | Create/read/edit queue entries and protected deletion | Planned | P06 |
 | P08 | Sprint/priority ordering and admin reordering | Planned | P07 |
 | P09 | Comments and per-user review signals | Planned | P08 |
@@ -70,7 +70,7 @@ three preview HTTP tests, analysis and SQL lint. Chrome verified captured-mail
 confirmation, cancellation, reload, sign-out, root/hash routes and narrow preview.
 In-page callback navigation found during QA is now scrubbed and rejected; normal
 email confirmation uses a new document. Commands/evidence are in AUTH and STATUS.
-Stop here for review; P05 has not started.
+P05 was subsequently selected by the owner; its current progress is below.
 
 ## P05 — Small hosted authentication/cost validation
 
@@ -79,6 +79,17 @@ Stop here for review; P05 has not started.
 **Acceptance:** Controlled developer inboxes receive a single valid magic link; expired/replayed links and email scanners are handled; signup disabled still allows invited login; direct Auth calls enforce CAPTCHA and hook budgets. Capture actual sanitized provider usage/configuration and delivery observations. Generic user acknowledgement does not expose team membership. No load testing of real email.
 
 **Boundary:** If provider setup needs user action, finish the local code/config/runbook first and identify the specific missing action. App-subdomain DNS and Pages publication remain P13; email-domain verification is separate. Do not change nameservers or proceed to queue implementation until this sign-in path works.
+
+**Completed 2026-09-20 for the controlled trial:** Resend/Turnstile implementation,
+bounded operator admissions, Free provider setup and usage, three single-message
+deliveries, first/confirmed-user login, expiry/replay, reload/sign-out, passive
+scanner rendering, live CAPTCHA reuse rejection and revoked-admission denial.
+Local tests cover broader authorization, signatures, budgets and concurrency.
+The sending trial is closed: zero active admissions/sessions/memberships; no extra
+mail from denial tests. Evidence and limits are in [HOSTED_AUTH](HOSTED_AUTH.md)
+and [STATUS](STATUS.md). All three emails reached Junk despite SPF/DMARC pass;
+investigate classification and retest the final HTTPS callback before rollout.
+P06 is ready when selected. No subsequent item is automatically authorized.
 
 ## P06 — Invitations, teams, and profiles
 

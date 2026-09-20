@@ -1,6 +1,10 @@
 # Architecture
 
-Updated: 2026-09-18. P04 local authentication, signed hook and mocked delivery are implemented. P04A migrated and verified the local path/callback at `/`, preparing for reviews.pedro-costa.dev. Real delivery, queue behavior and deployment remain planned. No components deployed. [AUTH](AUTH.md) documents the tested callback, session, provider corrections and runbook.
+Updated: 2026-09-20. P04/P04A local authentication and root callbacks are verified.
+P05 adds the Resend adapter, Turnstile bridge and strict loopback hosted-trial
+configuration. The controlled hosted trial passed; the temporary admission is
+revoked. Inbox placement and app publication remain release work. [AUTH](AUTH.md) covers local development;
+[HOSTED_AUTH](HOSTED_AUTH.md) records trial configuration and live evidence.
 
 ## Design
 
@@ -39,7 +43,11 @@ Sources: [GitHub custom-domain setup](https://docs.github.com/en/pages/configuri
 
 P04A now uses `http://127.0.0.1:4173/` consistently for the build/preview, early callback handler, client gate, Supabase local Site URL, sender validation, startup environment and tests. The old preview prefix returns 404 without a redirect; callback guards reject old paths and other origins. AUTH/frontend README contain tested replacement commands. This is a working local root build, not a deployed or hosted-auth-enabled subdomain.
 
-P05 will prepare the exact production Site URL/callback `https://reviews.pedro-costa.dev/`, approved local trial URLs, and Turnstile hostname. Validate the live production callback in P13. Do not accept wildcard redirects or leave the old portfolio URL authorized. Do not forward login fragments or sessions through the old origin.
+P05 uses only `http://127.0.0.1:4173/` and a separate managed Turnstile widget for
+`127.0.0.1`. Production Site URL/callback `https://reviews.pedro-costa.dev/` and
+its separate widget are prepared in the runbook, with code/config activation and
+verification deferred to P12/P13. Current production mode fails closed. Do not
+accept wildcard/portfolio redirects or forward login fragments between origins.
 
 GitHub Pages serves static files and does not run Supabase/backend code. It has restrictions on commercial SaaS and sensitive transactions. This plan is for the requested internal utility, not a commercial SaaS launch; revisit hosting if the use changes. See [GitHub Pages limits](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits).
 
@@ -126,6 +134,21 @@ Avoid a globally readable email column in profiles. If team admins need a roster
 The hook is important because direct calls to the public Auth API can bypass this Flutter UI. Budget and invitation checks must still run for every supported email action. Unsupported email actions fail closed. The hook is available on Supabase Free. [Auth Hooks](https://supabase.com/docs/guides/auth/auth-hooks), [Send Email Hook](https://supabase.com/docs/guides/auth/auth-hooks/send-email-hook)
 
 P04 proved server-provisioned identities can receive provider-generated links with signup disabled using the confirmation-resend correction. P05 must validate the hosted equivalent, CAPTCHA and real mail-scanner behavior. If a provider flow needs adjustment, record a small decision change before queue implementation. Initial app-invite expiry and short-lived sign-in-token expiry are different clocks.
+
+## P05 trial implementation
+
+P05's first trial identity uses an operator-only admission because team bootstrap
+requires an already verified admin. `private.auth_trial_admissions` has at most
+three identity/email pairs, each expiring within 24 hours. The signed hook also
+requires a configured recipient allowlist. Admissions apply only to users with no
+membership rows and never grant team access; existing invite/member eligibility,
+atomic quotas and event idempotency remain mandatory. Remove this temporary route
+before production. This does not implement P06 invitation claiming.
+
+The Turnstile bridge loads only when requesting a link and opens a themed native
+dialog. Each Auth attempt gets a new token; cancellation prevents late fallback.
+The Resend adapter sends one plain-text provider-generated link to a fixed HTTPS
+endpoint with event idempotency, bounded timeouts and no automatic retry. See D28.
 
 ## Mutations and consistency
 

@@ -62,3 +62,16 @@ test('sender failure consumes the reservation with unknown outcome and no retry'
   assert.equal((await handler(request())).status, 503);
   assert.equal(sends, 1);
 });
+test('trial allowlist denies other recipients before reserving or sending; eligibility still runs for allowed recipients', async () => {
+  let calls = 0;
+  const handler = createHandler({ secret, callback, allowedRecipients: ['developer@example.com'],
+    rpc: async () => { calls++; throw new Error('not invited'); }, send: async () => assert.fail() });
+  assert.equal((await handler(request())).status, 403);
+  assert.equal(calls, 0);
+  const body = JSON.stringify({ ...payload, user: { ...payload.user, email: ' Developer@Example.Com ' } });
+  // Payload validation rejects whitespace; normalization is tested without it.
+  assert.equal((await handler(request(body))).status, 400);
+  const allowed = JSON.stringify({ ...payload, user: { ...payload.user, email: 'Developer@Example.Com' } });
+  assert.equal((await handler(request(allowed))).status, 403);
+  assert.equal(calls, 1);
+});

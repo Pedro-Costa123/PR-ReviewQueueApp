@@ -4,6 +4,7 @@ type Payload = { user: { id: string; email: string }; email_data: {
 export type Dependencies = {
   secret: string;
   callback: string;
+  allowedRecipients?: string[];
   rpc: (name: string, args: Record<string, unknown>) => Promise<any>;
   send: (message: { to: string; link: string; id: string }) => Promise<void>;
 };
@@ -64,6 +65,7 @@ export function createHandler(deps: Dependencies) {
         || !/^[a-zA-Z0-9_-]{32,256}$/.test(data.token_hash)
         || data.redirect_to !== deps.callback) return failure(400);
     } catch { return failure(400); }
+    if (deps.allowedRecipients && !deps.allowedRecipients.includes(payload.user.email.trim().toLowerCase())) return failure(403);
     const digest = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)),
       b => b.toString(16).padStart(2, '0')).join('');
     let state: string;

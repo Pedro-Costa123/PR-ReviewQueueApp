@@ -59,6 +59,29 @@ load-time scrubber. History/hash callback events now scrub and reject that input
 opening the email link in a new document remains the supported confirmation flow.
 No hosted gate was widened and no hosting/provider decision changed.
 
+## D28 — Bounded hosted authentication trial (2026-09-18/19)
+
+The owner selected P05, named the existing Supabase Free project, approved
+`auth.pedro-costa.dev` as the dedicated sender, added its Namecheap verification
+records, and created a managed Turnstile widget. This authorizes the developer
+trial, not production Pages publication or a paid plan.
+
+Use explicit `hosted-trial` mode at the exact loopback root. Keep local Mailpit
+isolated and reject production mode until P12/P13. The reviewed sender uses Resend
+event idempotency and one bounded attempt; Turnstile tokens are fresh per Auth call.
+
+Implementation correction: the first hosted identity cannot receive a team invite
+before a verified bootstrap admin exists. An operator-only, maximum-three-slot,
+24-hour admission bound to an unconfirmed Auth identity/email permits guarded
+trial mail without pre-confirming email or copying fixtures. It grants no team
+access and cannot bypass existing membership revocation. Remove admissions before
+production. P06 still owns real invitation/provisioning/claiming behavior.
+
+The controlled trial completed on 2026-09-20 with real login, delivery, CAPTCHA
+reuse denial, revoked-admission denial and passive-rendering checks. Three messages
+reached Junk despite SPF/DMARC pass; retain this release follow-up. Admission is
+revoked. See [HOSTED_AUTH](HOSTED_AUTH.md) for evidence and limits. P06 is next.
+
 ## Alternatives evaluated
 
 P02 package references: [go_router](https://pub.dev/packages/go_router), [shared_preferences](https://pub.dev/packages/shared_preferences), checked 2026-09-14. Resolved versions were verified against the installed Flutter 3.47.4 / Dart 3.13.3 SDK. Provider, pricing, and product proposals have not been promoted to confirmed requirements by implementing the shell.

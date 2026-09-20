@@ -2,6 +2,42 @@
 
 Checked: **2026-09-14** using official provider documentation. Prices below are provider-listed USD, before applicable tax or currency conversion. €0 means zero additional service charges on the selected free plans, not free domain renewal or a guarantee of permanent pricing.
 
+## P05 recheck (2026-09-18)
+
+Official pricing rechecked before hosted setup:
+[Supabase Free](https://supabase.com/pricing) still lists 500 MB database,
+50,000 MAU, 5 GB egress and 500,000 Edge invocations, with two active projects,
+inactivity pausing and no automatic backups. The connected organization reports
+Free and the selected existing project is in Frankfurt. Schema setup added no
+fixtures/users. On 2026-09-20, the organization's Free usage dashboard showed
+25.87 MB database size (summary 0.027/0.5 GB), 1/50,000 MAU,
+2/500,000 Edge invocations, 0.00/5 GB displayed egress, and zero Storage/Realtime
+usage. No quota exceeded or overage billing. These rounded/delayed metrics can
+lag recent trial requests by an hour or more; they are not per-request accounting.
+
+[Resend Free](https://resend.com/pricing) lists 3,000 emails/month, 100/day and
+three domains; paid entry remains $20/month. The owner-approved sender domain is
+verified. On 2026-09-19 the dashboard confirmed Free, 0/100 daily and 0/3,000
+monthly transactional emails used, one of three domains, and pay-as-you-go off.
+On 2026-09-20, the first controlled send produced one delivered message, zero
+failures/bounces and one charged application reservation. The owner reported Junk
+placement. This single observation does not establish reliable inbox placement.
+The second controlled request also produced one message in Junk and brought the
+application's sent-reservation total to two; its link successfully signed in.
+The refreshed Resend dashboard confirmed 2/100 daily and 2/3,000 monthly usage,
+one of three domains, pay-as-you-go off; metrics reported two delivered and zero
+failed/bounced messages.
+Final controlled totals on 2026-09-20: three sent/delivered, zero failed/bounced,
+and three application reservations. All three landed in Junk. The temporary mail
+admission was revoked after testing; no additional sends were made for placement.
+
+[Turnstile Free](https://developers.cloudflare.com/turnstile/plans/) supports
+20 widgets, ten hostnames per widget and unlimited challenges. The owner created
+one managed loopback widget, without pre-clearance or a DNS-provider change.
+No paid plan, add-on or automatic upgrade was enabled. The successful second-send
+hook returned HTTP 200 in 1,119 ms according to hosted invocation details; this
+single observation is not a latency distribution. Keep the conservative app budgets below.
+
 ## P04 recheck (2026-09-17)
 
 Official pages rechecked before authentication implementation: [Supabase pricing](https://supabase.com/pricing),

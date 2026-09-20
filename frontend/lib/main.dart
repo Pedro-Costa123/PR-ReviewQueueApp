@@ -5,7 +5,8 @@ import 'shared/theme_controller.dart';
 import 'features/auth/auth_controller.dart';
 import 'features/auth/auth_repository.dart';
 import 'features/auth/browser_session.dart';
-import 'features/auth/local_auth_config.dart';
+import 'features/auth/auth_config.dart';
+import 'features/auth/challenge.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -16,12 +17,21 @@ Future<void> main() async {
   AuthController? auth;
   const api = String.fromEnvironment('SUPABASE_URL');
   const key = String.fromEnvironment('SUPABASE_ANON_KEY');
+  const publicKey = String.fromEnvironment('SUPABASE_PUBLISHABLE_KEY');
+  const mode = String.fromEnvironment('AUTH_MODE', defaultValue: 'local');
+  const siteKey = String.fromEnvironment('TURNSTILE_SITE_KEY');
   final pending = takeAuthCallback();
-  // P04 is local-only. No hosted login with CAPTCHA silently omitted.
-  if (allowsLocalAuth(api: api, key: key, page: Uri.base)) {
+  final config = AuthConfig.resolve(
+    mode: mode,
+    api: api,
+    key: publicKey.isEmpty ? key : publicKey,
+    siteKey: siteKey,
+    page: Uri.base,
+  );
+  if (config != null) {
     await Supabase.initialize(
       url: api,
-      publishableKey: key,
+      publishableKey: config.key,
       debug: false,
       authOptions: FlutterAuthClientOptions(
         authFlowType: AuthFlowType.implicit,
@@ -29,9 +39,23 @@ Future<void> main() async {
         localStorage: createSessionStorage(),
       ),
     );
+    final repository = SupabaseAuthRepository(
+      Supabase.instance.client,
+      config.callback,
+      requestChallenge: config.hostedTrial
+          ? () => requestChallenge(config.siteKey!, theme.mode.name)
+          : null,
+    );
     auth = AuthController(
-      SupabaseAuthRepository(Supabase.instance.client, localAuthCallback),
+      repository,
       callback: pending,
+      hostedTrial: config.hostedTrial,
+      cancelChallenge: config.hostedTrial
+          ? () {
+              repository.cancelRequest();
+              cancelChallenge();
+            }
+          : null,
     );
   }
   runApp(ReviewQueueApp(theme: theme, auth: auth));

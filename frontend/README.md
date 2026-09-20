@@ -1,6 +1,9 @@
 # Frontend
 
-P02 is implemented: a Flutter Web shell with read-only fictional data, a sign-in placeholder, two demo teams, profile/archive placeholders, responsive navigation, and a saved theme preference. P04 adds optional local Supabase authentication; queue writes remain unavailable. Follow [the P04 runbook](../docs/AUTH.md) to build the authentication preview.
+The Flutter Web shell has read-only fictional queues and optional local Supabase
+authentication. P05 adds an explicitly configured hosted trial with a lazy themed
+Turnstile dialog. Queue writes remain unavailable. Use [AUTH](../docs/AUTH.md) for
+local login or [HOSTED_AUTH](../docs/HOSTED_AUTH.md) for the controlled trial.
 
 Verified SDK: **Flutter 3.47.4 stable / Dart 3.13.3** on Windows. Only the web platform is scaffolded. Application dependencies and the lockfile are pinned; no global backend tooling is required.
 
@@ -8,7 +11,8 @@ Verified SDK: **Flutter 3.47.4 stable / Dart 3.13.3** on Windows. Only the web p
 
 The production target is now `https://reviews.pedro-costa.dev/` (confirmed
 2026-09-18), with base href `/`. P04A migrated and tested the local preview and
-callback flow together. These commands are local only; hosted login remains P05.
+callback flow together. These commands build the disconnected local demo;
+HOSTED_AUTH records the completed P05 trial and its separate configuration.
 
 From `frontend/` in PowerShell:
 
@@ -29,10 +33,15 @@ dart format --output=none --set-exit-if-changed lib test
 flutter analyze
 flutter test
 node --check tool/serve.cjs
-node --test test/auth_callback.test.cjs
+node --test test/auth_callback.test.cjs test/turnstile.test.cjs
 ```
 
-Sixteen Flutter tests and six JavaScript callback tests cover authentication and the existing shell. With the release preview running, `node --test test/preview.test.cjs` adds three HTTP checks for the root build, assets, old-path rejection and traversal. The original nine Flutter tests cover theme default/restoration/storage failure, demo navigation, and narrow/direct/unknown routes. See [Status](../docs/STATUS.md) for dated browser/keyboard results and limitations.
+Twenty Flutter tests and twelve JavaScript callback/widget tests cover auth,
+configuration, cancellation and the existing shell. With the release preview
+running, `node --test test/preview.test.cjs` adds three HTTP checks. For isolated
+widget QA run `node tool/turnstile-preview.cjs` and open port 4175 (`/narrow` for
+a 390 by 844 frame). Public dummy widgets never reach Auth or the release artifact.
+See [Status](../docs/STATUS.md) for dated browser/keyboard evidence and limitations.
 
 ## Structure and boundaries
 
@@ -46,4 +55,6 @@ The default demo stores only `pr_review_queue.theme`. The configured P04 preview
 
 The generated Flutter favicon/app icons remain temporary. The SDK emits a missing Cupertino font-family warning during icon tree shaking; this shell uses Material icons, which render correctly in the inspected browser. No native-platform tooling is needed.
 
-Product behavior is in [Product](../docs/PRODUCT.md) and architecture in [Architecture](../docs/ARCHITECTURE.md). P04A completes the local root-path authentication preview; the demo queue is unchanged. Stop for review. **P05** hosted validation is next, requiring owner selection and provider access.
+Product behavior is in [Product](../docs/PRODUCT.md) and architecture in
+[Architecture](../docs/ARCHITECTURE.md). P05 is complete for the controlled trial;
+the demo queue is unchanged. P06 is next when selected after review.

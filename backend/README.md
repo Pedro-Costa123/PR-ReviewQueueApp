@@ -3,9 +3,15 @@
 P03 implements the **local database and authorization foundation**. P04 adds local
 magic-link authentication, a signed Edge hook, guarded quotas and Mailpit delivery.
 The Flutter sign-in screen can connect locally; the queue remains fictional.
-There is no hosted project, real email sender or queue mutation API.
+P05 adds a gated Resend sender, bounded operator trial admissions and mock sender
+tests and a CLI-backed operator provisioning helper. The existing Free hosted
+project has the three migrations and the signed hook deployed/enabled. Controlled
+delivery/login and live denial checks passed; the trial admission is now revoked.
+Inbox placement remains a release follow-up. No queue mutation API.
 
 Follow [AUTH](../docs/AUTH.md) for the complete P04 setup/test/preview sequence.
+Use [HOSTED_AUTH](../docs/HOSTED_AUTH.md) for P05; never run local fixtures/tests
+against the hosted project or link this local test checkout to it.
 
 The researched proposal is Supabase Postgres/Auth with row-level security, SQL functions, and TypeScript Edge Functions. Resend delivers magic links through a guarded Send Email Hook. GitHub Pages serves the public frontend; it does not replace database authorization.
 
@@ -125,8 +131,8 @@ P04A is complete locally: Auth Site URL and the sender's exact callback use
 `npm start` migrates the known old `.env` callback without rotating the secret;
 stop an already-running stack first and restart the function terminal afterward.
 The full replacement sequence and browser checks are in AUTH/STATUS.
-Stop for P04A review. **P05** hosted authentication/cost validation is next,
-requiring owner selection and provider access.
+Continue **P05** hosted authentication/cost validation from HOSTED_AUTH;
+provider setup and controlled live acceptance remain the current boundary.
 The frontend subdomain does not require a paid Supabase custom domain.
 See [NEXT](../docs/NEXT.md), [STATUS](../docs/STATUS.md),
 [ARCHITECTURE](../docs/ARCHITECTURE.md), and [SECURITY](../docs/SECURITY.md).

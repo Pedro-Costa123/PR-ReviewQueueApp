@@ -15,17 +15,16 @@ The repository documents are the shared source of context. A planning conversati
 
 `AGENTS.md` instructs Codex to read this context and work incrementally. It does not synchronize repositories. Other checkouts need the corresponding files/commit/branch, and any conversation without repository access must be given the relevant document contents. [Official AGENTS.md guidance](https://learn.chatgpt.com/docs/agent-configuration/agents-md)
 
-## Prompt for reviewing the completed item
+## Prompt for the next item when selected
 
 ```text
 Work in the existing PR-ReviewQueueApp repository. Read AGENTS.md and the
-project docs, especially STATUS.md and NEXT.md. Review the completed local
-P04A root-path migration and docs/AUTH.md's tested runbook. Check that exact
-callbacks, early cleanup, local-only gates, explicit confirmation, signup
-restrictions and hook budgets remain intact. P05 is next but requires the
-owner to select the hosted trial and provide access through secret storage.
-Do not begin P05, configure hosted services,
-change DNS/Pages/repository visibility, send real email or deploy the app.
+project docs, especially STATUS.md, NEXT.md and HOSTED_AUTH.md. Implement only
+P06: admin invitations, teams, and profiles. P05's trial admission is revoked;
+preserve that state and implement real invitations instead of extending the trial.
+Keep credentials in provider/secret storage, exact callbacks, explicit confirmation,
+disabled signup, server-side membership and email budgets. Verify P06, update
+the docs and stop for review. Do not start P07 or publish the app.
 ```
 
 ## Prompt for any later item
@@ -48,17 +47,21 @@ The final reply should name the completed item, give the useful result/link, sum
 
 ## Current handoff
 
-P00-P04A are complete locally. See [STATUS](STATUS.md) for
-verification and [AUTH](AUTH.md) for local setup, the first-login resend correction,
-sessionStorage/cross-tab behavior, budget/idempotency rules and CAPTCHA design.
-The owner selected `https://reviews.pedro-costa.dev/` on 2026-09-18. P04A now
-verifies the local root-path equivalent at `http://127.0.0.1:4173/`. The tested
-runbooks use `/`; P02-P04 prefix results remain dated history in STATUS.
-Stop for P04A review. No real mail, cloud configuration, DNS/Pages settings,
-repository visibility/name changes or deployment occurred.
+P00-P04A are complete locally; P05 is complete for the controlled hosted trial
+and ready for review. P06 is the next ready item, not started. See
+[HOSTED_AUTH](HOSTED_AUTH.md) for provider state, acceptance evidence and limits.
+Three requested messages arrived in Junk; recipient SPF/DMARC passed on the third.
+First and confirmed-user login, reload/sign-out, link expiry/replay, CAPTCHA reuse
+denial, passive scanner rendering and failure recovery passed. The sending trial
+is closed: admission revoked, zero sessions/memberships, further mail denied.
+Inbox placement remains a release follow-up; do not send more mail merely to chase
+placement or assume the admission is still active. The final artifact is the
+disconnected demo; rebuild explicit trial configuration only when needed.
 
-P03 is committed as c2b44c8 and P04 as 1ff6c13. P04A began at bd8e62c (the
-hosting-decision docs commit) with a clean worktree and is uncommitted;
-no remote check was made.
-P05 requires owner-selected hosted setup/provider access. Queue behavior and
-invitation claiming remain later work.
+[AUTH](AUTH.md) retains the local runbook. Hosted/local builds share the exact
+loopback root but use distinct explicit modes. Production publication at
+`https://reviews.pedro-costa.dev/` remains P12/P13. The queue is still fictional;
+invitation claiming and all subsequent queue work remain later items.
+
+P03 is committed as c2b44c8, P04 as 1ff6c13 and P04A as 99c68f3. P05 changes
+are uncommitted. No push or app publication has been performed.

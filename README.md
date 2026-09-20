@@ -2,7 +2,11 @@
 
 A private team queue that keeps pull requests visible, makes sprint priorities clear, and records review feedback and archived work.
 
-**Current stage: P04A local root-path authentication migration complete, ready for review.** The Flutter sign-in screen connects to local Supabase; the queue remains fictional. Real email, hosted setup, queue mutations and deployment remain future work. Work proceeds one backlog item at a time.
+**Current stage: P05 controlled hosted trial complete; ready for review.**
+Resend/Turnstile, hosted login and denial checks passed. Inbox placement remains
+a release follow-up; P06 invitations/teams/profiles is next when selected.
+The hosted schema is applied; the queue remains fictional and read-only. No
+production app is published. Work proceeds one backlog item at a time.
 
 ## Project documentation
 
@@ -16,6 +20,7 @@ A private team queue that keeps pull requests visible, makes sprint priorities c
 | [Costs](docs/COSTS.md) | Hosting/authentication comparison, quotas, estimates, and sources |
 | [Security](docs/SECURITY.md) | Access rules, abuse controls, and launch checks |
 | [Local authentication](docs/AUTH.md) | P04 runbook, provider corrections, sessions, email guards and CAPTCHA design |
+| [Hosted authentication trial](docs/HOSTED_AUTH.md) | P05 configuration, provider state, evidence and limitations |
 | [Handoff](docs/HANDOFF.md) | How to continue the project across planning and implementation tasks |
 
 ## Proposed stack
@@ -29,7 +34,9 @@ A private team queue that keeps pull requests visible, makes sprint priorities c
 
 Flutter Web, magic links, the dedicated subdomain, Namecheap DNS, GitHub Pages, manual updates, sprint-first ordering, and multiple team membership are confirmed. The owner selected the subdomain on 2026-09-18 to separate the app's browser origin from the portfolio and PassGen. Supabase + Resend remains the researched backend recommendation. The estimated additional service cost is **€0/month within free-plan limits**; existing domain renewal is separate. Read [Costs](docs/COSTS.md) for limits and [Security](docs/SECURITY.md) for the origin boundary.
 
-P04A migrated and verified the local preview/build and authentication callbacks at `/`. Local authentication and captured mail remain restricted to the loopback development stack. No DNS, Pages, repository visibility or deployment setting changed.
+P04A verified local root callbacks. P05 adds a separately gated hosted trial at
+the same loopback root; the owner verified the dedicated email-sending domain at
+Namecheap. Pages, the production app hostname and repository visibility remain unchanged.
 
 ## Repository layout
 
@@ -44,7 +51,10 @@ LICENSE            Existing MIT license
 
 ## Start the next step
 
-Read [Status](docs/STATUS.md), then [Next](docs/NEXT.md). Review P04A using the [local authentication runbook](docs/AUTH.md); the [frontend demo commands](frontend/README.md) remain available. **P05's hosted authentication/cost validation** is next after review and requires owner selection and provider access. The [handoff instructions](docs/HANDOFF.md) describe that boundary.
+Read [Status](docs/STATUS.md), then [Next](docs/NEXT.md). Continue the selected
+**P05 hosted authentication/cost validation** using [the trial runbook](docs/HOSTED_AUTH.md).
+The [local authentication runbook](docs/AUTH.md) and [frontend demo commands](frontend/README.md)
+remain available. Complete live acceptance and stop for review before P06.
 
 Do not run the entire backlog in one task. Complete the selected item, verify its acceptance criteria, update the docs, and stop at its review boundary.
 

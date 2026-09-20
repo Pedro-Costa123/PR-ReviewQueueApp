@@ -1,13 +1,16 @@
 # Current status
 
-Updated: 2026-09-18.
+Updated: 2026-09-20.
 
 ## Current implementation
 
-P00-P04A are complete locally. **Stop for P04A review; P05 is next.** The
-Flutter queue remains fictional and read-only, while its sign-in screen can now
-authenticate against the local Supabase stack. No hosted project or production
-deployment exists. See [AUTH](AUTH.md) for the complete local runbook and decisions.
+P00-P04A are complete locally. **P05 is complete for the controlled hosted trial,
+ready for owner review.** P06 is next and has not started. The Flutter queue
+remains fictional and read-only. The selected Supabase Free project now has the
+three versioned migrations and one operator-provisioned trial identity, without
+fixtures or memberships. No production app is
+deployed. See [HOSTED_AUTH](HOSTED_AUTH.md) for the trial and [AUTH](AUTH.md) for
+local development.
 
 - P02 shell: desktop/narrow navigation, Atlas/Orbit fixtures, profile/archive
   placeholders, dark default and saved theme preference.
@@ -20,19 +23,134 @@ deployment exists. See [AUTH](AUTH.md) for the complete local runbook and decisi
 - P04 backend: signed local Edge Function, exact identity/email/invitation checks,
   service-only quota reservation/completion RPCs, atomic recipient/global rolling
   budgets, digest-bound event idempotency and conservative unknown outcomes.
-- Mail goes only to local Mailpit and fictional @example.test recipients. The
-  frontend and sender have explicit local-only gates. Test provisioning is outside
-  migrations/application builds; no fake application identity or token generator.
+- Default/local mail goes only to Mailpit and fictional @example.test recipients.
+  Explicit hosted-trial configuration enables Resend and Turnstile at the exact
+  loopback root, with one to three allowed recipients. Production mode is rejected.
+  Test provisioning remains outside migrations/application builds.
 - P04A: root-base preview/frame and build, exact root callbacks in frontend/Auth/
   sender, secret-preserving local environment migration, expanded callback and
   preview denial tests, and verified replacement runbook commands.
 
-Not implemented: hosted login/Resend/Turnstile widget, invitation admin/provisioning
-UI or claiming, real queue CRUD/reorder/comments/reviews/archive,
-CI, independent Pages release or deployment. P04 verifies identities
-but creates no team membership.
-P05 requires the owner to select the hosted trial and supply provider access/secrets
-through secret storage; no cloud, billing, DNS or real-email changes were made.
+Not complete: reliable Inbox placement and production-hostname acceptance,
+invitation admin/provisioning UI or claiming, real queue CRUD/reorder/comments/reviews/archive,
+CI, independent Pages release or deployment. Authentication creates no membership.
+
+## P05 implementation and evidence on 2026-09-18 through 2026-09-20
+
+- Added explicit trial client/sender configuration, a lazy themed Turnstile dialog
+  with cancellation and fresh tokens per Auth attempt, and a fixed Resend adapter
+  with signed-event idempotency, bounded timeouts and no automatic retries.
+- Added operator-only, three-slot, 24-hour identity/email admissions for first
+  trial login before a verified team admin exists. No API role can read/write
+  admissions; revoked members cannot use them. No profile or membership is created.
+- Clean local reset applied all three migrations. `npm test`: **19 passed**;
+  `npm run test:auth`: **28 passed**; `npm run test:unit`: **14 passed** (a subset
+  of the auth run). SQL lint passed. Tests cover authorization/concurrency,
+  admission expiry/revocation/forged pairs, allowlists, sender failure, config
+  rejection and duplicate delivery without real mail.
+- `flutter analyze` passed; **20 Flutter tests passed**. Callback/Turnstile Node
+  tests: **12 passed**; preview HTTP tests: **3 passed**. Default and configured
+  trial root release builds and Wasm dry runs passed; the pre-existing Cupertino font warning
+  remains. No dependency or lockfile change.
+- Chrome's isolated widget harness exercised real Cloudflare public test widgets,
+  success/failure, light/dark dialogs, cancellation with Enter/Escape and focus
+  restoration. The harness has no Auth client and is excluded from the artifact.
+  These checks do not prove server-side CAPTCHA enforcement.
+- Final browser console review exposed an async-loader `turnstile.ready()` error
+  hidden by subsequent attempts with the API already loaded. Replaced it with
+  Cloudflare's documented load callback; added the first-load regression test and
+  verified success on a fresh page with no new console errors. Narrow 390 by 844
+  dark layout, keyboard cancellation and desktop light/dark rendering were checked.
+- Supabase Free/EU project selected; all three migrations applied via MCP to an
+  initially empty project. Hosted checks confirm all 11 tables have RLS, no
+  admission grants to API roles and service-only mail reservation. Initially there
+  were zero users, teams or admissions. Migration timestamp mapping is in HOSTED_AUTH.
+- Disabled hosted public signup; anonymous sign-in and manual linking remain off,
+  email confirmation remains on. Set email expiry to 900 seconds and Site URL to
+  the exact loopback root; there are no additional redirects.
+- Owner approved `auth.pedro-costa.dev`, added the displayed Namecheap DNS records,
+  and Resend reports the domain and all four records verified. Receiving and
+  tracking are disabled. No paid service enabled.
+- Hosted security advisor reports four informational private-table/no-policy
+  findings and one warning for the intentional guarded membership RPC; reviewed
+  in SECURITY. Do not mistake these for a clean zero-warning report.
+- Owner created the real managed Turnstile widget and entered its secret in Auth.
+  Direct missing/invalid CAPTCHA probes on both `/otp` and `/resend` each returned
+  HTTP 400 `captcha_failed`. The owner's valid challenges led to one delivered
+  first-login message; final reused-token evidence is recorded below.
+- Owner stored Resend and hook-signing secrets directly in Supabase; all six
+  trial settings are stored. Deployed `send-auth-email` version 1; unsigned POST
+  returned 401 in 614 ms. Owner-authorized hook activation is verified enabled.
+- Resend Free usage before delivery: 0/100 daily and 0/3,000 monthly emails,
+  one of three domains, pay-as-you-go off. No real message sent at this point.
+- Dashboard creation required a password and created no identity. After owner CLI
+  login, the new operator helper provisioned one unconfirmed identity via the Auth
+  admin API without supplying a password. Admission slot 1 expires 2026-09-21
+  00:19 UTC; zero memberships. Provider-generated internal password hashing is
+  expected; no operator password was chosen or stored. See HOSTED_AUTH.
+- The owner reported exactly one email, delivered to Junk. Resend reported one
+  delivered and no bounce/failure; the hook recorded one sent reservation.
+  Opening the link showed explicit confirmation at a clean URL without sign-in.
+  Confirmation over eight hours after sending correctly failed past the
+  15-minute expiry. The second message also arrived in Junk; its fresh link
+  successfully confirmed the identity and signed in. Reload preserved the session,
+  and Sign out succeeded. SQL confirms zero memberships and two sent reservations.
+  The owner reopened the used link and it was rejected. SQL then confirmed zero
+  remaining sessions, zero memberships and the same two reservations.
+  No DMARC record was initially found. The owner added sender-only
+  `v=DMARC1; p=none;`; both authoritative nameservers and Google's resolver
+  returned it. A negative cache persisted at Cloudflare's resolver at that check.
+  Recipient authentication and deliverability investigation remain open.
+- Third email: SPF and DMARC passed according to receiver results; DKIM
+  signatures were supplied without an explicit verification verdict. It still
+  reached Junk. The already-confirmed identity successfully signed in, verified
+  by browser and SQL. Totals: two confirmation sends and one magic-link send;
+  Resend reports three delivered, zero failed/bounced. Raw headers are not stored.
+- Closed the sending trial by signing out and revoking admission slot 1. SQL
+  confirms zero active admissions, sessions and memberships. A service-role mail
+  reservation then failed with `email not eligible`, leaving three reservations.
+  No further delivery is eligible through the revoked admission.
+- Successful second-send hook: HTTP 200, 1,119 ms execution time in hosted
+  invocation details. Custom SMTP is disabled; the active hook replaces templates.
+- Saved hosted Data API exposure to only `public`, maximum 200 rows; automatic
+  table exposure remains off. Refresh-token replay protection is enabled with
+  10-second reuse interval and 3,600-second access-token expiry.
+- Recorded actual Free organization usage in COSTS: 25.87 MB database, one MAU,
+  two reported Edge invocations, rounded 0.00 GB egress, no exceeded quota.
+  Dashboard counters may lag recent requests. Documentation links/fences/whitespace
+  passed (14 Markdown files, 69 relative links); operator helper syntax and
+  `git diff --check` passed after the live-evidence updates.
+
+- Final live negative check: fresh owner-completed CAPTCHA reached `/otp`, which
+  returned HTTP 500 for the hook's expected 403 revoked-admission denial. The app
+  kept its generic acknowledgement. Reuse on `/otp` and `/resend` returned HTTP
+  400 `timeout-or-duplicate`. SQL still shows three reservations/hook events,
+  zero active admissions, zero sessions and zero memberships.
+- Passive browser scanner simulation rendered a synthetic token callback without
+  confirmation: clean root, confirmation screen, zero Auth calls among 13 page
+  requests. Reload discarded the pending callback; zero Auth calls across 28
+  total page requests. No provider token was created or redeemed in this probe.
+- Browser outage simulation blocked only the Turnstile loader: retry message,
+  Send button restored, zero Auth calls. Removed the temporary network block and
+  reloaded. Natural hosted token expiry was not separately timed; unit coverage
+  handles expiry/timeout/cancellation and Cloudflare enforces single-use tokens.
+- Final source review scanned 87 tracked/new files for the trial address and
+  secret-key patterns: no matches. The initial Node child-process scan hit sandbox
+  EPERM; the approved read-only retry passed. No credentials or raw mail headers
+  were added to source. Final default root release build and Wasm dry run passed;
+  the generated artifact is again the disconnected demo, with the existing
+  unused Cupertino font warning. Rebuild with the trial define file only when needed.
+- Browser inspection verified the final default artifact has no connected email
+  form. Stopped the preview, widget harness and local function server;
+  `npm run stop` passed and backed up/preserved the local Supabase data. Hosted
+  services remain on Free with the deployed guarded hook and revoked admission.
+
+P05's acceptance/evidence matrix and limitations are in HOSTED_AUTH. All three
+emails reached Junk despite SPF/DMARC pass; Inbox reliability is a release follow-up,
+not a claimed success. Passive scanners are covered; arbitrary automated form
+submission is not. The dashboard did not expose the provider send interval; the
+hook independently enforces the tested 60-second minimum. Sending remains closed.
+P06 is next, not started. No commit, push or app publication was performed.
 
 ## P04A verification on 2026-09-18
 
@@ -89,7 +207,8 @@ passed. An initial combined formatting command stalled in the sandbox and was
 stopped; standalone formatting worked. Analysis initially found two interpolation
 style issues in the new test; they were fixed before the passing run. No provider
 account, DNS, Pages, visibility, real mail or deployment operation was performed.
-P05 has not started. Hosted CAPTCHA/delivery and the real subdomain remain untested.
+At the end of P04A, P05 had not started. Current P05 hosted trial evidence is
+above; the production subdomain remains untested.
 
 ## Historical hosting decision update on 2026-09-18
 
@@ -175,13 +294,14 @@ were outstanding at that point; only the local P04A work is now complete.
 
 Workspace: C:\Users\pedro\Projects\PR-ReviewQueueApp. Branch: main. P03 is
 committed as c2b44c8 and P04 as 1ff6c13. P04A began from a clean worktree at
-bd8e62c (the hosting-decision documentation commit). P04A changes are uncommitted.
-No fetch, push, deployment or remote-state check was performed.
+bd8e62c (the hosting-decision documentation commit) and was committed as 99c68f3.
+P05 changes are uncommitted. No fetch, push or app publication was performed.
 
 Tooling remains Flutter 3.47.4/Dart 3.13.3, Node 26.5.0/npm 11.17.0, Supabase CLI
 2.117.0 and Postgres 17.6.1.167. P04 also exercised local Edge Runtime 1.74.3
 (Deno 2.1.4), GoTrue 2.196.0 and Mailpit 1.30.2. Docker Desktop's Linux engine was
-started for verification. No global tool upgrade or new hosted service was added.
+started for verification. P05 selected the existing hosted project and configured
+the sender domain; no global tool upgrade or paid subscription was added.
 
 Remaining product defaults are still proposed: title/priority labels, profile email
 visibility, self-review, edit/archive privileges, operator-created teams and retention.
@@ -222,6 +342,6 @@ No backend tests were applicable during P02; P03 results are above. No productio
 
 ## Next
 
-Review **P04A: local root-path and callback migration**. The next item is **P05:
-hosted authentication/cost validation**, requiring owner selection and provider
-access through secret storage. No P05 work is authorized or started by this handoff.
+Review **P05: hosted authentication/cost validation**. The next ready item is
+**P06: admin invitations, teams, and profiles**. Keep trial admission revoked;
+carry the documented delivery and production callback checks into P12/P13.

@@ -1,7 +1,9 @@
 # Local authentication (P04 / P04A)
 
 Implemented in P04 and migrated/tested at `/` on 2026-09-18. This is a local feasibility implementation,
-not a hosted authentication deployment. P05 owns real Resend/Turnstile setup.
+not a hosted authentication deployment. P05's implemented trial code and provider
+setup are documented separately in [HOSTED_AUTH](HOSTED_AUTH.md). This runbook
+continues to use fictional recipients and local Mailpit only.
 
 ## Hosting decision update (2026-09-18)
 
@@ -136,8 +138,8 @@ configuration change cannot count a stale transaction snapshot after the lock.
 
 P04's entrypoint only runs in the local runtime, posts to the fixed Mailpit
 capture API, and accepts fictional `@example.test` recipients. It has no Resend
-credential or external sender. P05 must replace that local adapter with the
-reviewed Resend sender, using the same event ID as provider idempotency key and
+credential or external sender in local mode. P05 adds a separately gated
+Resend sender, using the same event ID as provider idempotency key and
 keeping ambiguous failures conservative. Mailpit itself is not claimed to
 implement provider idempotency; the database prevents repeated calls.
 
@@ -165,8 +167,9 @@ Automatic SDK URL session detection is disabled. Explicit confirmation calls
 one-use material. The request client uses the non-PKCE option for this explicit
 token-hash exchange, so a link can open in a different browser/tab without a
 stored verifier. A plain GET/HEAD or page-rendering scanner cannot consume it;
-a scanner that actually activates the confirmation control remains a real-mail
-P05 check. Reload before confirming intentionally drops the pending token: reopen
+a scanner that actually activates the confirmation control can still consume it.
+P05 verified passive rendering; arbitrary scanner interaction is not guaranteed.
+Reload before confirming intentionally drops the pending token: reopen
 the email or request a fresh link. No auth material goes into analytics or team
 data caches.
 
@@ -182,19 +185,19 @@ that boundary. SDK synchronization among tabs on the app's own origin remains.
 
 ## CAPTCHA integration design and P05 gate
 
-P04's exact-loopback preview uses no live CAPTCHA service. Hosted login is
-disabled in this implementation, rather than allowing that local omission to
-ship. P05 must enable Turnstile enforcement in **Supabase Auth itself**, mount
-the widget, pass the response through `requestChallenge`, and obtain a fresh
-single-use challenge for every provider request. In particular the failed
+P04's exact-loopback local mode uses no live CAPTCHA service. P05 adds a separate
+hosted-trial mode, enables Turnstile in **Supabase Auth itself**, mounts the
+widget, passes its response through `requestChallenge`, and obtains a fresh
+single-use challenge for every provider request. Production mode remains disabled.
+In particular the failed
 unconfirmed `/otp` attempt may consume its challenge: `/resend` must obtain a
 new one. SDK request-contract tests prove distinct challenge tokens reach both
 endpoints and rate errors do not start fallback retries.
 
-Validate missing/invalid/reused challenge tokens through direct `/otp` and
-`/resend` requests in the hosted trial, widget expiry/error recovery, exact
-callback configuration, and scanner behavior with controlled inboxes. Do not
-claim those live checks passed locally. The SDK exposes `captchaToken` on both
+P05 verified missing/invalid/reused challenge denials through direct `/otp` and
+`/resend`, live failure recovery, exact callbacks and passive scanner rendering.
+Expiry/timeout recovery is unit-tested; natural hosted CAPTCHA expiry was not
+separately timed. See HOSTED_AUTH for the actual evidence. The SDK exposes `captchaToken` on both
 methods. See [Supabase CAPTCHA](https://supabase.com/docs/guides/auth/auth-captcha)
 and [Turnstile validation](https://developers.cloudflare.com/turnstile/get-started/server-side-validation/).
 

@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turnstile isolated QA</title>
+<style>body{font:16px/1.5 system-ui;max-width:500px;margin:24px auto;padding:16px;background:#111718;color:#edf4f1}button,select{font:inherit;min-height:48px;margin:6px}button:focus-visible,select:focus-visible{outline:3px solid #76d7bb}</style>
+<h1>Turnstile isolated QA</h1><p>Cloudflare public test keys only. No Auth calls or email delivery.</p>
+<label>Theme <select id="theme"><option>dark</option><option>light</option></select></label>
+<p><button data-key="1x00000000000000000000AA">Test success</button>
+<button data-key="2x00000000000000000000AB">Test failure</button>
+<button data-key="3x00000000000000000000FF">Test cancellation</button></p>
+<p id="result" role="status">Ready</p><script src="turnstile.js"></script><script>
+for (const button of document.querySelectorAll('button')) button.onclick = async () => {
+  document.getElementById('result').textContent = 'Verification pending';
+  try {
+    await window.prQueueChallenge.request(button.dataset.key, document.getElementById('theme').value);
+    document.getElementById('result').textContent = 'Success (token discarded)';
+  } catch { document.getElementById('result').textContent = 'Verification did not complete; ready to retry'; }
+};
+</script></html>

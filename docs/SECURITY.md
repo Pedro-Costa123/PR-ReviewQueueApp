@@ -1,6 +1,9 @@
 # Security design and launch evidence
 
-Last updated: 2026-09-18. P03 database authorization, P04 local sign-in/email guards and P04A root-path migration are implemented and tested. The production subdomain is confirmed; hosted CAPTCHA/mail, lifecycle and launch controls remain planned. [AUTH](AUTH.md) records implemented controls and limits.
+Last updated: 2026-09-20. P03/P04/P04A local controls are verified. P05 controlled
+hosted login, mail, CAPTCHA replay denial and passive-scanner checks passed.
+[AUTH](AUTH.md) and [HOSTED_AUTH](HOSTED_AUTH.md) distinguish implementation,
+provider configuration and observed behavior. Lifecycle/launch controls remain planned.
 
 The queue still contains only public fictional presentation fixtures. P04 adds a real local Auth client and sessionStorage adapter, with SDK cross-tab synchronization. There is no fake signed-in identity, role switch or company URL. Browser navigation between demo teams is not an authorization test. P03 SQL-role/Data API denial tests run separately against local Supabase. The release build remains a local preview, not a production authentication path.
 
@@ -68,6 +71,39 @@ Create restricted backups/export instructions, retention, and a restore test bef
 For an incident: revoke affected memberships/invites and sessions, disable mail sending if abused, rotate exposed provider keys, preserve minimal useful logs, and restore from a verified backup if needed. Prefer a temporary outage to disabling authorization. Free-plan limits and remaining availability risks are in [Costs](COSTS.md).
 
 ## Required evidence before pilot
+
+### P05 trial controls and hosted advisor review
+
+The operator-only admission table permits guarded first-user mail for at most
+three identity/email pairs for up to 24 hours, never membership. The live Auth
+email/ban/deletion checks still apply, and any existing membership prevents use of
+this bootstrap exception. Tests deny unauthenticated/authenticated/service table
+reads/writes, revoked/expired admissions and forged email pairs. Revoke admissions
+after testing and remove the route before production.
+
+Frontend and hook both require explicit hosted-trial configuration. Only the exact
+loopback callback is accepted; dummy Turnstile keys cannot enable app auth. Secrets
+remain in provider stores. The browser only holds public project/site keys.
+Resend redirects fail closed, sends are bounded and uncertain results stay charged;
+there is no retry or alternate provider. Live CAPTCHA must be enforced by Auth.
+
+The final hosted check used a valid human-completed CAPTCHA after admission
+revocation: the hook denied mail before reserving quota. Reuse of that token on
+both Auth endpoints returned `timeout-or-duplicate`. Final counts remained three
+reservations, zero active admissions, zero sessions and zero memberships. Passive
+scanner rendering made no Auth calls; automated submission of the confirmation
+control is outside that guarantee. Turnstile outage recovery made no Auth call.
+
+Hosted advisor review on 2026-09-18 returned four informational
+[RLS-without-policy findings](https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy)
+for private operator/hook tables. These intentionally deny API table access and
+are not exposed. It also warned about
+[authenticated SECURITY DEFINER execution](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable)
+for `set_member_access`. This is the intended admin RPC: it derives identity,
+checks live admin authority before and after locking, and has local denial and
+concurrency coverage. No broad privilege was added to silence either finding.
+
+### Launch matrix
 
 | Test | Required result |
 | --- | --- |

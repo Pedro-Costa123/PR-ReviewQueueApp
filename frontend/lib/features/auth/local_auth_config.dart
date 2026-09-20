@@ -1,6 +1,6 @@
 const localAuthCallback = 'http://127.0.0.1:4173/';
 
-// P05 must explicitly implement hosted login and CAPTCHA before widening this.
+// The local adapter stays separate from P05's explicit hosted trial config.
 bool allowsLocalAuth({
   required String api,
   required String key,

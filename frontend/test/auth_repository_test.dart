@@ -1,12 +1,84 @@
 import 'dart:convert';
+import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:pr_review_queue/features/auth/auth_repository.dart';
+import 'package:pr_review_queue/features/auth/challenge.dart';
 
 void main() {
+  test(
+    'leaving sign-in while OTP is pending prevents a later fallback challenge',
+    () async {
+      final response = Completer<http.Response>();
+      final started = Completer<void>();
+      var challenges = 0;
+      final client = SupabaseClient(
+        'https://example.test',
+        'public-test-key',
+        authOptions: const AuthClientOptions(
+          autoRefreshToken: false,
+          authFlowType: AuthFlowType.implicit,
+        ),
+        httpClient: MockClient((_) {
+          started.complete();
+          return response.future;
+        }),
+      );
+      final repository = SupabaseAuthRepository(
+        client,
+        'http://127.0.0.1:4173/',
+        requestChallenge: () async => 'token-${++challenges}',
+      );
+      final pending = repository.requestLink('member@example.test');
+      final rejected = expectLater(pending, throwsA(isA<ChallengeException>()));
+      await started.future;
+      repository.cancelRequest();
+      response.complete(
+        http.Response(
+          '{"msg":"Signup disabled","error_code":"signup_disabled"}',
+          422,
+        ),
+      );
+      await rejected;
+      expect(challenges, 1);
+      await client.dispose();
+    },
+  );
+  test(
+    'failed or empty CAPTCHA prevents Auth calls and fallback sends',
+    () async {
+      var calls = 0;
+      final client = SupabaseClient(
+        'https://example.test',
+        'public-test-key',
+        authOptions: const AuthClientOptions(autoRefreshToken: false),
+        httpClient: MockClient((_) async {
+          calls++;
+          return http.Response('{}', 200);
+        }),
+      );
+      for (final challenge in <Future<String?> Function()>[
+        () async => null,
+        () async => '',
+        () async => throw const ChallengeException(),
+      ]) {
+        final repository = SupabaseAuthRepository(
+          client,
+          'http://127.0.0.1:4173/',
+          requestChallenge: challenge,
+        );
+        await expectLater(
+          repository.requestLink('member@example.test'),
+          throwsA(isA<ChallengeException>()),
+        );
+      }
+      expect(calls, 0);
+      await client.dispose();
+    },
+  );
   test(
     'unconfirmed fallback uses maintained SDK and a fresh CAPTCHA per call',
     () async {
