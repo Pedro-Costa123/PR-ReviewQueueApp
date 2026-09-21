@@ -5,6 +5,12 @@ authentication. P05 adds an explicitly configured hosted trial with a lazy theme
 Turnstile dialog. Queue writes remain unavailable. Use [AUTH](../docs/AUTH.md) for
 local login or [HOSTED_AUTH](../docs/HOSTED_AUTH.md) for the controlled trial.
 
+P06 adds the connected signed-in root workspace: real team selector, profile
+completion/edit/view, admin invitations and member controls. Use the
+[onboarding runbook](../docs/ONBOARDING.md) for its two-team local preview.
+The queue routes remain fictional. Email is visible only to self/shared active
+teammates through the server. No P06 hosted deployment has been performed.
+
 Verified SDK: **Flutter 3.47.4 stable / Dart 3.13.3** on Windows. Only the web platform is scaffolded. Application dependencies and the lockfile are pinned; no global backend tooling is required.
 
 ## Run the verified release preview

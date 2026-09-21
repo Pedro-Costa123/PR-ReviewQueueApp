@@ -1,16 +1,16 @@
 # Current status
 
-Updated: 2026-09-20.
+Updated: 2026-09-21.
 
 ## Current implementation
 
-P00-P04A are complete locally. **P05 is complete for the controlled hosted trial,
-ready for owner review.** P06 is next and has not started. The Flutter queue
+P00-P04A are complete locally. P05 is complete for the controlled hosted trial.
+**P06 is complete locally, ready for owner review.** P07 has not started. The Flutter queue
 remains fictional and read-only. The selected Supabase Free project now has the
 three versioned migrations and one operator-provisioned trial identity, without
 fixtures or memberships. No production app is
 deployed. See [HOSTED_AUTH](HOSTED_AUTH.md) for the trial and [AUTH](AUTH.md) for
-local development.
+local development. [ONBOARDING](ONBOARDING.md) covers the P06 workflow and checks.
 
 - P02 shell: desktop/narrow navigation, Atlas/Orbit fixtures, profile/archive
   placeholders, dark default and saved theme preference.
@@ -32,8 +32,69 @@ local development.
   preview denial tests, and verified replacement runbook commands.
 
 Not complete: reliable Inbox placement and production-hostname acceptance,
-invitation admin/provisioning UI or claiming, real queue CRUD/reorder/comments/reviews/archive,
-CI, independent Pages release or deployment. Authentication creates no membership.
+hosted P06 deployment, real queue CRUD/reorder/comments/reviews/archive,
+CI, independent Pages release or deployment. Authentication alone grants no team;
+the guarded P06 claim transaction creates invited memberships.
+
+## P06 implementation and evidence on 2026-09-21
+
+- Added the fourth versioned migration, `invite-member` Edge Function, connected
+  Flutter workspace/repository, five widget tests, 14 backend/handler tests and
+  a local two-team preview helper. Preserved existing dependency lockfiles.
+- Admin invitations/revoke/resend, exact-identity Auth provisioning/recovery,
+  verified first-login claiming, real team selection, profile completion/edit/view,
+  and member role/removal/restoration controls are implemented. Queue remains demo-only.
+- Owner answered the material question: **all active teammates may see each
+  other's email**. Enforced in a guarded profile RPC, without a global directory.
+  Operator-created teams/team-scoped admins retain the selected P06 default.
+- Clean local reset applied all four migrations. `npm test`: **19 passed**;
+  `npm run test:auth`: **28 passed**; `npm run test:onboarding`: **14 passed**.
+  SQL lint passed. New denial and concurrency coverage is detailed in ONBOARDING.
+- Local security advisor: **five informational** private RLS/no-policy findings,
+  **zero warnings/errors**. Reviewed as intentional API-denied operational tables.
+- `flutter analyze`: no issues; **25 Flutter tests passed**. Callback/Turnstile/
+  preview JavaScript checks: **15 passed**. Configured root release build and
+  Wasm dry run passed; the existing unused Cupertino font warning remains.
+- Browser: captured provider link, clean callback/Enter confirmation, first-login
+  completion and profile save with Tab/Enter, both real teams, team-specific admin
+  controls, invitation provisioning/mail request, teammate email view, Escape
+  cancellation/focus restoration, and narrow light/dark forms. No console errors.
+  Fixed clipped username help found during narrow QA.
+- Final browser checks verified explicit resend/revoke, a role change, member
+  removal hiding the profile, reload persistence and keyboard sign-out clearing
+  workspace data. Owner-reported roster indentation is corrected and the current
+  user's row says “(you)”; inspected the rebuilt release. Profile email now has
+  an explicit accessibility label.
+- A second owner alignment review removed the name-only button's extra vertical
+  space: name/status share one accessible target and admin actions align with
+  them. Analysis and the five onboarding widget tests passed again. Inspected
+  the rebuilt desktop and 390-pixel release: matching text edges, balanced card
+  padding and aligned admin actions. Enter opens the grouped profile target;
+  Escape closes it, and keyboard sign-out clears the workspace. Console clean.
+- Documentation checks passed for 15 Markdown files and 81 relative links,
+  balanced fences and whitespace. Scanned 97 tracked/new files for private-key
+  and provider-secret patterns: no matches. Preview helper syntax, unchanged
+  lockfiles/license and `git diff --check` passed. The first file-list scan used
+  PowerShell UTF-16 output; reran with explicit UTF-8. Node `--check` does not
+  parse this TypeScript entry; the passing handler tests and local Edge Runtime
+  execution provide its verification instead.
+- Initial failures were an outdated RPC allowlist, an overlong test username,
+  style lints and a spinner kept active behind a profile dialog. Corrected and
+  rerun successfully. Node workers/CLI telemetry required sandbox escalation.
+  A stalled `dart fix` attempt was stopped; explicit edits and formatting passed.
+- Official Auth/pricing references were rechecked; no provider, hosted, DNS,
+  repository visibility, Pages, real-mail or billing operation was performed.
+  The migration draft was moved into `backend/supabase/migrations/` using the
+  CLI-generated timestamp before reset; no stray backend-root migration remains.
+- After final alignment QA, rebuilt the default root release without environment
+  defines; build/Wasm dry run passed and the browser showed disconnected sign-in.
+  Stopped the preview, function process and project Supabase stack, preserving
+  the fictional local database. No deployment was performed.
+
+No material P06 product question remains unanswered. P06 is locally verified;
+hosted rollout is explicitly unperformed. Lists are bounded at 100 and refreshed
+manually; background refresh/pagination remain P11. Stop for onboarding review;
+P07 is next, with enterprise hostname and entry-default questions still ahead.
 
 ## P05 implementation and evidence on 2026-09-18 through 2026-09-20
 
@@ -150,7 +211,8 @@ emails reached Junk despite SPF/DMARC pass; Inbox reliability is a release follo
 not a claimed success. Passive scanners are covered; arbitrary automated form
 submission is not. The dashboard did not expose the provider send interval; the
 hook independently enforces the tested 60-second minimum. Sending remains closed.
-P06 is next, not started. No commit, push or app publication was performed.
+At the P05 boundary, P06 was next and not started. No commit, push or app
+publication was performed during that trial. Current P06 evidence is above.
 
 ## P04A verification on 2026-09-18
 
@@ -303,8 +365,9 @@ Tooling remains Flutter 3.47.4/Dart 3.13.3, Node 26.5.0/npm 11.17.0, Supabase CL
 started for verification. P05 selected the existing hosted project and configured
 the sender domain; no global tool upgrade or paid subscription was added.
 
-Remaining product defaults are still proposed: title/priority labels, profile email
-visibility, self-review, edit/archive privileges, operator-created teams and retention.
+Remaining product defaults are still proposed: title/priority labels, self-review,
+edit/archive privileges, operator-created teams and retention. P06 confirmed
+profile email visibility for all active teammates.
 Exact enterprise hostnames are needed for P07; this app's Pages setup, domain
 ownership, DNS and separate browser origin must be checked before publishing.
 No unresolved product question blocks completed local P04A verification.
@@ -342,6 +405,6 @@ No backend tests were applicable during P02; P03 results are above. No productio
 
 ## Next
 
-Review **P05: hosted authentication/cost validation**. The next ready item is
-**P06: admin invitations, teams, and profiles**. Keep trial admission revoked;
+Review **P06: invitations, teams, and profiles**. The next ready item is
+**P07: queue entries and ownership**. Keep trial admission revoked;
 carry the documented delivery and production callback checks into P12/P13.

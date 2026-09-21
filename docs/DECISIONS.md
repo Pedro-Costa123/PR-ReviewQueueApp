@@ -1,6 +1,6 @@
 # Decisions
 
-Updated: 2026-09-18. **Confirmed** means specified/answered by the owner. **Proposed** means a researched design choice for staged validation. **Deferred** means deliberately outside current work. **Superseded** records an earlier choice replaced by a later decision.
+Updated: 2026-09-21. **Confirmed** means specified/answered by the owner. **Proposed** means a researched design choice for staged validation. **Deferred** means deliberately outside current work. **Superseded** records an earlier choice replaced by a later decision.
 
 | ID | Status | Decision and reasoning |
 | --- | --- | --- |
@@ -81,6 +81,24 @@ The controlled trial completed on 2026-09-20 with real login, delivery, CAPTCHA
 reuse denial, revoked-admission denial and passive-rendering checks. Three messages
 reached Junk despite SPF/DMARC pass; retain this release follow-up. Admission is
 revoked. See [HOSTED_AUTH](HOSTED_AUTH.md) for evidence and limits. P06 is next.
+
+## D29 — P06 onboarding and profile disclosure (2026-09-21)
+
+**Confirmed:** the owner selected P06 only and explicitly chose email visibility
+to **all active teammates**, superseding the proposed admin-only email rule.
+`profile_details` returns Auth email only to self/shared active teammates; there
+is no global directory or profile-editable email field.
+
+**Implemented locally:** retain operator-created teams and team-scoped admins,
+seven-day invitations, idempotent preparation with unchanged pending role/expiry,
+unconfirmed password-free Auth provisioning and exact-identity reconciliation.
+Delivery reuses the existing provider OTP/confirmation resend and signed hook,
+so admin resend does not create a CAPTCHA or budget bypass. First-login claiming
+requires both bound identity and current verified email. Old invitations never
+restore removed memberships; an admin must explicitly restore access.
+
+P06 adds no provider, dependency, public signup, queue behavior or deployment.
+See [ONBOARDING](ONBOARDING.md) for recovery, verification and local-only limits.
 
 ## Alternatives evaluated
 

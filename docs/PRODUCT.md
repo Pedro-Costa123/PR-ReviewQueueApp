@@ -1,8 +1,8 @@
 # Product
 
-Last updated: 2026-09-20. Owner: Pedro Costa. Stage: P05 controlled hosted
-authentication trial complete, ready for review. P06 invitations/teams/profiles is
-next when selected. Inbox placement remains a release follow-up. Queue data
+Last updated: 2026-09-21. Owner: Pedro Costa. Stage: P06 invitations/teams/profiles
+complete locally, ready for review. P07 is next when selected. P05 controlled
+hosted authentication is complete; Inbox placement remains a release follow-up. Queue data
 remains fictional and disconnected. The production subdomain is confirmed but
 not published. Demo content and preparatory schema fields remain proposals.
 
@@ -48,7 +48,7 @@ Confirmed rules above take precedence. Additional details below are proposed def
 - Allow membership in multiple teams. Admin rights are team-specific. Being an admin in Team A grants no rights in Team B.
 - A deployment operator bootstraps the initial team and admin explicitly. The first person to visit the site never becomes admin automatically.
 - Invites expire after 7 days and can be revoked. Removing a member revokes their access to that team on their next API request.
-- Teammates may view one another's profiles. Do not expose a global directory or another team's membership. Proposed public-to-teammates fields: name and username; email is visible to the user and their team admins.
+- Teammates may view one another's profiles. Do not expose a global directory or another team's membership. **Confirmed 2026-09-21:** name, username and email are visible to the user and all shared active teammates. P06 enforces this on the server.
 - A deployment operator creates additional teams for the initial release. Self-service creation of unrelated organizations is deferred.
 
 ### Queue entries and ordering
@@ -116,7 +116,7 @@ Native mobile/desktop apps, payments, attachments/avatar uploads, Teams messages
 | Q04 answered | Ordering and teams? | Sprint first, then priority, admin reorder within groups; multiple teams allowed. |
 | Q05 answered | External hosting permission? | Owner says allowed. Region/retention remain unspecified; select an available EU project region unless a different requirement emerges. |
 | Q06 | Who creates teams and appoints initial admins? | Deployment operator bootstraps them. Team admins manage their own members. |
-| Q07 | Who may archive/edit, should emails be visible to teammates, and can submitters review their own PR? | Defaults above. |
+| Q07 partially answered | Who may archive/edit, should emails be visible to teammates, and can submitters review their own PR? | Email visible to all active teammates confirmed 2026-09-21; entry/archive/self-review defaults remain for their respective backlog items. |
 | Q08 | Are the title field, priority labels, deletion recovery, and retention acceptable? | Title + High/Normal/Low; confirm archive/audit retention and deletion policy before data lifecycle work. |
 
 ## Pilot success criteria

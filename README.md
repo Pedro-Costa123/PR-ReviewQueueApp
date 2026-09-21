@@ -2,10 +2,10 @@
 
 A private team queue that keeps pull requests visible, makes sprint priorities clear, and records review feedback and archived work.
 
-**Current stage: P05 controlled hosted trial complete; ready for review.**
-Resend/Turnstile, hosted login and denial checks passed. Inbox placement remains
-a release follow-up; P06 invitations/teams/profiles is next when selected.
-The hosted schema is applied; the queue remains fictional and read-only. No
+**Current stage: P06 invitations, teams and profiles complete locally; ready for review.**
+P05's controlled hosted trial is complete. Inbox placement remains a release
+follow-up; P07 is next when selected. P06 has not been deployed to the hosted
+project; the queue remains fictional and read-only. No
 production app is published. Work proceeds one backlog item at a time.
 
 ## Project documentation
@@ -21,6 +21,7 @@ production app is published. Work proceeds one backlog item at a time.
 | [Security](docs/SECURITY.md) | Access rules, abuse controls, and launch checks |
 | [Local authentication](docs/AUTH.md) | P04 runbook, provider corrections, sessions, email guards and CAPTCHA design |
 | [Hosted authentication trial](docs/HOSTED_AUTH.md) | P05 configuration, provider state, evidence and limitations |
+| [Onboarding](docs/ONBOARDING.md) | P06 invitation/profile workflow, local verification and recovery |
 | [Handoff](docs/HANDOFF.md) | How to continue the project across planning and implementation tasks |
 
 ## Proposed stack
@@ -51,10 +52,10 @@ LICENSE            Existing MIT license
 
 ## Start the next step
 
-Read [Status](docs/STATUS.md), then [Next](docs/NEXT.md). Continue the selected
-**P05 hosted authentication/cost validation** using [the trial runbook](docs/HOSTED_AUTH.md).
-The [local authentication runbook](docs/AUTH.md) and [frontend demo commands](frontend/README.md)
-remain available. Complete live acceptance and stop for review before P06.
+Read [Status](docs/STATUS.md), then [Next](docs/NEXT.md). Review the completed local
+**P06 onboarding workflow** using [its runbook](docs/ONBOARDING.md). P07 is ready
+when selected. The [local authentication runbook](docs/AUTH.md) and
+[frontend demo commands](frontend/README.md) remain available.
 
 Do not run the entire backlog in one task. Complete the selected item, verify its acceptance criteria, update the docs, and stop at its review boundary.
 

@@ -9,6 +9,12 @@ project has the three migrations and the signed hook deployed/enabled. Controlle
 delivery/login and live denial checks passed; the trial admission is now revoked.
 Inbox placement remains a release follow-up. No queue mutation API.
 
+P06 adds a fourth **local** migration, `invite-member`, guarded invitation
+claiming and profile RPCs, and the budgeted membership wrapper. Its 14 dedicated
+tests run with `npm run test:onboarding` while `npm run functions` is serving.
+See [ONBOARDING](../docs/ONBOARDING.md) for setup, recovery, grants and evidence.
+The hosted project still has three migrations; no P06 deployment was performed.
+
 Follow [AUTH](../docs/AUTH.md) for the complete P04 setup/test/preview sequence.
 Use [HOSTED_AUTH](../docs/HOSTED_AUTH.md) for P05; never run local fixtures/tests
 against the hosted project or link this local test checkout to it.
@@ -76,8 +82,8 @@ includes local development keys; do not paste it into committed logs or document
 - `private`: audit and future email-budget/idempotency storage, with no client
   table grants or Data API exposure. Only membership/profile predicate helpers
   are executable by authenticated users; they always derive identity from JWT.
-- `set_member_access(p_team_id, p_user_id, p_role, p_active)`: the only exposed
-  mutation. An active team admin can change an **existing** membership. It locks
+- `set_member_access(p_team_id, p_user_id, p_role, p_active)`: P03's membership
+  mutation, now wrapped with P06's budget. An active team admin can change an **existing** membership. It locks
   the team, rechecks live authority, advances data revision, audits the change,
   and revokes matching pending invitations when removing access. It cannot
   create a membership. The last active admin cannot be removed or demoted.
@@ -94,8 +100,9 @@ must continue to declare permissions explicitly and extend the denial tests.
 The proposed title/priority/lifecycle columns prepare later items; they do not
 confirm product defaults. Complete enterprise URL validation is P07, self-review
 behavior P09, and retention/purging P10. P04 adds service-role-only reserve_auth_email/finish_auth_email functions and
-atomic budgets; clients still cannot access operational tables. Admin UI/provisioning and mutation rate limits
-are later work; the P03 RPC is an authorization foundation, not a release.
+atomic budgets; clients still cannot access operational tables. P06 adds admin
+UI/provisioning, profile/claim RPCs and onboarding mutation limits. Queue mutation
+limits are later work; this remains a locally verified implementation, not a release.
 
 ## Explicit operator bootstrap
 

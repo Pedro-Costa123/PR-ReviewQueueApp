@@ -1,6 +1,7 @@
 # Architecture
 
-Updated: 2026-09-20. P04/P04A local authentication and root callbacks are verified.
+Updated: 2026-09-21. P06 adds locally verified onboarding; see [ONBOARDING](ONBOARDING.md).
+P04/P04A local authentication and root callbacks are verified.
 P05 adds the Resend adapter, Turnstile bridge and strict loopback hosted-trial
 configuration. The controlled hosted trial passed; the temporary admission is
 revoked. Inbox placement and app publication remain release work. [AUTH](AUTH.md) covers local development;
@@ -69,6 +70,16 @@ Routes are `/`, `/teams/:teamId`, `/teams/:teamId/archive`, and `/teams/:teamId/
 
 ## Backend organization
 
+P06 now connects the signed-in root workspace to real teams and profiles.
+`invite-member` verifies Auth `/user`, prepares with the caller JWT, and uses a
+service-only RPC to reconcile an exact invitation with Auth. It never sends mail
+or returns admin credentials. Client delivery retains the existing CAPTCHA/hook
+flow. The fourth migration binds invitations to provisioned Auth IDs and adds
+transactional verified-email claiming, self profile editing and shared-active-team
+email disclosure. A private fixed-window mutation budget protects onboarding,
+including the wrapped P03 membership RPC. Direct writes stay denied. P06 is local
+only; the hosted project still has the three P03–P05 migrations.
+
 P03 now provides project-local Supabase CLI 2.117.0, Docker config, the initial migration, local SQL-role/Data API tests, fictional test fixtures, and an operator bootstrap script. The queue frontend remains disconnected; the local sign-in screen is connected in P04. `private` is excluded from the exposed API schemas. Public reads use explicit grants and live-membership RLS; all direct writes are denied. Global and schema-scoped function default grants are revoked, including PostgreSQL's default PUBLIC execution. Helpers use fixed search paths and derive identity from `auth.uid()`.
 
 The only exposed P03 mutation is `set_member_access`, restricted to live team admins and existing memberships. It serializes on the team, rechecks authority after locking, updates data revision, revokes pending invitations on removal, and audits the change. Triggers also serialize operator membership writes and protect the last admin; a deferred team constraint requires the initial admin at commit. `private.bootstrap_team` is operator-only, requires an existing verified Auth identity, and creates the team/admin/audit atomically. Queue behavior remains later work. P04 adds service-role-only reserve_auth_email/finish_auth_email functions and a signed local email hook.
@@ -77,7 +88,7 @@ Own profiles remain readable without team membership; other profiles require a s
 
 Tests and fixtures live outside migrations and configured seeds, require an empty local database, and refuse linked/remote targets. Synthetic local JWTs exercise PostgREST authorization without implementing login. Setup, verification, and operator commands are in the [backend README](../backend/README.md).
 
-Directory organization (P04 implements send-auth-email and Auth integration tests; invite-member remains future work):
+Directory organization (P04 implements send-auth-email; P06 adds invite-member locally):
 
 ```text
 backend/
@@ -120,7 +131,9 @@ IDs are generated UUIDs. Store UTC timestamps, display local time, and use datab
 
 Use composite foreign keys or equivalent database constraints so child rows cannot claim a different team than their parent. Index membership lookups, active entries by team/group/position, archive pagination, comments by entry, and review uniqueness. Use a partial unique index to prevent duplicate non-deleted active PR URLs per team.
 
-Avoid a globally readable email column in profiles. If team admins need a roster email, expose it through a specifically authorized server function. A shared profile does not disclose the person's other teams.
+Avoid a globally readable email column in profiles. P06 exposes Auth email through
+`profile_details` to self and shared active teammates, as confirmed by the owner.
+A shared profile does not disclose the person's other teams.
 
 ## Authentication and onboarding
 
@@ -128,7 +141,7 @@ Avoid a globally readable email column in profiles. If team admins need a roster
 2. Persist a pending invitation before provisioning Auth. Provision an unconfirmed email identity if absent, without creating a password or granting membership. Use server-only Auth admin capabilities. Repeated requests reconcile the same identity/invite instead of duplicating them.
 3. An invited user requests a magic link with a valid CAPTCHA (live widget/enforcement is P05). P04 validated a required correction: unconfirmed existing users receive a confirmation link through SDK resend(type: signup), after /otp returns signup_disabled; confirmed users use /otp. Each attempt requires a fresh CAPTCHA token when enforcement is enabled. Disable public signup in Supabase settings and pass `shouldCreateUser: false`. These are separate protections: client options alone are insufficient. [Auth settings](https://supabase.com/docs/guides/auth/general-configuration), [passwordless sign-in](https://supabase.com/docs/guides/auth/auth-email-passwordless)
 4. Supabase creates the login material and calls a signed Send Email Hook. The hook verifies signature/timestamp, checks active membership or a valid invite, atomically reserves email budget, and sends through Resend. Do not build a custom token generator.
-5. The P04 callback removes the token-hash fragment before Flutter starts and verifies provider material only after explicit confirmation. P06 will claim pending team invitations for the authenticated, verified email in a transaction. Auth record existence alone never grants team access. Profile completion follows.
+5. The P04 callback removes the token-hash fragment before Flutter starts and verifies provider material only after explicit confirmation. P06 claims pending team invitations for the authenticated identity and current verified email in a transaction. Auth record existence alone never grants team access. Profile completion follows.
 6. Removing membership is effective for every database request even while a JWT remains valid. Revoke pending invitations too; another team's membership must remain intact.
 
 The hook is important because direct calls to the public Auth API can bypass this Flutter UI. Budget and invitation checks must still run for every supported email action. Unsupported email actions fail closed. The hook is available on Supabase Free. [Auth Hooks](https://supabase.com/docs/guides/auth/auth-hooks), [Send Email Hook](https://supabase.com/docs/guides/auth/auth-hooks/send-email-hook)
@@ -153,7 +166,7 @@ endpoint with event idempotency, bounded timeouts and no automatic retry. See D2
 ## Mutations and consistency
 
 - Read identity from the verified session, derive ownership server-side, and recheck current membership in the database transaction.
-- Use transactional functions such as `create_entry`, `update_entry`, `move_entry`, `archive_entry`, `restore_entry`, `set_review`, and `claim_invites`. Names are proposed contracts, not existing functions.
+- P06 implements transactional `claim_invites`. Queue functions such as `create_entry`, `update_entry`, `move_entry`, `archive_entry`, `restore_entry` and `set_review` remain proposed contracts.
 - Entry edits carry an expected version; stale writes return a conflict and the latest version. Do not silently overwrite another user's change.
 - A reorder locks the team's queue revision, checks the expected revision, validates admin/group membership, and updates positions atomically. A bounded group can be reindexed in one transaction; avoid fractional-rank infrastructure at this scale.
 - Changing sprint flag/priority appends to the destination group and advances the queue revision. Restore behaves similarly. Database uniqueness detects an active duplicate during restore.

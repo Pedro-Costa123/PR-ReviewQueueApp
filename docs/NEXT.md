@@ -1,8 +1,8 @@
 # Ordered implementation backlog
 
-Updated: 2026-09-20. **Execute one selected item, verify it, update the docs, and stop.** Do not turn this file into a single full-app implementation prompt.
+Updated: 2026-09-21. **Execute one selected item, verify it, update the docs, and stop.** Do not turn this file into a single full-app implementation prompt.
 
-The owner selected `https://reviews.pedro-costa.dev/` and subsequently authorized P05's hosted trial. P05 is complete for the controlled trial, with delivery limitations recorded. Stop for review; P06 is next when selected.
+The owner selected `https://reviews.pedro-costa.dev/`, P05's hosted trial and then P06. P06 is complete locally; hosted rollout is unperformed. Stop for onboarding review. P07 is next when selected.
 
 `Complete` means the item's actual deliverable exists. `Ready` means the next item can start when requested. Later items remain planned, not authorized as a batch. Smaller UI/product defaults can be settled at the item that needs them.
 
@@ -13,10 +13,10 @@ The owner selected `https://reviews.pedro-costa.dev/` and subsequently authorize
 | P02 | Local Flutter app shell | Complete; ready for owner review | P01 |
 | P03 | Local Supabase schema and team authorization | Complete; ready for owner review | P02 |
 | P04 | Magic-link flow and guarded email delivery locally | Complete locally; ready for owner review | P03 |
-| **P04A** | **Local root-path and callback migration** | **Complete locally; ready for owner review** | P04 |
-| **P05** | **Small hosted authentication/cost validation** | **Complete for controlled trial; ready for owner review** | P04A |
-| P06 | Admin invitations, teams, and profiles | Ready; not started | P05 |
-| P07 | Create/read/edit queue entries and protected deletion | Planned | P06 |
+| P04A | Local root-path and callback migration | Complete locally; ready for owner review | P04 |
+| P05 | Small hosted authentication/cost validation | Complete for controlled trial; ready for owner review | P04A |
+| P06 | Admin invitations, teams, and profiles | Complete locally; ready for owner review | P05 |
+| P07 | Create/read/edit queue entries and protected deletion | Ready; not started | P06 |
 | P08 | Sprint/priority ordering and admin reordering | Planned | P07 |
 | P09 | Comments and per-user review signals | Planned | P08 |
 | P10 | Archive, restore, and data lifecycle | Planned | P09 |
@@ -98,6 +98,16 @@ P06 is ready when selected. No subsequent item is automatically authorized.
 **Acceptance:** A real test invitation lands in the correct team; a user can belong to two teams without data leakage; repeated/failed provisioning is recoverable; usernames cannot claim invites; teammate profile permissions work; email disclosure follows the agreed rule; last-admin removal is prevented.
 
 **Boundary:** No public team signup or global user directory. Review the onboarding workflow.
+
+**Completed locally 2026-09-21:** Admin invite/revoke/resend and member controls,
+recoverable unconfirmed Auth provisioning, verified identity-bound invitation
+claiming, team selector, profile completion/edit/view and active-teammate email
+disclosure (owner confirmed). Clean reset, 19 authorization tests, 28 auth tests,
+14 onboarding tests, 25 Flutter tests, 15 JavaScript tests, analysis, SQL lint,
+security advisor and root release build passed with documented advisory/font
+limitations. Browser/keyboard checks exercised local provider links and the
+connected workflow. See [ONBOARDING](ONBOARDING.md) and [STATUS](STATUS.md).
+No hosted deployment or real-company invitations. Stop here; P07 is not executed.
 
 ## P07 — Queue entries and ownership
 

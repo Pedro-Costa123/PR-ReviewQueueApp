@@ -19,12 +19,13 @@ The repository documents are the shared source of context. A planning conversati
 
 ```text
 Work in the existing PR-ReviewQueueApp repository. Read AGENTS.md and the
-project docs, especially STATUS.md, NEXT.md and HOSTED_AUTH.md. Implement only
-P06: admin invitations, teams, and profiles. P05's trial admission is revoked;
-preserve that state and implement real invitations instead of extending the trial.
+project docs, especially STATUS.md, NEXT.md and ONBOARDING.md. Implement only
+P07: queue entries and ownership. P06 is verified locally, not deployed. P05's
+hosted trial admission remains revoked; preserve that state.
 Keep credentials in provider/secret storage, exact callbacks, explicit confirmation,
-disabled signup, server-side membership and email budgets. Verify P06, update
-the docs and stop for review. Do not start P07 or publish the app.
+disabled signup, server-side membership and email budgets. Resolve P07's entry
+defaults and enterprise hostname requirements. Verify P07, update the docs and
+stop for review. Do not start P08 or publish the app.
 ```
 
 ## Prompt for any later item
@@ -47,8 +48,9 @@ The final reply should name the completed item, give the useful result/link, sum
 
 ## Current handoff
 
-P00-P04A are complete locally; P05 is complete for the controlled hosted trial
-and ready for review. P06 is the next ready item, not started. See
+P00-P04A are complete locally; P05 is complete for the controlled hosted trial.
+P06 is complete locally and ready for onboarding review; P07 is next when selected.
+See [ONBOARDING](ONBOARDING.md) for implementation, local evidence and limits, and
 [HOSTED_AUTH](HOSTED_AUTH.md) for provider state, acceptance evidence and limits.
 Three requested messages arrived in Junk; recipient SPF/DMARC passed on the third.
 First and confirmed-user login, reload/sign-out, link expiry/replay, CAPTCHA reuse
@@ -61,7 +63,9 @@ disconnected demo; rebuild explicit trial configuration only when needed.
 [AUTH](AUTH.md) retains the local runbook. Hosted/local builds share the exact
 loopback root but use distinct explicit modes. Production publication at
 `https://reviews.pedro-costa.dev/` remains P12/P13. The queue is still fictional;
-invitation claiming and all subsequent queue work remain later items.
+P06 now implements invitation claiming and profiles locally. All queue work
+remains later items. The owner confirmed email visibility to active teammates.
 
-P03 is committed as c2b44c8, P04 as 1ff6c13 and P04A as 99c68f3. P05 changes
-are uncommitted. No push or app publication has been performed.
+P06 changes are uncommitted. No commit, push or app publication was performed
+during P06. Inspect Git for earlier history rather than assuming another
+checkout or conversation has synchronized it.

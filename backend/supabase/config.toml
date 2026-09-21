@@ -83,5 +83,9 @@ enabled = true
 [functions.send-auth-email]
 verify_jwt = false
 
+[functions.invite-member]
+# The handler validates the bearer with Auth /user before any privileged call.
+verify_jwt = false
+
 [analytics]
 enabled = false

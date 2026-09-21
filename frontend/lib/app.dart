@@ -8,6 +8,8 @@ import 'features/profiles/profile_page.dart';
 import 'features/queue/queue_page.dart';
 import 'features/queue/queue_repository.dart';
 import 'features/teams/workspace_shell.dart';
+import 'features/teams/onboarding_page.dart';
+import 'features/teams/onboarding_repository.dart';
 import 'shared/theme_controller.dart';
 
 class ReviewQueueApp extends StatefulWidget {
@@ -17,11 +19,13 @@ class ReviewQueueApp extends StatefulWidget {
     this.repository = const DemoQueueRepository(),
     this.initialLocation,
     this.auth,
+    this.onboarding,
   });
   final ThemeController theme;
   final QueueRepository repository;
   final String? initialLocation;
   final AuthController? auth;
+  final OnboardingRepository? onboarding;
   @override
   State<ReviewQueueApp> createState() => _ReviewQueueAppState();
 }
@@ -41,7 +45,21 @@ class _ReviewQueueAppState extends State<ReviewQueueApp> {
         routes: [
           GoRoute(
             path: '/',
-            builder: (context, state) => SignInPage(auth: widget.auth),
+            builder: (context, state) =>
+                widget.auth == null || widget.onboarding == null
+                ? SignInPage(auth: widget.auth)
+                : ListenableBuilder(
+                    listenable: widget.auth!,
+                    builder: (context, _) =>
+                        widget.auth!.email != null &&
+                            !widget.auth!.hasPendingLink
+                        ? OnboardingPage(
+                            key: ValueKey(widget.auth!.email),
+                            repository: widget.onboarding!,
+                            signOut: widget.auth!.signOut,
+                          )
+                        : SignInPage(auth: widget.auth),
+                  ),
           ),
           GoRoute(
             path: '/teams/:teamId',

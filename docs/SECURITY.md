@@ -1,6 +1,6 @@
 # Security design and launch evidence
 
-Last updated: 2026-09-20. P03/P04/P04A local controls are verified. P05 controlled
+Last updated: 2026-09-21. P06 onboarding is verified locally. P03/P04/P04A local controls are verified. P05 controlled
 hosted login, mail, CAPTCHA replay denial and passive-scanner checks passed.
 [AUTH](AUTH.md) and [HOSTED_AUTH](HOSTED_AUTH.md) distinguish implementation,
 provider configuration and observed behavior. Lifecycle/launch controls remain planned.
@@ -19,6 +19,22 @@ The queue still contains only public fictional presentation fixtures. P04 adds a
 Commands and scope are in the [backend README](../backend/README.md); actual results are in [STATUS](STATUS.md).
 
 ## Boundaries
+
+P06's [onboarding evidence](ONBOARDING.md) extends the P03 boundary with guarded
+invitation lifecycle/identity binding, self-only profile edits and owner-confirmed
+email visibility to shared **active** teammates. Username and metadata cannot
+claim invitations. Exact Auth user ID/current verified email, live admin checks,
+post-lock revocation checks and explicit grants protect the new RPCs. Provisioning
+can leave an unconfirmed orphan after a revoke race, but cannot grant membership.
+Retry reconciles the same identity rather than deleting or pre-confirming it.
+
+The new private limiter caps successful onboarding operations at 30 per identity
+per one-minute window. The P03 membership implementation is now private behind
+the budgeted public wrapper. Direct client writes and private helper execution
+remain denied. Existing rolling mail budgets and CAPTCHA are unchanged.
+Local security advisors reported five informational RLS/no-policy private tables,
+zero warnings/errors on 2026-09-21. Those tables intentionally have no API grants
+or policies; the prior hosted advisory result remains historical evidence.
 
 Protect work identities, team membership, PR/Jira URLs, comments, and review activity. Treat company URLs as private metadata even when their destinations already require company access.
 

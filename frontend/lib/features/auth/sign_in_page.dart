@@ -49,7 +49,7 @@ class _SignInPageState extends State<SignInPage> {
             Text('Signed in as ${auth.email}'),
             const SizedBox(height: 12),
             const Text(
-              'Your session is kept in open app tabs and survives reload. Team onboarding is not available yet; the queue below is still fictional.',
+              'Your session is kept in open app tabs and survives reload. The demo queue is still fictional.',
             ),
             const SizedBox(height: 16),
             OutlinedButton(
@@ -148,8 +148,8 @@ class _SignInPageState extends State<SignInPage> {
             widget.auth == null
                 ? 'Fictional people and entries. No account or authentication session is created.'
                 : widget.auth!.hostedTrial
-                ? 'Controlled developer trial. Team onboarding and queue actions are not available yet.'
-                : 'Local mail only. Team invitations and queue actions are coming in later steps.',
+                ? 'Controlled developer trial. Sign in to open your teams and profile.'
+                : 'Local mail only. Sign in to open your teams and profile.',
             style: TextStyle(fontSize: 12),
           ),
         ],

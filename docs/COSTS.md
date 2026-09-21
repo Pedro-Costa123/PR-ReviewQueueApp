@@ -2,6 +2,22 @@
 
 Checked: **2026-09-14** using official provider documentation. Prices below are provider-listed USD, before applicable tax or currency conversion. €0 means zero additional service charges on the selected free plans, not free domain renewal or a guarantee of permanent pricing.
 
+## P06 recheck (2026-09-21)
+
+Before invitation provisioning, official [Supabase pricing](https://supabase.com/pricing)
+still lists 500,000 Free Edge invocations. [Resend pricing](https://resend.com/pricing)
+still lists $0 for 3,000 emails/month, 100/day and three domains.
+[Turnstile plans](https://developers.cloudflare.com/turnstile/plans/) still lists
+20 free widgets, ten hostnames per widget and unlimited challenges. Provider,
+DNS, Pages and zero-additional-service assumptions are unchanged.
+
+P06 adds one authenticated provisioning Edge call per admin invite/retry and
+reuses the existing budgeted Auth mail route. Creating an unconfirmed identity
+does not itself send email. Onboarding mutations have a 30/minute per-identity
+database budget; delivery retains the stricter P04 rolling budgets. Validation
+used only local Auth/Mailpit, so no hosted delivery, deployment or new measured
+provider usage is claimed. No paid add-on or upgrade was enabled.
+
 ## P05 recheck (2026-09-18)
 
 Official pricing rechecked before hosted setup:
