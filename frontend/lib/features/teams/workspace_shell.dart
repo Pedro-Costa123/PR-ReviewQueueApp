@@ -13,12 +13,14 @@ class WorkspaceShell extends StatelessWidget {
     required this.path,
     required this.child,
     this.teamId,
+    this.connected = false,
   });
   final ThemeController theme;
   final QueueRepository repository;
   final String path;
   final String? teamId;
   final Widget child;
+  final bool connected;
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
@@ -47,7 +49,7 @@ class WorkspaceShell extends StatelessWidget {
             const SizedBox(width: 12),
           ],
         ),
-        drawer: wide
+        drawer: wide || connected
             ? null
             : Drawer(
                 child: SafeArea(child: _navigation(context, closeDrawer: true)),
@@ -55,7 +57,8 @@ class WorkspaceShell extends StatelessWidget {
         body: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (wide) SizedBox(width: 240, child: _navigation(context)),
+            if (wide && !connected)
+              SizedBox(width: 240, child: _navigation(context)),
             Expanded(
               child: Column(
                 children: [
@@ -66,9 +69,11 @@ class WorkspaceShell extends StatelessWidget {
                       vertical: 12,
                     ),
                     color: Theme.of(context).colorScheme.surfaceContainerHigh,
-                    child: const Text(
-                      'DEMO QUEUES · Fictional entries. Queue saving is not connected.',
-                      style: TextStyle(fontSize: 12),
+                    child: Text(
+                      connected
+                          ? 'PRIVATE WORKSPACE · Access is limited to your active teams.'
+                          : 'DEMO QUEUES · Fictional entries. Queue saving is not connected.',
+                      style: const TextStyle(fontSize: 12),
                     ),
                   ),
                   if (theme.warning != null)

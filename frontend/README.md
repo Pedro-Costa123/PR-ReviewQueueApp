@@ -2,14 +2,17 @@
 
 The Flutter Web shell has read-only fictional queues and optional local Supabase
 authentication. P05 adds an explicitly configured hosted trial with a lazy themed
-Turnstile dialog. Queue writes remain unavailable. Use [AUTH](../docs/AUTH.md) for
+Turnstile dialog. P07 connects queue writes in the signed-in workspace. Use [AUTH](../docs/AUTH.md) for
 local login or [HOSTED_AUTH](../docs/HOSTED_AUTH.md) for the controlled trial.
 
 P06 adds the connected signed-in root workspace: real team selector, profile
 completion/edit/view, admin invitations and member controls. Use the
 [onboarding runbook](../docs/ONBOARDING.md) for its two-team local preview.
-The queue routes remain fictional. Email is visible only to self/shared active
-teammates through the server. No P06 hosted deployment has been performed.
+The separate demo queue routes remain fictional. P07 adds real selected-team
+entries, validated manual links, Low/Medium/High/Critical priorities, guarded
+editing/deletion and retained drafts on conflicts. See [QUEUE](../docs/QUEUE.md)
+for its preview and checks. Email is visible only to self/shared active teammates
+through the server. No P06/P07 hosted deployment has been performed.
 
 Verified SDK: **Flutter 3.47.4 stable / Dart 3.13.3** on Windows. Only the web platform is scaffolded. Application dependencies and the lockfile are pinned; no global backend tooling is required.
 
@@ -42,7 +45,7 @@ node --check tool/serve.cjs
 node --test test/auth_callback.test.cjs test/turnstile.test.cjs
 ```
 
-Twenty Flutter tests and twelve JavaScript callback/widget tests cover auth,
+Thirty-two Flutter tests and twelve JavaScript callback/widget tests cover entries, auth,
 configuration, cancellation and the existing shell. With the release preview
 running, `node --test test/preview.test.cjs` adds three HTTP checks. For isolated
 widget QA run `node tool/turnstile-preview.cjs` and open port 4175 (`/narrow` for

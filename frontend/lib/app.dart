@@ -7,6 +7,7 @@ import 'features/auth/auth_controller.dart';
 import 'features/profiles/profile_page.dart';
 import 'features/queue/queue_page.dart';
 import 'features/queue/queue_repository.dart';
+import 'features/queue/entry_repository.dart';
 import 'features/teams/workspace_shell.dart';
 import 'features/teams/onboarding_page.dart';
 import 'features/teams/onboarding_repository.dart';
@@ -20,12 +21,14 @@ class ReviewQueueApp extends StatefulWidget {
     this.initialLocation,
     this.auth,
     this.onboarding,
+    this.entries,
   });
   final ThemeController theme;
   final QueueRepository repository;
   final String? initialLocation;
   final AuthController? auth;
   final OnboardingRepository? onboarding;
+  final EntryRepository? entries;
   @override
   State<ReviewQueueApp> createState() => _ReviewQueueAppState();
 }
@@ -35,12 +38,19 @@ class _ReviewQueueAppState extends State<ReviewQueueApp> {
     initialLocation: widget.initialLocation,
     routes: [
       ShellRoute(
-        builder: (context, state, child) => WorkspaceShell(
-          theme: widget.theme,
-          repository: widget.repository,
-          path: state.uri.path,
-          teamId: state.pathParameters['teamId'],
-          child: child,
+        builder: (context, state, child) => ListenableBuilder(
+          listenable: widget.auth ?? widget.theme,
+          builder: (context, _) => WorkspaceShell(
+            theme: widget.theme,
+            repository: widget.repository,
+            path: state.uri.path,
+            teamId: state.pathParameters['teamId'],
+            connected:
+                state.uri.path == '/' &&
+                widget.auth?.email != null &&
+                widget.auth?.hasPendingLink == false,
+            child: child,
+          ),
         ),
         routes: [
           GoRoute(
@@ -57,6 +67,7 @@ class _ReviewQueueAppState extends State<ReviewQueueApp> {
                             key: ValueKey(widget.auth!.email),
                             repository: widget.onboarding!,
                             signOut: widget.auth!.signOut,
+                            entries: widget.entries,
                           )
                         : SignInPage(auth: widget.auth),
                   ),

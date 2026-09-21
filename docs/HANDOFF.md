@@ -19,13 +19,13 @@ The repository documents are the shared source of context. A planning conversati
 
 ```text
 Work in the existing PR-ReviewQueueApp repository. Read AGENTS.md and the
-project docs, especially STATUS.md, NEXT.md and ONBOARDING.md. Implement only
-P07: queue entries and ownership. P06 is verified locally, not deployed. P05's
+project docs, especially STATUS.md, NEXT.md and QUEUE.md. Implement only
+P08: sprint/priority ordering and admin reordering. P06/P07 are verified locally, not deployed. P05's
 hosted trial admission remains revoked; preserve that state.
 Keep credentials in provider/secret storage, exact callbacks, explicit confirmation,
-disabled signup, server-side membership and email budgets. Resolve P07's entry
-defaults and enterprise hostname requirements. Verify P07, update the docs and
-stop for review. Do not start P08 or publish the app.
+disabled signup, server-side membership and email budgets. Preserve confirmed
+Low/Medium/High/Critical priorities and private enterprise host configuration.
+Verify P08, update the docs and stop for review. Do not start P09 or publish the app.
 ```
 
 ## Prompt for any later item
@@ -49,7 +49,8 @@ The final reply should name the completed item, give the useful result/link, sum
 ## Current handoff
 
 P00-P04A are complete locally; P05 is complete for the controlled hosted trial.
-P06 is complete locally and ready for onboarding review; P07 is next when selected.
+P07 is complete locally and ready for entry/ownership review; P08 is next when selected.
+See [QUEUE](QUEUE.md) for the entry contract, private hosts, preview and limitations.
 See [ONBOARDING](ONBOARDING.md) for implementation, local evidence and limits, and
 [HOSTED_AUTH](HOSTED_AUTH.md) for provider state, acceptance evidence and limits.
 Three requested messages arrived in Junk; recipient SPF/DMARC passed on the third.
@@ -62,10 +63,11 @@ disconnected demo; rebuild explicit trial configuration only when needed.
 
 [AUTH](AUTH.md) retains the local runbook. Hosted/local builds share the exact
 loopback root but use distinct explicit modes. Production publication at
-`https://reviews.pedro-costa.dev/` remains P12/P13. The queue is still fictional;
-P06 now implements invitation claiming and profiles locally. All queue work
-remains later items. The owner confirmed email visibility to active teammates.
+`https://reviews.pedro-costa.dev/` remains P12/P13. The signed-in queue now persists
+entries locally; demo routes remain fictional. Sorting/reorder, comments/reviews
+and archive remain later items. The owner confirmed email visibility to active
+teammates, title/owner-admin entry edits and Low/Medium/High/Critical priorities.
 
-P06 changes are uncommitted. No commit, push or app publication was performed
-during P06. Inspect Git for earlier history rather than assuming another
+P07 changes are uncommitted. No commit, push or app publication was performed
+during P07. Inspect Git for earlier history rather than assuming another
 checkout or conversation has synchronized it.

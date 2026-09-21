@@ -1,0 +1,1 @@
+void openEnterpriseLink(String url) {}

@@ -2,7 +2,7 @@
 
 Updated: 2026-09-21. **Execute one selected item, verify it, update the docs, and stop.** Do not turn this file into a single full-app implementation prompt.
 
-The owner selected `https://reviews.pedro-costa.dev/`, P05's hosted trial and then P06. P06 is complete locally; hosted rollout is unperformed. Stop for onboarding review. P07 is next when selected.
+The owner selected `https://reviews.pedro-costa.dev/`, P05's hosted trial, P06 and then P07. P07 is complete locally; hosted P06/P07 rollout is unperformed. Stop for queue-entry review. P08 is next when selected.
 
 `Complete` means the item's actual deliverable exists. `Ready` means the next item can start when requested. Later items remain planned, not authorized as a batch. Smaller UI/product defaults can be settled at the item that needs them.
 
@@ -16,8 +16,8 @@ The owner selected `https://reviews.pedro-costa.dev/`, P05's hosted trial and th
 | P04A | Local root-path and callback migration | Complete locally; ready for owner review | P04 |
 | P05 | Small hosted authentication/cost validation | Complete for controlled trial; ready for owner review | P04A |
 | P06 | Admin invitations, teams, and profiles | Complete locally; ready for owner review | P05 |
-| P07 | Create/read/edit queue entries and protected deletion | Ready; not started | P06 |
-| P08 | Sprint/priority ordering and admin reordering | Planned | P07 |
+| P07 | Create/read/edit queue entries and protected deletion | Complete locally; ready for owner review | P06 |
+| P08 | Sprint/priority ordering and admin reordering | Ready; not started | P07 |
 | P09 | Comments and per-user review signals | Planned | P08 |
 | P10 | Archive, restore, and data lifecycle | Planned | P09 |
 | P11 | Refresh, filtering, responsive UI, and accessibility | Planned | P10 |
@@ -117,9 +117,18 @@ No hosted deployment or real-company invitations. Stop here; P07 is not executed
 
 **Boundary:** No external GitHub/Jira credentials or inferred PR state.
 
+**Completed locally 2026-09-21:** connected entry list/add/edit/delete, guarded
+transactional RPCs, private per-team exact host configuration, canonical resource
+links, duplicate protection, optimistic versions, mutation budgets and deletion
+audit metadata. Owner confirmed title/owner-admin edits and later revised
+priorities to **Low, Medium, High, Critical**; Medium replaces Normal, including
+existing-row migration. Fictional hosts locally; real hosts remain private before
+live use. Verification and limitations are in [QUEUE](QUEUE.md) and [STATUS](STATUS.md).
+No P08 reorder controls or subsequent backlog behavior was implemented.
+
 ## P08 — Priority and reordering
 
-**Deliver:** Sprint-goal groups, High/Normal/Low groups, admin drag/drop and keyboard moves within a group. Transactional queue revisions prevent competing admins losing changes. Moving groups appends to the destination.
+**Deliver:** Sprint-goal groups, Critical/High/Medium/Low groups, admin drag/drop and keyboard moves within a group. Transactional queue revisions prevent competing admins losing changes. Moving groups appends to the destination. P07 already maintains revision/append metadata for create/edit/delete; reuse it and add the actual sorting/reorder contract here.
 
 **Acceptance:** A representative mixed queue sorts correctly; a member cannot reorder via UI or API; cross-group drag is disallowed; simultaneous edits produce a clear conflict; order remains stable after reload.
 

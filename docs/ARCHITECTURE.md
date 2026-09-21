@@ -1,6 +1,7 @@
 # Architecture
 
-Updated: 2026-09-21. P06 adds locally verified onboarding; see [ONBOARDING](ONBOARDING.md).
+Updated: 2026-09-21. P07 adds locally verified queue CRUD/ownership; see [QUEUE](QUEUE.md).
+P06 adds locally verified onboarding; see [ONBOARDING](ONBOARDING.md).
 P04/P04A local authentication and root callbacks are verified.
 P05 adds the Resend adapter, Turnstile bridge and strict loopback hosted-trial
 configuration. The controlled hosted trial passed; the temporary admission is
@@ -70,6 +71,17 @@ Routes are `/`, `/teams/:teamId`, `/teams/:teamId/archive`, and `/teams/:teamId/
 
 ## Backend organization
 
+P07 connects `EntryRepository`/`EntryQueue` to the signed-in root workspace.
+The fifth migration adds `create_entry`, `update_entry`, `delete_entry` and
+`queue_link_hosts`. They derive identity, require live membership, recheck after
+the team lock, enforce owner/admin writes and optimistic versions, and retain
+denied direct table writes. Private exact-host configuration is empty by default;
+only local test helpers insert fictional hosts. Low/Medium/High/Critical replaces
+the preparatory priorities, with an explicit Normal-to-Medium migration.
+See QUEUE for canonical links, mutation budgets, conflict recovery and audit data.
+P08 sorting/reorder remains unimplemented; P07 maintains append positions and
+revision metadata needed by those later operations. Hosted P06/P07 is unperformed.
+
 P06 now connects the signed-in root workspace to real teams and profiles.
 `invite-member` verifies Auth `/user`, prepares with the caller JWT, and uses a
 service-only RPC to reconcile an exact invitation with Auth. It never sends mail
@@ -80,11 +92,11 @@ email disclosure. A private fixed-window mutation budget protects onboarding,
 including the wrapped P03 membership RPC. Direct writes stay denied. P06 is local
 only; the hosted project still has the three P03–P05 migrations.
 
-P03 now provides project-local Supabase CLI 2.117.0, Docker config, the initial migration, local SQL-role/Data API tests, fictional test fixtures, and an operator bootstrap script. The queue frontend remains disconnected; the local sign-in screen is connected in P04. `private` is excluded from the exposed API schemas. Public reads use explicit grants and live-membership RLS; all direct writes are denied. Global and schema-scoped function default grants are revoked, including PostgreSQL's default PUBLIC execution. Helpers use fixed search paths and derive identity from `auth.uid()`.
+P03 now provides project-local Supabase CLI 2.117.0, Docker config, the initial migration, local SQL-role/Data API tests, fictional test fixtures, and an operator bootstrap script. The sign-in screen was connected in P04 and the real queue in P07. `private` is excluded from the exposed API schemas. Public reads use explicit grants and live-membership RLS; all direct writes are denied. Global and schema-scoped function default grants are revoked, including PostgreSQL's default PUBLIC execution. Helpers use fixed search paths and derive identity from `auth.uid()`.
 
-The only exposed P03 mutation is `set_member_access`, restricted to live team admins and existing memberships. It serializes on the team, rechecks authority after locking, updates data revision, revokes pending invitations on removal, and audits the change. Triggers also serialize operator membership writes and protect the last admin; a deferred team constraint requires the initial admin at commit. `private.bootstrap_team` is operator-only, requires an existing verified Auth identity, and creates the team/admin/audit atomically. Queue behavior remains later work. P04 adds service-role-only reserve_auth_email/finish_auth_email functions and a signed local email hook.
+The only exposed P03 mutation is `set_member_access`, restricted to live team admins and existing memberships. It serializes on the team, rechecks authority after locking, updates data revision, revokes pending invitations on removal, and audits the change. Triggers also serialize operator membership writes and protect the last admin; a deferred team constraint requires the initial admin at commit. `private.bootstrap_team` is operator-only, requires an existing verified Auth identity, and creates the team/admin/audit atomically. Queue mutation behavior is now implemented by P07. P04 adds service-role-only reserve_auth_email/finish_auth_email functions and a signed local email hook.
 
-Own profiles remain readable without team membership; other profiles require a shared active team. Profile rows contain no email. Revocation removes team data access immediately but does not delete the person's own profile or unrelated team memberships. Direct owner/admin queue deletion is intentionally unavailable until P07.
+Own profiles remain readable without team membership; other profiles require a shared active team. Profile rows contain no email. Revocation removes team data access immediately but does not delete the person's own profile or unrelated team memberships. P07 permits owner/admin soft deletion only through its guarded RPC.
 
 Tests and fixtures live outside migrations and configured seeds, require an empty local database, and refuse linked/remote targets. Synthetic local JWTs exercise PostgREST authorization without implementing login. Setup, verification, and operator commands are in the [backend README](../backend/README.md).
 
@@ -166,7 +178,7 @@ endpoint with event idempotency, bounded timeouts and no automatic retry. See D2
 ## Mutations and consistency
 
 - Read identity from the verified session, derive ownership server-side, and recheck current membership in the database transaction.
-- P06 implements transactional `claim_invites`. Queue functions such as `create_entry`, `update_entry`, `move_entry`, `archive_entry`, `restore_entry` and `set_review` remain proposed contracts.
+- P06 implements transactional `claim_invites`. P07 implements `create_entry`, `update_entry` and `delete_entry`; `move_entry`, `archive_entry`, `restore_entry` and `set_review` remain proposed contracts.
 - Entry edits carry an expected version; stale writes return a conflict and the latest version. Do not silently overwrite another user's change.
 - A reorder locks the team's queue revision, checks the expected revision, validates admin/group membership, and updates positions atomically. A bounded group can be reindexed in one transaction; avoid fractional-rank infrastructure at this scale.
 - Changing sprint flag/priority appends to the destination group and advances the queue revision. Restore behaves similarly. Database uniqueness detects an active duplicate during restore.

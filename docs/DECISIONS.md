@@ -16,7 +16,7 @@ Updated: 2026-09-21. **Confirmed** means specified/answered by the owner. **Prop
 | D10 | Superseded by D27 | The proposed combined portfolio/app Pages artifact is no longer needed. Deploy this repository's app independently with its own custom subdomain. |
 | D11 | Proposed | Use hash routing with the required Flutter base href. It avoids relying on unsupported Pages rewrites; callback compatibility is an early test. |
 | D12 | Proposed | Enforce permissions in RLS and transactional functions. Privileged Edge Functions are narrowly scoped to invitation/provisioning and mail. No second general-purpose backend server. |
-| D13 | Proposed | Short title + High/Normal/Low priorities; owner/admin entry edits and archiving; no self-review. These fill unspecified product details and may be adjusted at the relevant step. |
+| D13 | Partly superseded by D30 | P07 confirms title and owner/admin entry edits and replaces the proposed priorities. Archive authority and no-self-review remain proposed for P09/P10. |
 | D14 | Proposed | Active/archive are queue lifecycle states, not provider-verified PR states. Review signals are local indicators, not GitHub approvals. |
 | D15 | Proposed | Operator bootstraps teams/initial admins; team admins manage invitations and roles. Prevent last-admin removal and cross-team admin authority. |
 | D16 | Proposed | Review theme/layout locally first, then validate invitation/security design before building the full queue. |
@@ -99,6 +99,28 @@ restore removed memberships; an admin must explicitly restore access.
 
 P06 adds no provider, dependency, public signup, queue behavior or deployment.
 See [ONBOARDING](ONBOARDING.md) for recovery, verification and local-only limits.
+
+## D30 — P07 entries and enterprise hosts (2026-09-21)
+
+**Confirmed:** the owner selected P07 only, accepted required title (1–160),
+submitter/team-admin editing and soft deletion with audit metadata, and chose
+operator-configured exact hostname allowlists with fictional hosts locally.
+Real company hosts will be supplied privately before live use. A later instruction
+in the same item replaced the earlier labels with **Low, Medium, High, Critical**.
+Medium replaces Normal as the default; the migration converts existing values and
+advances versions/revisions to invalidate stale edits.
+
+**Implemented locally:** empty-by-default private team host allowlist; strict
+GitHub PR/Jira issue resource grammar; canonical resource URLs without
+query/fragments; server-derived submitter; owner/admin guarded edits/deletion;
+version conflicts; unique active PR/team; 30 successful mutations per identity
+per minute; minimal private audit metadata. See [QUEUE](QUEUE.md).
+
+Existing Material patterns are reused. No design-generation service, dependency,
+external integration, hosted migration, DNS, Pages or billing change is included.
+P08 sorting/reorder, P09 review/comments and P10 archive/recovery/purge remain
+unimplemented. Host availability and real enterprise access are not claimed by
+the fictional local link checks.
 
 ## Alternatives evaluated
 

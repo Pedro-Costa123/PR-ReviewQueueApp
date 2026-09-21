@@ -1,9 +1,9 @@
 # Product
 
-Last updated: 2026-09-21. Owner: Pedro Costa. Stage: P06 invitations/teams/profiles
-complete locally, ready for review. P07 is next when selected. P05 controlled
-hosted authentication is complete; Inbox placement remains a release follow-up. Queue data
-remains fictional and disconnected. The production subdomain is confirmed but
+Last updated: 2026-09-21. Owner: Pedro Costa. Stage: P07 queue entries/ownership
+complete locally, ready for review. P08 is next when selected. P05 controlled
+hosted authentication is complete; Inbox placement remains a release follow-up. The
+signed-in queue now persists data locally; demo routes remain fictional. The production subdomain is confirmed but
 not published. Demo content and preparatory schema fields remain proposals.
 
 ## Problem and outcome
@@ -53,11 +53,11 @@ Confirmed rules above take precedence. Additional details below are proposed def
 
 ### Queue entries and ordering
 
-- Also request a short title (1-160 characters) so the queue is understandable without fetching a private PR. This is an added proposed field, not an integration requirement.
-- Require HTTPS PR and Jira links, an explicit sprint-goal boolean, and priority: High, Normal, or Low. Normal is the proposed default.
-- Proposed sort: sprint-goal entries first; within each group, High before Normal before Low; within each priority group, admin-defined order, then stable creation order.
+- **Confirmed in P07:** require a short title (1-160 characters), HTTPS PR/Jira links, an explicit sprint-goal boolean, and priorities **Low, Medium, High, Critical**. Medium replaces Normal as the implementation default.
+- P07 uses operator-configured exact hostname allowlists, empty in migrations and fictional in local tests. Real company hosts stay in private configuration before live use. See [QUEUE](QUEUE.md) for resource paths and URL normalization.
+- Planned P08 sort: sprint-goal entries first; within each group, Critical before High before Medium before Low; within each priority group, admin-defined order, then stable creation order. P07 lists by stable creation/ID order only.
 - Admin drag/drop and keyboard move controls operate within a group. Changing the sprint-goal flag or priority moves the entry to the end of its new group. If admins need an emergency override across groups, choose that different rule in P01.
-- Only submitters and team admins edit an entry. Other members can comment and set their own review signal.
+- **Confirmed in P07:** only submitters and team admins edit an entry. Other members' comments/review signals remain P09.
 - An active entry with the same normalized PR URL in the same team is rejected as a duplicate. The same PR in another team is permitted. Re-adding an archived PR prompts restoration by an authorized user.
 - Suggested queue columns: order, title, sprint-goal badge, priority, submitter, review counts, age, and link/actions menu.
 - Include text search and filters for sprint goal, priority, and submitter. Keep paginated archive views separate from the active queue.
@@ -75,7 +75,7 @@ Confirmed rules above take precedence. Additional details below are proposed def
 
 - An authorized submitter or team admin can archive and restore an entry. Archiving records who did it, when, and a reason: merged, closed, no longer needed, or other.
 - Archived entries keep comments and signals and become read-only until restored. Archive is not deletion.
-- Delete removes an erroneous entry from normal views; proposed implementation is soft deletion with 30-day recovery for the submitter/team admin, followed by a controlled purge. Confirm retention in P01; do not implement an unapproved automatic purge.
+- P07 deletion hides an erroneous active entry with actor/time/version and minimal audit metadata, as confirmed by the owner. Recovery, retention and purge policy remain unconfirmed P10 work; no recovery period or automatic purge is implemented.
 - Archive manually, as confirmed by the owner. Show that state is manually maintained, with the last updater and timestamp. An archived entry must not be represented as provider-verified merged/closed just because someone archived it.
 - Do not add GitHub/Jira integrations, link previews, server-side URL fetches, webhooks, credentials, or network tunnels. The user's browser opens the enterprise links directly.
 
@@ -116,8 +116,8 @@ Native mobile/desktop apps, payments, attachments/avatar uploads, Teams messages
 | Q04 answered | Ordering and teams? | Sprint first, then priority, admin reorder within groups; multiple teams allowed. |
 | Q05 answered | External hosting permission? | Owner says allowed. Region/retention remain unspecified; select an available EU project region unless a different requirement emerges. |
 | Q06 | Who creates teams and appoints initial admins? | Deployment operator bootstraps them. Team admins manage their own members. |
-| Q07 partially answered | Who may archive/edit, should emails be visible to teammates, and can submitters review their own PR? | Email visible to all active teammates confirmed 2026-09-21; entry/archive/self-review defaults remain for their respective backlog items. |
-| Q08 | Are the title field, priority labels, deletion recovery, and retention acceptable? | Title + High/Normal/Low; confirm archive/audit retention and deletion policy before data lifecycle work. |
+| Q07 partially answered | Who may archive/edit, should emails be visible to teammates, and can submitters review their own PR? | Email visible to all active teammates and submitter/team-admin edits confirmed 2026-09-21. Archive/self-review defaults remain for their respective backlog items. |
+| Q08 partially answered | Are the title field, priority labels, deletion recovery, and retention acceptable? | Title and Low/Medium/High/Critical confirmed in P07. Soft deletion with audit metadata now; recovery/retention/purge remain P10. |
 
 ## Pilot success criteria
 

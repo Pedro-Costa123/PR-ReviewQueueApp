@@ -168,7 +168,7 @@ test('private tables, operator bootstrap, trigger functions, and default grants 
   assert.equal(scalar(`select string_agg(n.nspname || '.' || p.proname, ',' order by n.nspname, p.proname)
     from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname in ('public', 'private')
       and has_function_privilege('authenticated', p.oid, 'EXECUTE')`),
-  'private.is_admin,private.is_member,private.shares_team,public.claim_invites,public.prepare_invite,public.profile_details,public.revoke_invite,public.save_profile,public.set_member_access');
+  'private.is_admin,private.is_member,private.shares_team,public.claim_invites,public.create_entry,public.delete_entry,public.prepare_invite,public.profile_details,public.queue_link_hosts,public.revoke_invite,public.save_profile,public.set_member_access,public.update_entry');
   assert.equal(scalar(`select count(*) from pg_proc p join pg_namespace n on n.oid = p.pronamespace
     where n.nspname in ('public', 'private') and has_function_privilege('anon', p.oid, 'EXECUTE')`), '0');
   assert.equal(scalar(`select count(*) from pg_class c join pg_namespace n on n.oid = c.relnamespace

@@ -2,18 +2,24 @@
 
 P03 implements the **local database and authorization foundation**. P04 adds local
 magic-link authentication, a signed Edge hook, guarded quotas and Mailpit delivery.
-The Flutter sign-in screen can connect locally; the queue remains fictional.
+The Flutter sign-in screen and signed-in queue can connect locally.
 P05 adds a gated Resend sender, bounded operator trial admissions and mock sender
 tests and a CLI-backed operator provisioning helper. The existing Free hosted
 project has the three migrations and the signed hook deployed/enabled. Controlled
 delivery/login and live denial checks passed; the trial admission is now revoked.
-Inbox placement remains a release follow-up. No queue mutation API.
+Inbox placement remains a release follow-up.
 
 P06 adds a fourth **local** migration, `invite-member`, guarded invitation
 claiming and profile RPCs, and the budgeted membership wrapper. Its 14 dedicated
 tests run with `npm run test:onboarding` while `npm run functions` is serving.
 See [ONBOARDING](../docs/ONBOARDING.md) for setup, recovery, grants and evidence.
 The hosted project still has three migrations; no P06 deployment was performed.
+
+P07 adds the fifth local migration, guarded create/edit/delete functions,
+private exact enterprise host configuration and queue mutation limits. Priorities
+are Low/Medium/High/Critical. `npm run test:queue` runs its direct API, denial and
+concurrency checks. See [QUEUE](../docs/QUEUE.md) for the local preview, operator
+host configuration, URL grammar and verification. No P07 hosted deployment.
 
 Follow [AUTH](../docs/AUTH.md) for the complete P04 setup/test/preview sequence.
 Use [HOSTED_AUTH](../docs/HOSTED_AUTH.md) for P05; never run local fixtures/tests
@@ -89,20 +95,20 @@ includes local development keys; do not paste it into committed logs or document
   create a membership. The last active admin cannot be removed or demoted.
 - Direct table writes are denied even to team admins and submitters. Immutable
   keys and composite foreign keys add protection beneath future guarded writes.
-  Read policies hide soft-deleted entries and their children. No deletion,
-  restoration, ordering, or purge operation has been implemented.
+  Read policies hide soft-deleted entries and their children. P07 adds guarded
+  owner/admin soft deletion; restoration, reorder and purge remain unimplemented.
 
 The `private` schema is not exposed by PostgREST. All elevated functions have a
 fixed empty search path. Explicit grants and global/schema default revocations
 prevent newly added functions inheriting PUBLIC execution. Future migrations
 must continue to declare permissions explicitly and extend the denial tests.
 
-The proposed title/priority/lifecycle columns prepare later items; they do not
-confirm product defaults. Complete enterprise URL validation is P07, self-review
-behavior P09, and retention/purging P10. P04 adds service-role-only reserve_auth_email/finish_auth_email functions and
+P07 confirms title/entry permissions and Low/Medium/High/Critical priorities,
+implements enterprise URL validation and the queue mutation budget. Self-review
+behavior remains P09, and retention/purging P10. P04 adds service-role-only reserve_auth_email/finish_auth_email functions and
 atomic budgets; clients still cannot access operational tables. P06 adds admin
-UI/provisioning, profile/claim RPCs and onboarding mutation limits. Queue mutation
-limits are later work; this remains a locally verified implementation, not a release.
+UI/provisioning, profile/claim RPCs and onboarding mutation limits. This remains a
+locally verified implementation, not a release.
 
 ## Explicit operator bootstrap
 

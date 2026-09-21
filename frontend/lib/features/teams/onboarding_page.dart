@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../shared/widgets.dart';
+import '../queue/entry_repository.dart';
+import '../queue/entry_queue.dart';
 import 'onboarding_repository.dart';
 
 class OnboardingPage extends StatefulWidget {
@@ -9,9 +11,11 @@ class OnboardingPage extends StatefulWidget {
     super.key,
     required this.repository,
     required this.signOut,
+    this.entries,
   });
   final OnboardingRepository repository;
   final Future<void> Function() signOut;
+  final EntryRepository? entries;
   @override
   State<OnboardingPage> createState() => _OnboardingPageState();
 }
@@ -296,11 +300,15 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   },
           ),
           const SizedBox(height: 16),
-          const SurfaceCard(
-            child: Text(
-              'Your team queue will appear here when queue saving is available.',
+          if (widget.entries != null && !_busy)
+            EntryQueue(
+              key: ValueKey(_teamId),
+              repository: widget.entries!,
+              teamId: _teamId!,
+              admin: _admin,
+              members: _members,
+              viewProfile: _viewProfile,
             ),
-          ),
           const SizedBox(height: 24),
           Text('Members', style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 12),

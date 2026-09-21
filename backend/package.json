@@ -14,7 +14,8 @@
     "test": "node --test --test-concurrency=1 tests/authorization.test.cjs",
     "test:unit": "node --test tests/local-callback.test.cjs tests/email-hook.test.ts tests/hosted-email.test.ts",
     "test:auth": "node --test --test-concurrency=1 tests/local-callback.test.cjs tests/email-hook.test.ts tests/hosted-email.test.ts tests/auth.test.cjs",
-    "test:onboarding": "node --test --test-concurrency=1 tests/invite-handler.test.ts tests/onboarding.test.cjs"
+    "test:onboarding": "node --test --test-concurrency=1 tests/invite-handler.test.ts tests/onboarding.test.cjs",
+    "test:queue": "node --test --test-concurrency=1 tests/queue.test.cjs"
   },
   "devDependencies": { "supabase": "2.117.0" }
 }

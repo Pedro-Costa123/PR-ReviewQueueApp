@@ -1,11 +1,40 @@
 # Security design and launch evidence
 
-Last updated: 2026-09-21. P06 onboarding is verified locally. P03/P04/P04A local controls are verified. P05 controlled
+Last updated: 2026-09-21. P07 queue mutations and P06 onboarding are verified locally. P03/P04/P04A local controls are verified. P05 controlled
 hosted login, mail, CAPTCHA replay denial and passive-scanner checks passed.
 [AUTH](AUTH.md) and [HOSTED_AUTH](HOSTED_AUTH.md) distinguish implementation,
 provider configuration and observed behavior. Lifecycle/launch controls remain planned.
 
-The queue still contains only public fictional presentation fixtures. P04 adds a real local Auth client and sessionStorage adapter, with SDK cross-tab synchronization. There is no fake signed-in identity, role switch or company URL. Browser navigation between demo teams is not an authorization test. P03 SQL-role/Data API denial tests run separately against local Supabase. The release build remains a local preview, not a production authentication path.
+The signed-in workspace now reads/writes team entries through guarded P07 RPCs;
+public demo routes still contain only fictional presentation fixtures. P04 adds
+a real local Auth client and sessionStorage adapter, with SDK cross-tab synchronization.
+There is no fake signed-in identity, role switch or company URL. Browser demo
+navigation is not an authorization test. SQL-role/Data API denial tests run against
+local Supabase. The release build remains a local preview, not a production auth path.
+
+## P07 implemented evidence and limits
+
+The fifth migration adds a private, empty-by-default per-team enterprise host
+allowlist and atomic queue mutation budget. Server-side resource URL validation,
+session-derived submitter, immutable team/owner, post-lock live membership/role
+checks, expected versions, unique active PR/team, soft-deletion metadata and
+minimal audit events are enforced through narrow RPCs. Direct writes/private
+helper execution remain denied to API roles. Only active team members may read
+their allowlist; the client revalidates stored links before opening a protected
+new tab. No server fetch or external integration is present.
+
+The P07 tests cover anonymous, cross-team, non-owner, forged-team/submitter,
+revoked-token and queued-after-revocation denials; hostile URLs; concurrent
+duplicates, edits and quota reservations; stale deletion; parent/child hiding;
+all four priorities; and private configuration/function grants. SQL lint passes.
+Local security advisors report seven informational private RLS/no-policy findings
+and zero warnings/errors; these tables deliberately have no API access policies.
+The shared audit uses no URL/title copies. See [QUEUE](QUEUE.md) for exact
+grammar, budget semantics, operator configuration, runbook and limitations.
+
+P07 adds no real company hosts or production access. Actual company navigation,
+hosted P06/P07 deployment and retention/recovery remain future work. Rate budgets
+cap successful writes, not read traffic or all failed request attempts.
 
 ## P03 implemented evidence and limits
 

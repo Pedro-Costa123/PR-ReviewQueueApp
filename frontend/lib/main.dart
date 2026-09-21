@@ -8,6 +8,7 @@ import 'features/auth/browser_session.dart';
 import 'features/auth/auth_config.dart';
 import 'features/auth/challenge.dart';
 import 'features/teams/onboarding_repository.dart';
+import 'features/queue/entry_repository.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -17,6 +18,7 @@ Future<void> main() async {
   await theme.load();
   AuthController? auth;
   OnboardingRepository? onboarding;
+  EntryRepository? entries;
   const api = String.fromEnvironment('SUPABASE_URL');
   const key = String.fromEnvironment('SUPABASE_ANON_KEY');
   const publicKey = String.fromEnvironment('SUPABASE_PUBLISHABLE_KEY');
@@ -63,6 +65,14 @@ Future<void> main() async {
       Supabase.instance.client,
       repository,
     );
+    entries = SupabaseEntryRepository(Supabase.instance.client);
   }
-  runApp(ReviewQueueApp(theme: theme, auth: auth, onboarding: onboarding));
+  runApp(
+    ReviewQueueApp(
+      theme: theme,
+      auth: auth,
+      onboarding: onboarding,
+      entries: entries,
+    ),
+  );
 }

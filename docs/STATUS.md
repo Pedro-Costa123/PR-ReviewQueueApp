@@ -5,12 +5,13 @@ Updated: 2026-09-21.
 ## Current implementation
 
 P00-P04A are complete locally. P05 is complete for the controlled hosted trial.
-**P06 is complete locally, ready for owner review.** P07 has not started. The Flutter queue
-remains fictional and read-only. The selected Supabase Free project now has the
+**P07 is complete locally, ready for owner review.** The signed-in Flutter queue
+now persists entries with guarded edits/deletion; separate demo routes remain
+fictional and read-only. The selected Supabase Free project still has the
 three versioned migrations and one operator-provisioned trial identity, without
 fixtures or memberships. No production app is
 deployed. See [HOSTED_AUTH](HOSTED_AUTH.md) for the trial and [AUTH](AUTH.md) for
-local development. [ONBOARDING](ONBOARDING.md) covers the P06 workflow and checks.
+local development. [ONBOARDING](ONBOARDING.md) covers P06; [QUEUE](QUEUE.md) covers P07.
 
 - P02 shell: desktop/narrow navigation, Atlas/Orbit fixtures, profile/archive
   placeholders, dark default and saved theme preference.
@@ -32,9 +33,68 @@ local development. [ONBOARDING](ONBOARDING.md) covers the P06 workflow and check
   preview denial tests, and verified replacement runbook commands.
 
 Not complete: reliable Inbox placement and production-hostname acceptance,
-hosted P06 deployment, real queue CRUD/reorder/comments/reviews/archive,
+hosted P06/P07 deployment, queue sorting/reorder/comments/reviews/archive,
 CI, independent Pages release or deployment. Authentication alone grants no team;
 the guarded P06 claim transaction creates invited memberships.
+
+## P07 implementation and evidence on 2026-09-21
+
+- Added the fifth migration, guarded create/update/delete/host-list RPCs,
+  private team hostname configuration and atomic queue mutation budgets.
+  Ownership is session-derived; direct writes stay denied. Deleted parents and
+  their children disappear through existing RLS, with minimal audit metadata.
+- Connected entry list/forms/actions to P06's selected-team workspace; added
+  safe browser link opening, retained drafts on save errors and explicit
+  conflict/duplicate/quota feedback. Signed-in navigation no longer labels the
+  real workspace as a demo. Separate demo routes are still read-only.
+- Owner confirmed title (1–160), owner/team-admin edits, soft deletion now and
+  recovery/purge in P10, and fictional exact hosts locally with real hosts private
+  before live use. Later correction: **Low, Medium, High, Critical**; Medium is
+  the default. Migration replaces existing Normal values and invalidates stale
+  versions. No material unanswered question blocks local P07.
+- Clean reset applied all five migrations with no seeded hosts or identities.
+  Final `npm test`: **19 passed**; `npm run test:queue`: **11 passed**;
+  `npm run lint`: passed, no schema errors. Direct denial and concurrency coverage
+  includes non-owner/foreign-team deletion, forged ownership/team, stale edits,
+  queued revocation, duplicate active URLs and atomic mutation limits.
+- Existing auth/hook regression: **28 passed**; onboarding/handler regression:
+  **14 passed**. `flutter analyze`: no issues; **32 Flutter tests passed**,
+  including validation/defaults, Critical edits/version forwarding, conflict
+  draft retention, ownership UI, delete confirmation, refresh clearing and
+  narrow Escape cancellation. JavaScript callback/Turnstile/preview: **15 passed**.
+- Configured and default root release builds and Wasm dry runs passed; the
+  pre-existing unused Cupertino font warning remains. No dependency/lockfile change.
+- Browser: real captured local provider login/profile, Tab/Enter creation/save,
+  concurrent RPC edit producing retained-draft conflict, reload persistence,
+  canonical PR and Jira destinations in new tabs, Critical priority editing,
+  Normal-to-Medium fixture migration, owner deletion, two-team isolation and
+  team-specific controls. Light/dark 390 × 844 forms and desktop layout inspected;
+  Escape restores focus and keyboard sign-out clears workspace data. Console clean.
+  Fictional enterprise hosts do not resolve; actual enterprise access is untested.
+- Initial checks found style lints and Escape blocked by a non-dismissible
+  dialog barrier; corrected and rerun successfully. The Supabase CLI's telemetry
+  and Node workers required sandbox escalation. The web tool could not parse the
+  markdown changelog; curl retrieved it after PowerShell's reader failed.
+- Updated product/architecture/security/decisions and the new QUEUE runbook,
+  README/handoff pointers and P08's planned priority labels. No P08+ behavior,
+  hosted migration, provider/DNS/Pages operation, real mail, commit or push.
+- Documentation checks passed for **16 Markdown files and 94 relative links**,
+  balanced fences and whitespace. Scanned **94 source/config files** for
+  private-key/provider-secret patterns; only the existing explicit invalid
+  key marker in the auth configuration test matched and was reviewed/excluded. No real
+  secrets found. Helper/test syntax, unchanged lockfiles/license and
+  `git diff --check` passed. Final Dart format check: 34 files, unchanged.
+  An initial format invocation stalled inside the sandbox and was interrupted;
+  the equivalent approved argument order passed.
+- After browser QA, signed out and rebuilt without environment defines. The
+  final browser showed disconnected sign-in, and the artifact contains no local
+  fake identity. Preview/functions were stopped and `npm run stop` passed,
+  preserving the final fictional test database. No deployment was performed.
+
+Lists remain bounded to 100 with manual refresh and stable creation order.
+P08 owns sprint/priority sorting and reorder; P07 only maintains necessary
+append/revision metadata. Hosted rollout, private real-host configuration,
+enterprise availability, Inbox placement and final HTTPS callback remain ahead.
 
 ## P06 implementation and evidence on 2026-09-21
 
@@ -93,8 +153,8 @@ the guarded P06 claim transaction creates invited memberships.
 
 No material P06 product question remains unanswered. P06 is locally verified;
 hosted rollout is explicitly unperformed. Lists are bounded at 100 and refreshed
-manually; background refresh/pagination remain P11. Stop for onboarding review;
-P07 is next, with enterprise hostname and entry-default questions still ahead.
+manually; background refresh/pagination remain P11. This was the P06 review
+boundary; P07 was subsequently selected and its current evidence is above.
 
 ## P05 implementation and evidence on 2026-09-18 through 2026-09-20
 
@@ -357,7 +417,8 @@ were outstanding at that point; only the local P04A work is now complete.
 Workspace: C:\Users\pedro\Projects\PR-ReviewQueueApp. Branch: main. P03 is
 committed as c2b44c8 and P04 as 1ff6c13. P04A began from a clean worktree at
 bd8e62c (the hosting-decision documentation commit) and was committed as 99c68f3.
-P05 changes are uncommitted. No fetch, push or app publication was performed.
+P05 is committed as 5ad5235 and P06 as 4c96d27. P07 began from that clean
+worktree and remains uncommitted. No fetch, push or app publication was performed.
 
 Tooling remains Flutter 3.47.4/Dart 3.13.3, Node 26.5.0/npm 11.17.0, Supabase CLI
 2.117.0 and Postgres 17.6.1.167. P04 also exercised local Edge Runtime 1.74.3
@@ -365,10 +426,11 @@ Tooling remains Flutter 3.47.4/Dart 3.13.3, Node 26.5.0/npm 11.17.0, Supabase CL
 started for verification. P05 selected the existing hosted project and configured
 the sender domain; no global tool upgrade or paid subscription was added.
 
-Remaining product defaults are still proposed: title/priority labels, self-review,
-edit/archive privileges, operator-created teams and retention. P06 confirmed
-profile email visibility for all active teammates.
-Exact enterprise hostnames are needed for P07; this app's Pages setup, domain
+Remaining product defaults include self-review, archive privileges,
+operator-created teams and retention. P06 confirmed profile email visibility;
+P07 confirmed title, entry edit privileges, soft deletion and the revised priorities.
+Exact enterprise hostnames will be supplied privately before live use; P07 uses
+fictional local configuration as confirmed. This app's Pages setup, domain
 ownership, DNS and separate browser origin must be checked before publishing.
 No unresolved product question blocks completed local P04A verification.
 
@@ -405,6 +467,6 @@ No backend tests were applicable during P02; P03 results are above. No productio
 
 ## Next
 
-Review **P06: invitations, teams, and profiles**. The next ready item is
-**P07: queue entries and ownership**. Keep trial admission revoked;
+Review **P07: queue entries and ownership**. The next ready item is
+**P08: sprint/priority ordering and admin reordering**. Keep trial admission revoked;
 carry the documented delivery and production callback checks into P12/P13.
