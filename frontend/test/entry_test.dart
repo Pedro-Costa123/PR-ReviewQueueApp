@@ -36,8 +36,16 @@ class TestEntries implements EntryRepository {
   }
 
   @override
-  Future<List<EntryData>> list(String teamId) async =>
-      teamId == 'atlas' ? entries : [];
+  Future<QueueSnapshot> list(String teamId) async =>
+      QueueSnapshot(teamId == 'atlas' ? List.of(entries) : [], 7);
+  @override
+  Future<void> move(
+    String teamId,
+    String entryId,
+    String targetId, {
+    required bool after,
+    required int revision,
+  }) async {}
   @override
   Future<void> save(
     String teamId,

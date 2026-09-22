@@ -1,7 +1,7 @@
 # Product
 
-Last updated: 2026-09-21. Owner: Pedro Costa. Stage: P07 queue entries/ownership
-complete locally, ready for review. P08 is next when selected. P05 controlled
+Last updated: 2026-09-22. Owner: Pedro Costa. Stage: P08 ordering/reordering
+complete locally, ready for review. P09 is next when selected. P05 controlled
 hosted authentication is complete; Inbox placement remains a release follow-up. The
 signed-in queue now persists data locally; demo routes remain fictional. The production subdomain is confirmed but
 not published. Demo content and preparatory schema fields remain proposals.
@@ -55,8 +55,8 @@ Confirmed rules above take precedence. Additional details below are proposed def
 
 - **Confirmed in P07:** require a short title (1-160 characters), HTTPS PR/Jira links, an explicit sprint-goal boolean, and priorities **Low, Medium, High, Critical**. Medium replaces Normal as the implementation default.
 - P07 uses operator-configured exact hostname allowlists, empty in migrations and fictional in local tests. Real company hosts stay in private configuration before live use. See [QUEUE](QUEUE.md) for resource paths and URL normalization.
-- Planned P08 sort: sprint-goal entries first; within each group, Critical before High before Medium before Low; within each priority group, admin-defined order, then stable creation order. P07 lists by stable creation/ID order only.
-- Admin drag/drop and keyboard move controls operate within a group. Changing the sprint-goal flag or priority moves the entry to the end of its new group. If admins need an emergency override across groups, choose that different rule in P01.
+- Implemented P08 sort: sprint-goal entries first; within each group, Critical before High before Medium before Low; within each priority group, admin-defined position, then stable creation/ID order. Sorting happens on the server before the 100-entry display limit.
+- Admin drag/drop and keyboard move controls operate within a group. Changing the sprint-goal flag or priority moves the entry to the end of its new group. Queue revision conflicts reload the latest order and require a deliberate new move; no cross-group override is implemented.
 - **Confirmed in P07:** only submitters and team admins edit an entry. Other members' comments/review signals remain P09.
 - An active entry with the same normalized PR URL in the same team is rejected as a duplicate. The same PR in another team is permitted. Re-adding an archived PR prompts restoration by an authorized user.
 - Suggested queue columns: order, title, sprint-goal badge, priority, submitter, review counts, age, and link/actions menu.

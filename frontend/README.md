@@ -12,7 +12,10 @@ The separate demo queue routes remain fictional. P07 adds real selected-team
 entries, validated manual links, Low/Medium/High/Critical priorities, guarded
 editing/deletion and retained drafts on conflicts. See [QUEUE](../docs/QUEUE.md)
 for its preview and checks. Email is visible only to self/shared active teammates
-through the server. No P06/P07 hosted deployment has been performed.
+through the server. P08 adds sprint/priority group headings, admin drag handles
+and keyboard move controls with revision conflict recovery. The server orders
+before the 100-entry display limit; manual refresh remains. No P06–P08 hosted
+deployment has been performed. See QUEUE for ordering checks and preview fixtures.
 
 Verified SDK: **Flutter 3.47.4 stable / Dart 3.13.3** on Windows. Only the web platform is scaffolded. Application dependencies and the lockfile are pinned; no global backend tooling is required.
 
@@ -66,4 +69,5 @@ The generated Flutter favicon/app icons remain temporary. The SDK emits a missin
 
 Product behavior is in [Product](../docs/PRODUCT.md) and architecture in
 [Architecture](../docs/ARCHITECTURE.md). P05 is complete for the controlled trial;
-the demo queue is unchanged. P06 is next when selected after review.
+the demo queue remains fictional. P08 ordering is complete locally; P09 is next
+when selected after review.

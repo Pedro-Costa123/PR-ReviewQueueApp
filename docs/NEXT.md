@@ -1,8 +1,8 @@
 # Ordered implementation backlog
 
-Updated: 2026-09-21. **Execute one selected item, verify it, update the docs, and stop.** Do not turn this file into a single full-app implementation prompt.
+Updated: 2026-09-22. **Execute one selected item, verify it, update the docs, and stop.** Do not turn this file into a single full-app implementation prompt.
 
-The owner selected `https://reviews.pedro-costa.dev/`, P05's hosted trial, P06 and then P07. P07 is complete locally; hosted P06/P07 rollout is unperformed. Stop for queue-entry review. P08 is next when selected.
+The owner selected `https://reviews.pedro-costa.dev/`, P05's hosted trial, P06, P07 and now P08. P08 is complete locally; hosted P06–P08 rollout is unperformed. Stop for ordering/reorder review. P09 is next only when selected.
 
 `Complete` means the item's actual deliverable exists. `Ready` means the next item can start when requested. Later items remain planned, not authorized as a batch. Smaller UI/product defaults can be settled at the item that needs them.
 
@@ -17,8 +17,8 @@ The owner selected `https://reviews.pedro-costa.dev/`, P05's hosted trial, P06 a
 | P05 | Small hosted authentication/cost validation | Complete for controlled trial; ready for owner review | P04A |
 | P06 | Admin invitations, teams, and profiles | Complete locally; ready for owner review | P05 |
 | P07 | Create/read/edit queue entries and protected deletion | Complete locally; ready for owner review | P06 |
-| P08 | Sprint/priority ordering and admin reordering | Ready; not started | P07 |
-| P09 | Comments and per-user review signals | Planned | P08 |
+| P08 | Sprint/priority ordering and admin reordering | Complete locally; ready for owner review | P07 |
+| P09 | Comments and per-user review signals | Ready; not started | P08 |
 | P10 | Archive, restore, and data lifecycle | Planned | P09 |
 | P11 | Refresh, filtering, responsive UI, and accessibility | Planned | P10 |
 | P12 | Release checks and subdomain publishing preparation | Planned | P11 |
@@ -133,6 +133,16 @@ No P08 reorder controls or subsequent backlog behavior was implemented.
 **Acceptance:** A representative mixed queue sorts correctly; a member cannot reorder via UI or API; cross-group drag is disallowed; simultaneous edits produce a clear conflict; order remains stable after reload.
 
 **Boundary:** No unrequested override across sprint/priority groups.
+
+**Completed locally 2026-09-22:** ordered snapshots with matching revisions,
+admin-only transactional same-group moves, Material drag handles and keyboard
+move buttons, conflict refresh and destination append behavior. P07 dependency
+was complete; no material unanswered P08 question. Clean six-migration reset,
+19 authorization tests, 11 entry tests, eight ordering tests, 37 Flutter tests,
+analysis, SQL lint/security advisor and root release build passed. Browser
+checks cover admin/member controls, drag, keyboard, conflict, persistence and
+narrow themes. Details/limitations are in [QUEUE](QUEUE.md) and [STATUS](STATUS.md).
+No later backlog behavior or hosted/DNS/Pages operation. Stop at P08 review.
 
 ## P09 — Comments and review signals
 

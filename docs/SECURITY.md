@@ -1,6 +1,6 @@
 # Security design and launch evidence
 
-Last updated: 2026-09-21. P07 queue mutations and P06 onboarding are verified locally. P03/P04/P04A local controls are verified. P05 controlled
+Last updated: 2026-09-22. P08 ordering, P07 queue mutations and P06 onboarding are verified locally. P03/P04/P04A local controls are verified. P05 controlled
 hosted login, mail, CAPTCHA replay denial and passive-scanner checks passed.
 [AUTH](AUTH.md) and [HOSTED_AUTH](HOSTED_AUTH.md) distinguish implementation,
 provider configuration and observed behavior. Lifecycle/launch controls remain planned.
@@ -11,6 +11,22 @@ a real local Auth client and sessionStorage adapter, with SDK cross-tab synchron
 There is no fake signed-in identity, role switch or company URL. Browser demo
 navigation is not an authorization test. SQL-role/Data API denial tests run against
 local Supabase. The release build remains a local preview, not a production auth path.
+
+## P08 implemented evidence and limits
+
+The sixth migration grants authenticated execution only for `queue_snapshot` and
+`move_entry`; the private mutation implementation and direct writes remain denied.
+Snapshots require live membership and use one stable statement snapshot for rows
+and revision. Moves derive identity, require live team-admin status before and
+after the team lock, reject foreign/deleted/archived and cross-group targets, and
+require the observed queue revision. They share P07's atomic budget and lock order.
+
+Direct tests cover anonymous/member/submitter/foreign-admin/revoked-token access,
+forged team/owner arguments, private helper denial, concurrent admin conflicts,
+post-lock demotion/revocation, destination append behavior and concurrent budgets.
+The advisor still reports seven informational private RLS/no-policy findings,
+zero warnings/errors; SQL lint passes. No auth/provider/hosted grants changed.
+See [QUEUE](QUEUE.md) for limits and conflict recovery.
 
 ## P07 implemented evidence and limits
 

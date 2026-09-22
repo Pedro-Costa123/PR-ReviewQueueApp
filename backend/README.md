@@ -21,6 +21,11 @@ are Low/Medium/High/Critical. `npm run test:queue` runs its direct API, denial a
 concurrency checks. See [QUEUE](../docs/QUEUE.md) for the local preview, operator
 host configuration, URL grammar and verification. No P07 hosted deployment.
 
+P08 adds the sixth local migration: ordered `queue_snapshot` with its matching
+revision and admin-only `move_entry`, sharing P07's budget/team serialization.
+Run `npm run test:ordering` for ordering, denial and concurrent-mutation coverage.
+The QUEUE runbook includes mixed-group browser fixtures. No hosted migration.
+
 Follow [AUTH](../docs/AUTH.md) for the complete P04 setup/test/preview sequence.
 Use [HOSTED_AUTH](../docs/HOSTED_AUTH.md) for P05; never run local fixtures/tests
 against the hosted project or link this local test checkout to it.

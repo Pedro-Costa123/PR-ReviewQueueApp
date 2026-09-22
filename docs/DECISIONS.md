@@ -1,6 +1,6 @@
 # Decisions
 
-Updated: 2026-09-21. **Confirmed** means specified/answered by the owner. **Proposed** means a researched design choice for staged validation. **Deferred** means deliberately outside current work. **Superseded** records an earlier choice replaced by a later decision.
+Updated: 2026-09-22. **Confirmed** means specified/answered by the owner. **Proposed** means a researched design choice for staged validation. **Deferred** means deliberately outside current work. **Superseded** records an earlier choice replaced by a later decision.
 
 | ID | Status | Decision and reasoning |
 | --- | --- | --- |
@@ -121,6 +121,22 @@ external integration, hosted migration, DNS, Pages or billing change is included
 P08 sorting/reorder, P09 review/comments and P10 archive/recovery/purge remain
 unimplemented. Host availability and real enterprise access are not claimed by
 the fictional local link checks.
+
+## D31 — P08 ordering and concurrency (2026-09-22)
+
+The owner selected P08 only; confirmed D06 ordering and P07 priority labels fully
+determine its local product behavior. No material question blocks this item.
+P09 self-review and P10 lifecycle questions remain for their selected items.
+
+Implemented one stable snapshot RPC for ordered rows and queue revision, with
+server sorting before the existing 100-row bound. Admin moves name a same-group
+target and before/after placement, serialize under the existing team lock, recheck
+authority and revision, and shift the affected position interval. Reorder advances
+queue/data revisions but preserves content versions; P07 group edits still append.
+UI controls use existing Material patterns, drag handles and keyboard move buttons,
+with explicit conflict refresh and no automatic retry. No additional dependency,
+provider, authentication, pricing, DNS or publishing decision is introduced.
+See [QUEUE](QUEUE.md) and [STATUS](STATUS.md) for contracts, evidence and limits.
 
 ## Alternatives evaluated
 

@@ -1,7 +1,7 @@
-# P07 queue entries
+# P07/P08 queue entries and ordering
 
-Updated: 2026-09-21. Local implementation only; no hosted migration or publication.
-P06 is the completed local dependency. See [STATUS](STATUS.md) for final evidence.
+Updated: 2026-09-22. Local implementation only; no hosted migration or publication.
+P08 builds on completed local P07. See [STATUS](STATUS.md) for final evidence.
 
 ## Confirmed scope
 
@@ -16,9 +16,48 @@ The signed-in root workspace now lists, adds, edits and deletes real database
 entries for the selected team. Demo routes retain public fictional content.
 Submitter names open the existing teammate profile dialog. Explicit refresh and
 successful mutations reload the list. Failed refresh clears the old rows;
-switching teams or signing out discards the displayed queue. The first 100 active
-entries are shown in stable creation/ID order. P08 owns sprint/priority sorting
-and admin reorder controls; P11 owns pagination/background refresh.
+switching teams or signing out discards the displayed queue. P08 shows the first
+100 active entries in server-defined queue order with a visible truncation notice.
+P11 still owns pagination/background refresh.
+
+## P08 ordering contract
+
+Sprint-goal work comes first. Within sprint/non-sprint work, priorities are
+Critical, High, Medium, Low; within each group, position, creation time and UUID
+provide stable order. The sixth migration normalizes legacy positions (including
+ties) and indexes the explicit priority rank. It advances existing team revisions
+to invalidate old queue snapshots, without modifying entry content versions.
+
+`queue_snapshot(p_team_id)` requires live membership and returns `entries`,
+`revision`, and `has_more` from one stable database statement snapshot. It sorts
+before taking 100 entries, checks one extra row for truncation, and returns only
+the fields needed by the queue. Loading rows and a revision in separate requests
+would permit stale ordering to carry a newer revision; this RPC avoids that race.
+
+`move_entry(p_team_id,p_entry_id,p_target_id,p_after,p_expected_revision)` moves
+one active entry immediately before/after another active entry in the same team,
+sprint flag and priority. The private implementation requires live admin status,
+reserves the existing 30/minute per-user mutation budget, locks the team and
+rechecks authority. It checks the expected queue revision, shifts only positions
+in the affected interval and atomically advances queue/data revisions, with a
+minimal audit event. No direct table writes/private helper access are granted.
+Content versions stay unchanged by reorder, so unrelated title/link edits remain
+valid. P07 create/delete/group changes invalidate stale moves; group changes
+append after the current destination order. Position gaps after deletion are valid.
+
+The UI provides named group headings, drag handles and Tab/Enter-operable Move
+up/Move down buttons. Boundary buttons are disabled; cross-group drop targets
+reject the drag. A drop moves above an earlier target or below a later target.
+Only admins see controls, and server checks remain authoritative. Keyboard focus
+returns to a usable move control on the moved entry after reload. Moves are
+limited to displayed entries; longer-distance moves can use repeated keyboard
+controls/manual scrolling. Automatic drag scrolling is not implemented.
+
+A stale revision returns HTTP 409/code `PT409` with the current revision only
+after authorization. The UI reloads and explicitly says the move was not applied;
+it does not retry or overwrite automatically. Network ambiguity prompts checking
+the refreshed order. Permission/quota failures have separate messages. There is
+no optimistic saved-state claim and no override across groups.
 
 ## Database contract
 
@@ -49,8 +88,8 @@ actor, target and version, not title/URL copies.
 
 All successful mutations advance data revision. Creation, deletion and group
 changes also advance queue revision; creation/group changes append a position
-under the team lock. This preserves schema consistency for P08, without exposing
-a reorder API or implementing its UI. The migration maps old `normal` values to
+under the team lock. P08 reuses these invariants for its reorder API and UI.
+The fifth migration maps old `normal` values to
 `medium` and advances affected versions/team revisions so open stale edits fail.
 
 The private queue limiter permits 30 successful mutations per identity per
@@ -103,10 +142,11 @@ npm start
 npm run reset
 npm test
 npm run test:queue
+npm run test:ordering
 npm run lint
 ```
 
-Reset is destructive to this project's local test database. It applies all five
+Reset is destructive to this project's local test database. It applies all six
 migrations without seeding hosts/users. `npm test` requires a clean database and
 loads fictional fixtures. Queue tests create isolated identities/teams, refuse
 linked/remote targets, and never send email. Run the security advisor with:
@@ -121,6 +161,7 @@ backend terminal, then run:
 ```powershell
 node tool/prepare-onboarding-preview.cjs
 node tool/prepare-queue-preview.cjs
+node tool/prepare-ordering-preview.cjs
 ```
 
 The first helper writes ignored `frontend/.env.local.json` and prepares the
@@ -128,7 +169,9 @@ existing fictional two-team invitation flow. The second configures only
 `git.example.test` and `jira.example.test` for the two fixture teams. Neither is
 an application import, migration or deployable seed. Old P03 fixture links can
 remain disabled because they predate the stricter resource-path grammar; add a
-new entry using the documented paths to verify P07 links.
+new entry using the documented paths to verify P07 links. The third helper adds
+fictional examples in all eight P08 groups, with three sprint-critical entries
+for reorder checks. These helpers refuse linked/remote databases.
 
 From `frontend/`:
 
@@ -154,17 +197,17 @@ Docker all-interface binding limitation remains; see [AUTH](AUTH.md).
 
 ## Review boundary and sources
 
-No P08 reorder controls, P09 comments/review mutations, P10 archive/recovery/purge,
+No P09 comments/review mutations, P10 archive/recovery/purge,
 P11 background refresh, hosted migration, DNS change, mail-provider change,
-dependency, paid service, commit, push or publication is included. Hosted P06/P07
+dependency, paid service, commit, push or publication is included. Hosted P06–P08
 rollout, actual company hostname configuration, Inbox placement and the final
 HTTPS callback remain outstanding before live use. No material unanswered
-question blocks the agreed local P07 scope.
+question blocks the agreed local P08 scope. Review P08; P09 is next only when selected.
 
-Official references rechecked 2026-09-21:
+Official references rechecked 2026-09-22:
 [database functions](https://supabase.com/docs/guides/database/functions),
 [RLS](https://supabase.com/docs/guides/database/postgres/row-level-security), and
 [Supabase changelog](https://supabase.com/changelog).
 The changelog's recent breaking changes concern unrelated management logs,
-extension version pinning, self-hosted gateway and Realtime configuration; P07
+extension version pinning, self-hosted gateway and Realtime configuration; P08
 uses the already pinned CLI/client and adds no provider or billing assumption.

@@ -1,17 +1,18 @@
 # Current status
 
-Updated: 2026-09-21.
+Updated: 2026-09-22.
 
 ## Current implementation
 
 P00-P04A are complete locally. P05 is complete for the controlled hosted trial.
-**P07 is complete locally, ready for owner review.** The signed-in Flutter queue
-now persists entries with guarded edits/deletion; separate demo routes remain
+**P08 is complete locally, ready for owner review.** The signed-in Flutter queue
+now orders entries by sprint/priority with guarded admin drag/keyboard moves,
+alongside P07 edits/deletion; separate demo routes remain
 fictional and read-only. The selected Supabase Free project still has the
 three versioned migrations and one operator-provisioned trial identity, without
 fixtures or memberships. No production app is
 deployed. See [HOSTED_AUTH](HOSTED_AUTH.md) for the trial and [AUTH](AUTH.md) for
-local development. [ONBOARDING](ONBOARDING.md) covers P06; [QUEUE](QUEUE.md) covers P07.
+local development. [ONBOARDING](ONBOARDING.md) covers P06; [QUEUE](QUEUE.md) covers P07/P08.
 
 - P02 shell: desktop/narrow navigation, Atlas/Orbit fixtures, profile/archive
   placeholders, dark default and saved theme preference.
@@ -33,9 +34,69 @@ local development. [ONBOARDING](ONBOARDING.md) covers P06; [QUEUE](QUEUE.md) cov
   preview denial tests, and verified replacement runbook commands.
 
 Not complete: reliable Inbox placement and production-hostname acceptance,
-hosted P06/P07 deployment, queue sorting/reorder/comments/reviews/archive,
+hosted P06–P08 deployment, comments/reviews/archive,
 CI, independent Pages release or deployment. Authentication alone grants no team;
 the guarded P06 claim transaction creates invited memberships.
+
+## P08 implementation and evidence on 2026-09-22
+
+- P07's local dependency was complete. Confirmed sprint-first ordering,
+  Low/Medium/High/Critical labels and admin-only within-group moves settle P08;
+  no material unanswered question blocks it. P09 self-review and P10 lifecycle
+  questions remain deferred to those items.
+- Added the sixth migration: stable ordered snapshot plus matching revision,
+  explicit priority-rank index, normalized legacy positions and guarded admin
+  `move_entry`. Reuses P07 budget/team locking, checks live authority after waits,
+  validates same-group targets and advances queue/data revisions atomically.
+  Content versions remain independent; destination group edits still append.
+- Connected grouped Material UI, drag targets that reject cross-group drops,
+  boundary-aware keyboard buttons, focus restoration, server-confirmed saves
+  and explicit conflict/permission/quota/ambiguous-network recovery. No automatic
+  retry. Added fictional local mixed-group preview helper and ordering tests.
+- Clean `npm run reset` applied all six migrations without fixtures/hosts.
+  `npm test`: **19 passed**; `npm run test:queue`: **11 passed**;
+  `npm run test:ordering`: **8 passed**, including 100-row sort bounds,
+  stable ties/persistence, anonymous/member/foreign/revoked/forged denials,
+  group/invalid-target denials, competing admins, post-lock demotion/revocation,
+  destination append and atomic shared quotas. Tightened denial assertions and
+  reran the ordering suite successfully.
+- `npm run lint`: no schema errors. Local security advisor: **seven informational**
+  private RLS/no-policy findings and **zero warnings/errors**, unchanged intentional
+  API-denied operational tables. Auth/hook code and configuration are unchanged.
+- `flutter analyze`: no issues; **37 Flutter tests passed**, including five new
+  ordering tests for groups/member controls, keyboard version forwarding/focus,
+  valid/rejected drags, conflict reload/no retry and narrow/team-switch behavior.
+  Configured root release build and Wasm dry run passed; existing unused Cupertino
+  font warning remains. Dependencies, lockfiles and license are unchanged.
+- Browser: real local captured-mail login and profile, member-only Orbit without
+  reorder controls, mixed Atlas groups, Enter move with restored focus, drag/drop,
+  and a competing fixture-admin RPC followed by explicit stale-move rejection and
+  refreshed order. Reopening the app retained the saved order. Inspected dark/light
+  390 × 844 group layouts and exercised a narrow Enter move with focus restoration.
+  The browser preview retains real provider auth; no fake identity enters the app.
+- Tool limitations/corrections: CLI telemetry and Node workers needed sandbox
+  escalation; the web tool could not parse the changelog's Markdown MIME type,
+  so curl fetched it. Removed an unused test import flagged by analysis. Corrected
+  documentation patch context and a read command's working-directory paths.
+- Updated QUEUE, product/architecture/security/decisions, backlog, handoff and
+  READMEs. No P09+ behavior, hosted migration, real company hosts/mail, provider,
+  DNS, Pages, dependency, billing, commit, push or publication change.
+- Documentation checks passed for **16 Markdown files and 99 relative links**,
+  balanced fences and whitespace. Secret-pattern scan passed across **84 source/
+  config files**. New helper/test syntax, unchanged lockfiles/license and
+  `git diff --check` passed. Final Dart format: 35 files unchanged; analysis and
+  the five ordering widget tests passed again after clearing stale truncation
+  state on refresh. Keyboard sign-out cleared the private workspace; stopped
+  the function process and `npm run stop` passed, preserving fictional data.
+- Rebuilt the default root release without environment defines; build/Wasm dry
+  run passed. The final browser showed disconnected sign-in with no email input.
+  Stopped the preview server. The final artifact is not authorized for deployment.
+
+The queue remains bounded to 100 entries with manual refresh; moves target visible
+entries, and drag auto-scroll is not implemented. P11 retains pagination/background
+refresh. Hosted rollout, Inbox placement, real enterprise access and final HTTPS
+callback acceptance remain release work. Stop for P08 review; P09 is next only
+when selected.
 
 ## P07 implementation and evidence on 2026-09-21
 
@@ -467,6 +528,6 @@ No backend tests were applicable during P02; P03 results are above. No productio
 
 ## Next
 
-Review **P07: queue entries and ownership**. The next ready item is
-**P08: sprint/priority ordering and admin reordering**. Keep trial admission revoked;
+Review **P08: sprint/priority ordering and admin reordering**. The next ready item is
+**P09: comments and per-user review signals**. Keep trial admission revoked;
 carry the documented delivery and production callback checks into P12/P13.

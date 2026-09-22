@@ -41,8 +41,19 @@ class _EntryQueueState extends State<EntryQueue> {
   List<EntryData> _entries = [];
   LinkHosts _hosts = const LinkHosts(pr: [], jira: []);
   bool _busy = true;
+  bool _hasMore = false;
+  int _revision = 0;
+  final Map<String, FocusNode> _moveFocus = {};
   String? _message;
   int _generation = 0;
+  @override
+  void dispose() {
+    for (final node in _moveFocus.values) {
+      node.dispose();
+    }
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -63,6 +74,7 @@ class _EntryQueueState extends State<EntryQueue> {
     setState(() {
       _busy = true;
       _entries = [];
+      _hasMore = false;
       _message = null;
     });
     try {
@@ -71,7 +83,9 @@ class _EntryQueueState extends State<EntryQueue> {
       if (!mounted || generation != _generation) return;
       setState(() {
         _hosts = hosts;
-        _entries = entries;
+        _entries = entries.entries;
+        _revision = entries.revision;
+        _hasMore = entries.hasMore;
       });
     } catch (_) {
       if (!mounted || generation != _generation) return;
@@ -82,6 +96,154 @@ class _EntryQueueState extends State<EntryQueue> {
     } finally {
       if (mounted && generation == _generation) setState(() => _busy = false);
     }
+  }
+
+  Future<void> _move(List<EntryData> group, int from, int to) async {
+    if (_busy || !widget.admin || from == to) return;
+    final generation = _generation;
+    final team = widget.teamId;
+    final id = group[from]['id'] as String;
+    setState(() {
+      _busy = true;
+      _message = null;
+    });
+    String message;
+    try {
+      await widget.repository.move(
+        team,
+        id,
+        group[to]['id'] as String,
+        after: to > from,
+        revision: _revision,
+      );
+      message = 'Order saved.';
+    } catch (error) {
+      message = error is PostgrestException && error.code == 'PT409'
+          ? 'The queue changed. Your move was not applied. Review the refreshed order before moving again.'
+          : error is PostgrestException && error.code == '42501'
+          ? 'You can no longer reorder this queue. Refresh your teams to check access.'
+          : error is PostgrestException && error.code == 'PT429'
+          ? 'Too many changes. Wait a minute before moving again.'
+          : 'Could not confirm the move. Check the refreshed order before trying again.';
+    }
+    if (!mounted || generation != _generation) return;
+    await _load();
+    if (!mounted || widget.teamId != team) return;
+    setState(
+      () => _message = _message == null ? message : '$message $_message',
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && widget.teamId == team) _moveFocus[id]?.requestFocus();
+    });
+  }
+
+  Widget _group(BuildContext context, bool sprint, String priority) {
+    final entries = _entries
+        .where((e) => e['sprint_goal'] == sprint && e['priority'] == priority)
+        .toList();
+    if (entries.isEmpty) return const SizedBox.shrink();
+    final label =
+        '${sprint ? 'Sprint goal' : 'Other work'} · ${priority[0].toUpperCase()}${priority.substring(1)}';
+    Widget item(int index) {
+      final entry = entries[index];
+      final id = entry['id'] as String;
+      final focus = _moveFocus.putIfAbsent(id, FocusNode.new);
+      final card = Padding(
+        key: ValueKey(id),
+        padding: const EdgeInsets.only(top: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (widget.admin)
+              Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 8,
+                children: [
+                  Draggable<String>(
+                    data: id,
+                    maxSimultaneousDrags: !_busy && entries.length > 1 ? 1 : 0,
+                    feedback: Material(
+                      elevation: 6,
+                      borderRadius: BorderRadius.circular(12),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Text('Move ${entry['title']}'),
+                      ),
+                    ),
+                    child: Tooltip(
+                      message: 'Drag ${entry['title']} within $label',
+                      child: const Padding(
+                        padding: EdgeInsets.all(12),
+                        child: Icon(Icons.drag_handle),
+                      ),
+                    ),
+                  ),
+                  Semantics(
+                    label: 'Move ${entry['title']} up within $label',
+                    child: TextButton.icon(
+                      focusNode: index > 0 ? focus : null,
+                      onPressed: _busy || index == 0
+                          ? null
+                          : () => _move(entries, index, index - 1),
+                      icon: const Icon(Icons.arrow_upward, size: 18),
+                      label: const Text('Move up'),
+                    ),
+                  ),
+                  Semantics(
+                    label: 'Move ${entry['title']} down within $label',
+                    child: TextButton.icon(
+                      focusNode: index == 0 ? focus : null,
+                      onPressed: _busy || index == entries.length - 1
+                          ? null
+                          : () => _move(entries, index, index + 1),
+                      icon: const Icon(Icons.arrow_downward, size: 18),
+                      label: const Text('Move down'),
+                    ),
+                  ),
+                ],
+              ),
+            _card(context, entry),
+          ],
+        ),
+      );
+      if (!widget.admin) return card;
+      return DragTarget<String>(
+        key: ValueKey('drop-$id'),
+        onWillAcceptWithDetails: (details) =>
+            !_busy &&
+            details.data != id &&
+            entries.any((e) => e['id'] == details.data),
+        onAcceptWithDetails: (details) => _move(
+          entries,
+          entries.indexWhere((e) => e['id'] == details.data),
+          index,
+        ),
+        builder: (context, candidates, rejected) => DecoratedBox(
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: candidates.isEmpty
+                  ? Colors.transparent
+                  : Theme.of(context).colorScheme.primary,
+              width: 2,
+            ),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: card,
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(height: 24),
+        Semantics(
+          header: true,
+          child: Text(label, style: Theme.of(context).textTheme.titleLarge),
+        ),
+        for (var index = 0; index < entries.length; index++) item(index),
+      ],
+    );
   }
 
   Future<void> _edit([EntryData? entry]) async {
@@ -202,13 +364,20 @@ class _EntryQueueState extends State<EntryQueue> {
           padding: EdgeInsets.symmetric(vertical: 16),
           child: Text('No entries yet. Add a PR to start the queue.'),
         ),
-      for (final entry in _entries)
-        Padding(
-          padding: const EdgeInsets.only(top: 12),
-          child: _card(context, entry),
+      if (widget.admin && _entries.isNotEmpty)
+        const Padding(
+          padding: EdgeInsets.only(top: 12),
+          child: Text(
+            'Drag the handle or use Move up / Move down within a group. Sprint goals come first, then Critical, High, Medium and Low.',
+          ),
         ),
-      if (_entries.length == 100)
-        const Text('Showing the first 100 active entries.'),
+      for (final sprint in [true, false])
+        for (final priority in ['critical', 'high', 'medium', 'low'])
+          _group(context, sprint, priority),
+      if (_hasMore)
+        const Text(
+          'Showing the first 100 active entries in queue order. Moves are limited to visible entries in each group.',
+        ),
     ],
   );
   Widget _card(BuildContext context, EntryData entry) {
