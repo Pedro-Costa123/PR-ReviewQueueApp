@@ -1,6 +1,6 @@
 # Decisions
 
-Updated: 2026-09-22. **Confirmed** means specified/answered by the owner. **Proposed** means a researched design choice for staged validation. **Deferred** means deliberately outside current work. **Superseded** records an earlier choice replaced by a later decision.
+Updated: 2026-09-23. **Confirmed** means specified/answered by the owner. **Proposed** means a researched design choice for staged validation. **Deferred** means deliberately outside current work. **Superseded** records an earlier choice replaced by a later decision.
 
 | ID | Status | Decision and reasoning |
 | --- | --- | --- |
@@ -16,7 +16,7 @@ Updated: 2026-09-22. **Confirmed** means specified/answered by the owner. **Prop
 | D10 | Superseded by D27 | The proposed combined portfolio/app Pages artifact is no longer needed. Deploy this repository's app independently with its own custom subdomain. |
 | D11 | Proposed | Use hash routing with the required Flutter base href. It avoids relying on unsupported Pages rewrites; callback compatibility is an early test. |
 | D12 | Proposed | Enforce permissions in RLS and transactional functions. Privileged Edge Functions are narrowly scoped to invitation/provisioning and mail. No second general-purpose backend server. |
-| D13 | Partly superseded by D30 | P07 confirms title and owner/admin entry edits and replaces the proposed priorities. Archive authority and no-self-review remain proposed for P09/P10. |
+| D13 | Partly superseded by D30/D32 | P07 confirms title and owner/admin entry edits and replaces the proposed priorities. P09 confirms no self-review. Archive authority remains proposed for P10. |
 | D14 | Proposed | Active/archive are queue lifecycle states, not provider-verified PR states. Review signals are local indicators, not GitHub approvals. |
 | D15 | Proposed | Operator bootstraps teams/initial admins; team admins manage invitations and roles. Prevent last-admin removal and cross-team admin authority. |
 | D16 | Proposed | Review theme/layout locally first, then validate invitation/security design before building the full queue. |
@@ -137,6 +137,26 @@ UI controls use existing Material patterns, drag handles and keyboard move butto
 with explicit conflict refresh and no automatic retry. No additional dependency,
 provider, authentication, pricing, DNS or publishing decision is introduced.
 See [QUEUE](QUEUE.md) and [STATUS](STATUS.md) for contracts, evidence and limits.
+
+## D32 — P09 comments and review signals (2026-09-23)
+
+**Confirmed:** the owner selected only P09 and explicitly chose to prevent both
+review signals on one's own entry, including admins. Submitters may still comment.
+P08 is complete locally; no material P09 question remains unanswered.
+
+**Implemented locally:** retain the proposed 2,000-character plain-text comments,
+author edit/delete, admin removal without rewriting, and one current signal per
+identity. The X is labeled “Comments left on PR”. The guarded transaction reuses
+queue budgets/locks, derives authors, rechecks live membership/role after waits,
+and advances only data revision. Comment versions prevent stale overwrite; entry
+versions reject reviews of stale PR links. PR replacement atomically resets signals.
+Soft-deleted comment metadata/audit mirrors P07; retention/purge is still P10.
+Bounded on-demand activity panels use existing Material components, with complete
+counts and explicit manual refresh. See [ACTIVITY](ACTIVITY.md) for contracts.
+
+No new dependency, provider, authentication, pricing, hosting, external posting,
+DNS or publishing decision. Flutter Web, invited-email magic links, manual links,
+Namecheap DNS, GitHub Pages and `https://reviews.pedro-costa.dev/` are preserved.
 
 ## Alternatives evaluated
 

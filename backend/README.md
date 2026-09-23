@@ -26,6 +26,11 @@ revision and admin-only `move_entry`, sharing P07's budget/team serialization.
 Run `npm run test:ordering` for ordering, denial and concurrent-mutation coverage.
 The QUEUE runbook includes mixed-group browser fixtures. No hosted migration.
 
+P09 adds the seventh local migration: plain-text comments with author versions,
+author/admin deletion and per-user check/X/clear signals with no self-review.
+Run `npm run test:activity` for direct API denials, concurrency and count/reset
+checks. See [ACTIVITY](../docs/ACTIVITY.md). No hosted migration or external posting.
+
 Follow [AUTH](../docs/AUTH.md) for the complete P04 setup/test/preview sequence.
 Use [HOSTED_AUTH](../docs/HOSTED_AUTH.md) for P05; never run local fixtures/tests
 against the hosted project or link this local test checkout to it.

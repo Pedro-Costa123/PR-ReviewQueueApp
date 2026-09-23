@@ -1,8 +1,11 @@
 # Ordered implementation backlog
 
-Updated: 2026-09-22. **Execute one selected item, verify it, update the docs, and stop.** Do not turn this file into a single full-app implementation prompt.
+Updated: 2026-09-23. **Execute one selected item, verify it, update the docs, and stop.** Do not turn this file into a single full-app implementation prompt.
 
-The owner selected `https://reviews.pedro-costa.dev/`, P05's hosted trial, P06, P07 and now P08. P08 is complete locally; hosted P06–P08 rollout is unperformed. Stop for ordering/reorder review. P09 is next only when selected.
+The owner selected only P09 after completed local P08. Self-review is confirmed
+as prohibited, including admins; submitters can comment. P09 implementation,
+automated checks and browser verification are complete locally. Hosted
+P06–P09 rollout is unperformed. Stop at P09 review; do not execute P10 automatically.
 
 `Complete` means the item's actual deliverable exists. `Ready` means the next item can start when requested. Later items remain planned, not authorized as a batch. Smaller UI/product defaults can be settled at the item that needs them.
 
@@ -18,8 +21,8 @@ The owner selected `https://reviews.pedro-costa.dev/`, P05's hosted trial, P06, 
 | P06 | Admin invitations, teams, and profiles | Complete locally; ready for owner review | P05 |
 | P07 | Create/read/edit queue entries and protected deletion | Complete locally; ready for owner review | P06 |
 | P08 | Sprint/priority ordering and admin reordering | Complete locally; ready for owner review | P07 |
-| P09 | Comments and per-user review signals | Ready; not started | P08 |
-| P10 | Archive, restore, and data lifecycle | Planned | P09 |
+| P09 | Comments and per-user review signals | Complete locally; ready for owner review | P08 |
+| P10 | Archive, restore, and data lifecycle | Ready; not started | P09 |
 | P11 | Refresh, filtering, responsive UI, and accessibility | Planned | P10 |
 | P12 | Release checks and subdomain publishing preparation | Planned | P11 |
 | P13 | Deploy the prepared release and run a small pilot | Planned | P12 |
@@ -146,9 +149,17 @@ No later backlog behavior or hosted/DNS/Pages operation. Stop at P08 review.
 
 ## P09 — Comments and review signals
 
-**Deliver:** Plain-text comments; author edit/delete and admin moderation; per-user check/X/clear actions and counts. Confirm the proposed self-review restriction here.
+**Deliver:** Plain-text comments; author edit/delete and admin moderation; per-user check/X/clear actions and counts. Owner confirmed 2026-09-23: prohibit both review signals on one's own entry, including admins; comments remain allowed.
 
 **Acceptance:** One current signal per user; changing/clearing updates counts correctly; members cannot impersonate a reviewer; cross-team entry IDs fail; HTML-like input is safe. The X has the explicit label "Comments left on PR". These actions do not post externally or mark a PR merged.
+
+**Completed locally 2026-09-23:** seventh migration, guarded activity snapshot/comment/signal
+RPCs, optimistic comment versions, PR-link signal reset, shared mutation budget
+and connected Flutter panels. See [ACTIVITY](ACTIVITY.md) and [STATUS](STATUS.md)
+for verification and limitations. Clean reset, 47 backend tests across authorization,
+entries, ordering and activity, 44 Flutter tests, SQL lint/security advisor, analysis,
+root release builds and browser/keyboard checks passed with documented limits.
+No P10+ work or hosted/DNS/Pages operation. Stop for P09 review.
 
 ## P10 — Archive and lifecycle
 

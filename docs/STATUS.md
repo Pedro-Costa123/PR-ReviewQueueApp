@@ -1,18 +1,19 @@
 # Current status
 
-Updated: 2026-09-22.
+Updated: 2026-09-23.
 
 ## Current implementation
 
 P00-P04A are complete locally. P05 is complete for the controlled hosted trial.
-**P08 is complete locally, ready for owner review.** The signed-in Flutter queue
-now orders entries by sprint/priority with guarded admin drag/keyboard moves,
-alongside P07 edits/deletion; separate demo routes remain
+**P09 is complete locally, ready for owner review.** The signed-in
+Flutter queue now includes plain-text comments and per-user review signals,
+alongside P08 ordering/reordering and P07 edits/deletion; separate demo routes remain
 fictional and read-only. The selected Supabase Free project still has the
 three versioned migrations and one operator-provisioned trial identity, without
 fixtures or memberships. No production app is
 deployed. See [HOSTED_AUTH](HOSTED_AUTH.md) for the trial and [AUTH](AUTH.md) for
-local development. [ONBOARDING](ONBOARDING.md) covers P06; [QUEUE](QUEUE.md) covers P07/P08.
+local development. [ONBOARDING](ONBOARDING.md) covers P06; [QUEUE](QUEUE.md) covers P07/P08;
+[ACTIVITY](ACTIVITY.md) covers P09.
 
 - P02 shell: desktop/narrow navigation, Atlas/Orbit fixtures, profile/archive
   placeholders, dark default and saved theme preference.
@@ -34,9 +35,67 @@ local development. [ONBOARDING](ONBOARDING.md) covers P06; [QUEUE](QUEUE.md) cov
   preview denial tests, and verified replacement runbook commands.
 
 Not complete: reliable Inbox placement and production-hostname acceptance,
-hosted P06–P08 deployment, comments/reviews/archive,
+hosted P06–P09 deployment, archive,
 CI, independent Pages release or deployment. Authentication alone grants no team;
 the guarded P06 claim transaction creates invited memberships.
+
+## P09 implementation and evidence on 2026-09-23
+
+- P08 dependency is committed as `61fe31e`; P09 began with a clean worktree.
+  Owner confirmed no self-review (both signals, including admins); submitters
+  can still comment. No material P09 product question remains unanswered.
+- Added seventh migration, guarded activity/comment/review RPCs, comment versions
+  and deletion actor, and atomic PR-link signal reset. Reuses P07 budget/team locks
+  with post-lock live authorization; direct writes/private helpers remain denied.
+  Data revision advances independently of ordering/content versions.
+- Connected on-demand Flutter activity panels using existing Material components.
+  Plain-text comments, author edit/delete, admin removal, check/X/clear, complete
+  counts, identities/times, self-review explanation, conflict draft retention and
+  explicit refresh are implemented. The X says “Comments left on PR”.
+- Clean `npm run reset` applied all seven migrations without fixtures/hosts.
+  `npm test`: **19 passed**; `npm run test:queue`: **11 passed**;
+  `npm run test:ordering`: **8 passed**; `npm run test:activity`: **9 passed**.
+  P09 covers anonymous/foreign/revoked/forged denials, post-lock revocation/demotion,
+  author/admin distinctions, stale comments, signal concurrency/counts, PR reset,
+  text bounds, archived/deleted parents, bounded reads and atomic shared quotas.
+- SQL lint passed. Local security advisor: **seven informational** private
+  RLS/no-policy findings, **zero warnings/errors**, intentional denied tables.
+- **44 Flutter tests passed**, including seven new activity widget tests.
+  `flutter analyze`: no issues after fixing two brace-style lints in test code.
+  Root configured release build/Wasm dry run passed, with the existing unused
+  Cupertino font warning. Dependencies/lockfiles/license are unchanged.
+- Browser: real captured local provider login/profile, keyboard check, X switch
+  and clear/counts, literal HTML-like comment post/edit, reload persistence,
+  own-comment deletion, two-team switching, admin moderation and admin self-review
+  prohibition passed. Inspected desktop and 390 × 844 light/dark activity layouts
+  and deletion dialog. Added a local-only owned-entry/moderation fixture helper.
+  Found comment composer focus restoration needed a post-frame callback; corrected
+  it and the 14 activity/entry widget tests passed. Rebuilt and verified narrow
+  keyboard posting restores composer focus. Final signed-in browser console clean.
+- Tool corrections: the web reader rejected Markdown MIME; curl fetched the
+  changelog. CLI telemetry, Node workers and preview helpers needed sandbox
+  escalation. Corrected a CLI working directory and an atomic docs patch context.
+  First browser load overlapped the build and logged a JSON parse error; reload
+  after completed build recovered. No application startup change was needed.
+  A final combined Flutter check stalled before output; interrupted that process
+  and reran standalone analysis/format successfully. The read-only process check
+  needed sandbox escalation. An offscreen browser click timed out; keyboard worked.
+- Added ACTIVITY runbook and updated product/architecture/security/decisions,
+  READMEs, backlog and handoff. Documentation checks passed for 17 Markdown files,
+  114 relative links, balanced fences and whitespace. Secret-pattern scan passed
+  across 102 source/config/docs files. New test/helper syntax, unchanged lockfiles
+  and license, and `git diff --check` passed. Final analysis had no issues;
+  Dart format checked 37 files unchanged.
+- Keyboard sign-out cleared the private workspace. The final default release
+  build and Wasm dry run passed without environment defines; browser inspection
+  showed disconnected sign-in with no email input. Restored the browser viewport,
+  stopped preview/functions, and `npm run stop` passed, preserving fictional local
+  data. The artifact remains unauthorized for deployment.
+
+Activity details are bounded to 100 comments/reviewers with full counts and manual
+refresh. P11 retains pagination/background refresh. P10 archive/recovery/retention
+is next only when selected. No hosted migration, real company host/mail, provider,
+authentication, DNS, Pages, billing, dependency, commit, push or publication change.
 
 ## P08 implementation and evidence on 2026-09-22
 
@@ -478,8 +537,9 @@ were outstanding at that point; only the local P04A work is now complete.
 Workspace: C:\Users\pedro\Projects\PR-ReviewQueueApp. Branch: main. P03 is
 committed as c2b44c8 and P04 as 1ff6c13. P04A began from a clean worktree at
 bd8e62c (the hosting-decision documentation commit) and was committed as 99c68f3.
-P05 is committed as 5ad5235 and P06 as 4c96d27. P07 began from that clean
-worktree and remains uncommitted. No fetch, push or app publication was performed.
+P05 is committed as 5ad5235 and P06 as 4c96d27. P07 is committed as 9fa4565
+and P08 as 61fe31e. P09 began from a clean worktree and remains uncommitted.
+No fetch, push or app publication was performed during P09.
 
 Tooling remains Flutter 3.47.4/Dart 3.13.3, Node 26.5.0/npm 11.17.0, Supabase CLI
 2.117.0 and Postgres 17.6.1.167. P04 also exercised local Edge Runtime 1.74.3
@@ -487,7 +547,7 @@ Tooling remains Flutter 3.47.4/Dart 3.13.3, Node 26.5.0/npm 11.17.0, Supabase CL
 started for verification. P05 selected the existing hosted project and configured
 the sender domain; no global tool upgrade or paid subscription was added.
 
-Remaining product defaults include self-review, archive privileges,
+Remaining product defaults include archive privileges,
 operator-created teams and retention. P06 confirmed profile email visibility;
 P07 confirmed title, entry edit privileges, soft deletion and the revised priorities.
 Exact enterprise hostnames will be supplied privately before live use; P07 uses
@@ -528,6 +588,6 @@ No backend tests were applicable during P02; P03 results are above. No productio
 
 ## Next
 
-Review **P08: sprint/priority ordering and admin reordering**. The next ready item is
-**P09: comments and per-user review signals**. Keep trial admission revoked;
+Review **P09: comments and per-user review signals**.
+The next item is **P10: archive and lifecycle**, only when selected. Keep trial admission revoked;
 carry the documented delivery and production callback checks into P12/P13.

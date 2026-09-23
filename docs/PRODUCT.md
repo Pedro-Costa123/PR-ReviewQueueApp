@@ -1,7 +1,7 @@
 # Product
 
-Last updated: 2026-09-22. Owner: Pedro Costa. Stage: P08 ordering/reordering
-complete locally, ready for review. P09 is next when selected. P05 controlled
+Last updated: 2026-09-23. Owner: Pedro Costa. Stage: P09 comments/review signals
+complete locally, ready for review. P10 is next when selected. P05 controlled
 hosted authentication is complete; Inbox placement remains a release follow-up. The
 signed-in queue now persists data locally; demo routes remain fictional. The production subdomain is confirmed but
 not published. Demo content and preparatory schema fields remain proposals.
@@ -57,7 +57,7 @@ Confirmed rules above take precedence. Additional details below are proposed def
 - P07 uses operator-configured exact hostname allowlists, empty in migrations and fictional in local tests. Real company hosts stay in private configuration before live use. See [QUEUE](QUEUE.md) for resource paths and URL normalization.
 - Implemented P08 sort: sprint-goal entries first; within each group, Critical before High before Medium before Low; within each priority group, admin-defined position, then stable creation/ID order. Sorting happens on the server before the 100-entry display limit.
 - Admin drag/drop and keyboard move controls operate within a group. Changing the sprint-goal flag or priority moves the entry to the end of its new group. Queue revision conflicts reload the latest order and require a deliberate new move; no cross-group override is implemented.
-- **Confirmed in P07:** only submitters and team admins edit an entry. Other members' comments/review signals remain P09.
+- **Confirmed in P07:** only submitters and team admins edit an entry. P09 adds other members' comments/review signals; see [ACTIVITY](ACTIVITY.md).
 - An active entry with the same normalized PR URL in the same team is rejected as a duplicate. The same PR in another team is permitted. Re-adding an archived PR prompts restoration by an authorized user.
 - Suggested queue columns: order, title, sprint-goal badge, priority, submitter, review counts, age, and link/actions menu.
 - Include text search and filters for sprint goal, priority, and submitter. Keep paginated archive views separate from the active queue.
@@ -68,7 +68,7 @@ Confirmed rules above take precedence. Additional details below are proposed def
 - Use plain text, up to 2,000 characters. A comment's author can edit/delete it; team admins can remove it for moderation.
 - Each member has one current signal per entry: `looks_good`, `comments_left`, or unset. They can change or clear their own signal. Show who set it and when.
 - The X means feedback was left on the PR; it is not a build failure. Pair icons with text/tooltips and accessible labels.
-- Proposed: the submitter cannot mark their own entry as reviewed. No automatic completion based on a count of checks.
+- **Confirmed 2026-09-23:** the submitter cannot set either review signal on their own entry, including admins. They can still comment. No automatic completion based on a count of checks.
 - These signals do not replace required approvals in GitHub/GitLab/Azure DevOps/Bitbucket and can become outdated when code changes. Reset signals when the PR link changes; automated detection of new commits belongs with the future integration.
 
 ### Archive, deletion, and PR closure
@@ -116,7 +116,7 @@ Native mobile/desktop apps, payments, attachments/avatar uploads, Teams messages
 | Q04 answered | Ordering and teams? | Sprint first, then priority, admin reorder within groups; multiple teams allowed. |
 | Q05 answered | External hosting permission? | Owner says allowed. Region/retention remain unspecified; select an available EU project region unless a different requirement emerges. |
 | Q06 | Who creates teams and appoints initial admins? | Deployment operator bootstraps them. Team admins manage their own members. |
-| Q07 partially answered | Who may archive/edit, should emails be visible to teammates, and can submitters review their own PR? | Email visible to all active teammates and submitter/team-admin edits confirmed 2026-09-21. Archive/self-review defaults remain for their respective backlog items. |
+| Q07 partially answered | Who may archive/edit, should emails be visible to teammates, and can submitters review their own PR? | Email visible to all active teammates and submitter/team-admin edits confirmed 2026-09-21; no self-review confirmed 2026-09-23. Archive authority remains P10. |
 | Q08 partially answered | Are the title field, priority labels, deletion recovery, and retention acceptable? | Title and Low/Medium/High/Critical confirmed in P07. Soft deletion with audit metadata now; recovery/retention/purge remain P10. |
 
 ## Pilot success criteria

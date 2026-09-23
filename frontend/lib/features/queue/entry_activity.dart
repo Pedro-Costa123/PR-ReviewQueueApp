@@ -1,0 +1,431 @@
+import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'entry_repository.dart';
+
+String activityError(Object error) => error is PostgrestException
+    ? switch (error.code) {
+        'PT409' => 'This comment or entry changed. Your draft is kept. Refresh to review the latest activity; cancel editing before starting again.',
+        'PT429' => 'Too many changes. Wait a minute before trying again.',
+        '22023' => 'Enter 1–2,000 plain-text characters.',
+        '42501' => 'Your access changed or this entry is unavailable. Refresh your teams.',
+        _ => 'Could not confirm the change. Refresh and check before trying again. Your draft is kept.',
+      }
+    : 'Could not confirm the change. Refresh and check before trying again. Your draft is kept.';
+
+class EntryActivity extends StatefulWidget {
+  const EntryActivity({
+    super.key,
+    required this.repository,
+    required this.teamId,
+    required this.entryId,
+    required this.admin,
+    required this.members,
+    required this.viewProfile,
+  });
+  final EntryRepository repository;
+  final String teamId, entryId;
+  final bool admin;
+  final List<EntryData> members;
+  final void Function(String) viewProfile;
+  @override
+  State<EntryActivity> createState() => _EntryActivityState();
+}
+
+class _EntryActivityState extends State<EntryActivity> {
+  final _body = TextEditingController();
+  final _inputFocus = FocusNode();
+  EntryData? _data, _editing;
+  bool _open = false, _busy = false, _blocked = false;
+  String? _message;
+  int _generation = 0;
+  @override
+  void dispose() {
+    _body.dispose();
+    _inputFocus.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(EntryActivity oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.teamId != widget.teamId ||
+        oldWidget.entryId != widget.entryId ||
+        oldWidget.repository != widget.repository) {
+      _generation++;
+      _data = null;
+      _editing = null;
+      _body.clear();
+      _message = null;
+      _blocked = false;
+      _busy = false;
+      if (_open) _load();
+    }
+  }
+
+  Future<void> _load({String? message}) async {
+    final generation = ++_generation;
+    setState(() {
+      _busy = true;
+      _data = null;
+      _message = message;
+    });
+    try {
+      final data = await widget.repository.activity(
+        widget.teamId,
+        widget.entryId,
+      );
+      if (!mounted || generation != _generation) return;
+      setState(() {
+        _data = data;
+        if (_editing == null) _blocked = false;
+      });
+    } catch (_) {
+      if (!mounted || generation != _generation) return;
+      setState(
+        () => _message = 'Could not load activity. Check your connection or team access, then refresh.',
+      );
+    } finally {
+      if (mounted && generation == _generation) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _mutate(
+    Future<void> Function() action, {
+    bool comment = false,
+  }) async {
+    if (_busy || _data == null) return;
+    final generation = _generation;
+    setState(() {
+      _busy = true;
+      _message = null;
+    });
+    try {
+      await action();
+      if (!mounted || generation != _generation) return;
+      if (comment) {
+        _body.clear();
+        _editing = null;
+      }
+      await _load(message: 'Saved.');
+      if (mounted && comment) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _inputFocus.requestFocus();
+        });
+      }
+    } catch (error) {
+      if (!mounted || generation != _generation) return;
+      setState(() {
+        _busy = false;
+        _message = activityError(error);
+        _blocked =
+            error is! PostgrestException ||
+            !['PT429', '22023'].contains(error.code);
+        if (error is PostgrestException && error.code == '42501') _data = null;
+      });
+    }
+  }
+
+  void _save() {
+    final body = _body.text.trim();
+    if (body.isEmpty ||
+        body.runes.length > 2000 ||
+        RegExp(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]').hasMatch(body)) {
+      setState(() => _message = 'Enter 1–2,000 plain-text characters.');
+      return;
+    }
+    _mutate(
+      () => widget.repository.comment(
+        widget.teamId,
+        widget.entryId,
+        body,
+        original: _editing,
+      ),
+      comment: true,
+    );
+  }
+
+  Future<void> _delete(EntryData note) async {
+    final yes = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete comment?'),
+        content: const Text(
+          'This local comment will be hidden from the entry.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete comment'),
+          ),
+        ],
+      ),
+    );
+    if (yes == true && mounted) {
+      await _mutate(
+        () => widget.repository.deleteComment(
+          widget.teamId,
+          widget.entryId,
+          note,
+        ),
+      );
+    }
+  }
+
+  Widget _person(String id) {
+    final member = widget.members
+        .where((m) => m['user_id'] == id && m['active'] == true)
+        .firstOrNull;
+    return member == null
+        ? const Text('Former teammate')
+        : TextButton(
+            onPressed: _busy ? null : () => widget.viewProfile(id),
+            child: Text(
+              '${member['name'] ?? 'Teammate'}${id == widget.repository.userId ? ' (you)' : ''}',
+            ),
+          );
+  }
+
+  String _time(Object? value) {
+    final time = DateTime.tryParse('$value')?.toLocal();
+    return time == null
+        ? ''
+        : '${time.year}-${time.month.toString().padLeft(2, '0')}-${time.day.toString().padLeft(2, '0')} ${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final data = _data;
+    final notes = List<EntryData>.from(data?['comments'] ?? []);
+    final reviews = List<EntryData>.from(data?['reviews'] ?? []);
+    final active = data?['state'] == 'active';
+    final canReview =
+        active && data?['submitter_id'] != widget.repository.userId;
+    final enabled = !_busy && !_blocked && data != null;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Align(
+          alignment: Alignment.centerLeft,
+          child: TextButton.icon(
+            onPressed: () {
+              setState(() => _open = !_open);
+              if (_open && _data == null && !_busy) _load();
+            },
+            icon: Icon(_open ? Icons.expand_less : Icons.expand_more),
+            label: Text(
+              _open ? 'Hide comments and reviews' : 'Comments and reviews',
+            ),
+          ),
+        ),
+        if (_open) ...[
+          const Text(
+            'Local notes and review signals only. Nothing is posted to GitHub or Jira, and no PR is marked merged. Signals may become outdated as code changes.',
+          ),
+          const SizedBox(height: 8),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: OutlinedButton.icon(
+              onPressed: _busy ? null : _load,
+              icon: const Icon(Icons.refresh),
+              label: const Text('Refresh activity'),
+            ),
+          ),
+          if (_busy)
+            const LinearProgressIndicator(semanticsLabel: 'Loading activity'),
+          if (_message != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Semantics(liveRegion: true, child: Text(_message!)),
+            ),
+          if (data != null) ...[
+            const SizedBox(height: 12),
+            Text(
+              'Reviewed, looks good: ${data['looks_good_count']} · Comments left on PR: ${data['comments_left_count']}',
+            ),
+            if (data['submitter_id'] == widget.repository.userId)
+              const Text('You can comment, but cannot review your own entry.'),
+            if (!active) const Text('This entry is read-only.'),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (final signal in ['looks_good', 'comments_left'])
+                  FilterChip(
+                    avatar: Icon(
+                      signal == 'looks_good' ? Icons.check : Icons.close,
+                      size: 18,
+                    ),
+                    label: Text(
+                      signal == 'looks_good'
+                          ? 'Reviewed, looks good'
+                          : 'Comments left on PR',
+                    ),
+                    selected: data['my_signal'] == signal,
+                    onSelected: enabled && canReview
+                        ? (_) => _mutate(
+                            () => widget.repository.review(
+                              widget.teamId,
+                              widget.entryId,
+                              data['entry_version'] as int,
+                              signal,
+                            ),
+                          )
+                        : null,
+                  ),
+                TextButton(
+                  onPressed: enabled && active && data['my_signal'] != null
+                      ? () => _mutate(
+                          () => widget.repository.review(
+                            widget.teamId,
+                            widget.entryId,
+                            data['entry_version'] as int,
+                            null,
+                          ),
+                        )
+                      : null,
+                  child: const Text('Clear my signal'),
+                ),
+              ],
+            ),
+            for (final review in reviews)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Wrap(
+                  spacing: 8,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    _person(review['user_id'] as String),
+                    Text(
+                      review['signal'] == 'looks_good'
+                          ? 'Reviewed, looks good'
+                          : 'Comments left on PR',
+                    ),
+                    Text(_time(review['updated_at'])),
+                  ],
+                ),
+              ),
+            if ((data['looks_good_count'] as int) +
+                    (data['comments_left_count'] as int) >
+                reviews.length)
+              const Text(
+                'Showing the latest 100 reviewers. Counts include all signals.',
+              ),
+            const SizedBox(height: 16),
+            Text(
+              'Comments (${data['comments_count']})',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            if (active) ...[
+              const SizedBox(height: 12),
+              TextField(
+                controller: _body,
+                focusNode: _inputFocus,
+                enabled: !_busy,
+                minLines: 2,
+                maxLines: 6,
+                maxLength: 2000,
+                decoration: InputDecoration(
+                  labelText: _editing == null
+                      ? 'Add a comment'
+                      : 'Edit your comment',
+                  helperText: 'Plain text · stays in this app',
+                  helperMaxLines: 2,
+                ),
+              ),
+              Wrap(
+                spacing: 8,
+                children: [
+                  FilledButton(
+                    onPressed: enabled ? _save : null,
+                    child: Text(
+                      _editing == null ? 'Post comment' : 'Save comment',
+                    ),
+                  ),
+                  if (_editing != null || _blocked)
+                    TextButton(
+                      onPressed: _busy
+                          ? null
+                          : () {
+                              setState(() {
+                                _editing = null;
+                                _body.clear();
+                                _blocked = false;
+                                _message = null;
+                              });
+                            },
+                      child: const Text('Cancel editing'),
+                    ),
+                ],
+              ),
+            ],
+            if (notes.isEmpty)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 12),
+                child: Text('No comments yet.'),
+              ),
+            for (final note in notes)
+              Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Wrap(
+                      spacing: 8,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        _person(note['author_id'] as String),
+                        Text(
+                          '${_time(note['updated_at'])}${note['version'] == 1 ? '' : ' · edited'}',
+                        ),
+                      ],
+                    ),
+                    // Text widgets never parse HTML or Markdown or fetch embedded URLs.
+                    Text(note['body'] as String),
+                    Wrap(
+                      spacing: 8,
+                      children: [
+                        if (note['author_id'] == widget.repository.userId)
+                          TextButton(
+                            onPressed: enabled && active
+                                ? () {
+                                    setState(() {
+                                      _editing = note;
+                                      _body.text = note['body'] as String;
+                                      _message = null;
+                                    });
+                                    _inputFocus.requestFocus();
+                                  }
+                                : null,
+                            child: const Text('Edit comment'),
+                          ),
+                        if (note['author_id'] == widget.repository.userId ||
+                            widget.admin)
+                          TextButton(
+                            onPressed: enabled && active
+                                ? () => _delete(note)
+                                : null,
+                            child: Text(
+                              note['author_id'] == widget.repository.userId
+                                  ? 'Delete comment'
+                                  : 'Remove comment (admin)',
+                            ),
+                          ),
+                      ],
+                    ),
+                    const Divider(),
+                  ],
+                ),
+              ),
+            if ((data['comments_count'] as int) > notes.length)
+              const Text('Showing the latest 100 comments, newest first.'),
+          ],
+        ],
+      ],
+    );
+  }
+}

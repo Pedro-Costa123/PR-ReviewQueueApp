@@ -1,6 +1,7 @@
 # Architecture
 
-Updated: 2026-09-22. P08 adds locally verified ordering/reordering; P07 adds queue CRUD/ownership. See [QUEUE](QUEUE.md).
+Updated: 2026-09-23. P09 adds local comments/review signals; see [ACTIVITY](ACTIVITY.md).
+P08 adds locally verified ordering/reordering; P07 adds queue CRUD/ownership. See [QUEUE](QUEUE.md).
 P06 adds locally verified onboarding; see [ONBOARDING](ONBOARDING.md).
 P04/P04A local authentication and root callbacks are verified.
 P05 adds the Resend adapter, Turnstile bridge and strict loopback hosted-trial
@@ -83,7 +84,17 @@ P08's sixth migration adds a stable `queue_snapshot` RPC returning ordered rows
 and their revision together, plus admin-only `move_entry` backed by a private
 transaction. It reuses P07 budgets/team locks, validates same-team/group targets,
 checks revisions, shifts affected positions and preserves content versions.
-Sorting precedes the 100-row display limit. Hosted P06–P08 is unperformed.
+Sorting precedes the 100-row display limit. Hosted P06–P09 is unperformed.
+
+P09's seventh migration adds an authorized stable activity snapshot, guarded
+comment add/edit/delete and per-user signal set/clear. It reuses queue budgets
+and team/entry lock order with post-lock membership/role checks. Authors may edit;
+authors/admins may soft-delete comments with optimistic comment versions. Signals
+derive identity and reject self-review, including admins. A PR-link-change trigger
+clears signals in the same entry-edit transaction; stale review requests conflict
+on entry version. Activity advances only data revision. Details are bounded at 100
+comments/reviewers with full counts. Flutter renders plain text in expandable
+entry panels; no external posting or new service is involved.
 
 P06 now connects the signed-in root workspace to real teams and profiles.
 `invite-member` verifies Auth `/user`, prepares with the caller JWT, and uses a
@@ -181,7 +192,7 @@ endpoint with event idempotency, bounded timeouts and no automatic retry. See D2
 ## Mutations and consistency
 
 - Read identity from the verified session, derive ownership server-side, and recheck current membership in the database transaction.
-- P06 implements transactional `claim_invites`. P07 implements `create_entry`, `update_entry` and `delete_entry`; P08 implements `move_entry`. `archive_entry`, `restore_entry` and `set_review` remain proposed contracts.
+- P06 implements transactional `claim_invites`. P07 implements `create_entry`, `update_entry` and `delete_entry`; P08 implements `move_entry`; P09 implements `set_review` and comment mutations. `archive_entry` and `restore_entry` remain proposed contracts.
 - Entry edits carry an expected version; stale writes return a conflict and the latest version. Do not silently overwrite another user's change.
 - A reorder reserves the existing user budget, locks the team's queue revision, rechecks admin authority, validates the expected revision and same-group target, and shifts the affected position interval atomically. It advances queue/data revisions separately from entry content versions. No fractional-rank infrastructure is needed.
 - Changing sprint flag/priority appends to the destination group and advances the queue revision. Restore behaves similarly. Database uniqueness detects an active duplicate during restore.

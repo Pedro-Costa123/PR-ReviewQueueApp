@@ -2,9 +2,9 @@
 
 A private team queue that keeps pull requests visible, makes sprint priorities clear, and records review feedback and archived work.
 
-**Current stage: P08 queue ordering and admin reordering complete locally; ready for review.**
+**Current stage: P09 comments and review signals complete locally; ready for review.**
 P05's controlled hosted trial is complete. Inbox placement remains a release
-follow-up; P09 is next when selected. P06–P08 have not been deployed to the hosted
+follow-up; P10 is next when selected. P06–P09 have not been deployed to the hosted
 project. The signed-in queue persists entries locally; demo routes remain fictional. No
 production app is published. Work proceeds one backlog item at a time.
 
@@ -23,6 +23,7 @@ production app is published. Work proceeds one backlog item at a time.
 | [Hosted authentication trial](docs/HOSTED_AUTH.md) | P05 configuration, provider state, evidence and limitations |
 | [Onboarding](docs/ONBOARDING.md) | P06 invitation/profile workflow, local verification and recovery |
 | [Queue entries](docs/QUEUE.md) | P07/P08 entry/ordering contracts, private enterprise hosts and local verification |
+| [Comments and review signals](docs/ACTIVITY.md) | P09 permissions, counts, PR-link resets and verification |
 | [Handoff](docs/HANDOFF.md) | How to continue the project across planning and implementation tasks |
 
 ## Proposed stack
@@ -54,7 +55,7 @@ LICENSE            Existing MIT license
 ## Start the next step
 
 Read [Status](docs/STATUS.md), then [Next](docs/NEXT.md). Review the completed local
-**P08 ordering/reorder workflow** using [its runbook](docs/QUEUE.md). P09 is ready
+**P09 comments/review workflow** using [its runbook](docs/ACTIVITY.md). P10 is ready
 when selected. The [local authentication runbook](docs/AUTH.md) and
 [frontend demo commands](frontend/README.md) remain available.
 

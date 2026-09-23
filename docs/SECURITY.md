@@ -1,6 +1,6 @@
 # Security design and launch evidence
 
-Last updated: 2026-09-22. P08 ordering, P07 queue mutations and P06 onboarding are verified locally. P03/P04/P04A local controls are verified. P05 controlled
+Last updated: 2026-09-23. P09 adds local comments/review signals. P08 ordering, P07 queue mutations and P06 onboarding are verified locally. P03/P04/P04A local controls are verified. P05 controlled
 hosted login, mail, CAPTCHA replay denial and passive-scanner checks passed.
 [AUTH](AUTH.md) and [HOSTED_AUTH](HOSTED_AUTH.md) distinguish implementation,
 provider configuration and observed behavior. Lifecycle/launch controls remain planned.
@@ -11,6 +11,24 @@ a real local Auth client and sessionStorage adapter, with SDK cross-tab synchron
 There is no fake signed-in identity, role switch or company URL. Browser demo
 navigation is not an authorization test. SQL-role/Data API denial tests run against
 local Supabase. The release build remains a local preview, not a production auth path.
+
+## P09 implemented evidence and limits
+
+The seventh migration derives comment/review identity from the session, verifies
+team/parent IDs and live membership before and after team locking, and denies
+self-review even for admins. Comment authors alone may edit; authors/team admins
+may soft-delete with expected versions. Archived/deleted parents reject mutations.
+The shared queue budget, fixed search paths, explicit RPC grants, denied private
+helper/direct table access and original RLS/immutable keys remain in force.
+
+Denial tests cover anonymous, foreign team, forged author/reviewer/team, revoked
+valid tokens, queued revocation/demotion and direct-write bypasses. Concurrency
+tests cover stale comment edits, one signal per user and shared atomic budgets.
+Tests also cover PR replacement resets and stale review denial. Flutter Text
+renders HTML-like content literally; no network fetch or external posting occurs.
+See [ACTIVITY](ACTIVITY.md) for contracts and limits. SQL lint passes; the advisor
+has seven intentional private RLS/no-policy info findings and zero warnings/errors.
+Retention/purge remains P10; no hosted change.
 
 ## P08 implemented evidence and limits
 
@@ -105,7 +123,7 @@ Supabase supports magic links and PKCE and provides CAPTCHA and rate controls. T
 - Every read and write checks active membership in the owning team. Profiles require a shared active team; never reveal a person's unrelated memberships.
 - A removed member loses team data access on the next database request, even if their JWT has not expired. Prevent deleted memberships or old invitations from silently recreating access.
 - Enforce immutable submitter/comment author/review author. Only submitter/team admin can delete entries; only team admins reorder or invite.
-- Prevent role escalation, forged team IDs in nested resources, duplicate active entries, self-review if the proposed rule is retained, and removal of a team's last admin.
+- Prevent role escalation, forged team IDs in nested resources, duplicate active entries, self-review (confirmed in P09), and removal of a team's last admin.
 - Guarded mutation functions perform quotas and business changes transactionally. Revoke direct table writes that would bypass them. Elevated functions have fixed search paths and explicit caller checks.
 - Bootstrap the first admin through an explicit operator action. Never use "first registered user wins". Require MFA on infrastructure/admin provider accounts.
 

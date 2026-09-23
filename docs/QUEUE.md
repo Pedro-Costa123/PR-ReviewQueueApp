@@ -1,7 +1,8 @@
 # P07/P08 queue entries and ordering
 
-Updated: 2026-09-22. Local implementation only; no hosted migration or publication.
+Updated: 2026-09-23. Local implementation only; no hosted migration or publication.
 P08 builds on completed local P07. See [STATUS](STATUS.md) for final evidence.
+P09 adds [comments and review signals](ACTIVITY.md) to the connected entries.
 
 ## Confirmed scope
 
@@ -143,10 +144,11 @@ npm run reset
 npm test
 npm run test:queue
 npm run test:ordering
+npm run test:activity
 npm run lint
 ```
 
-Reset is destructive to this project's local test database. It applies all six
+Reset is destructive to this project's local test database. It applies all seven
 migrations without seeding hosts/users. `npm test` requires a clean database and
 loads fictional fixtures. Queue tests create isolated identities/teams, refuse
 linked/remote targets, and never send email. Run the security advisor with:
@@ -197,12 +199,13 @@ Docker all-interface binding limitation remains; see [AUTH](AUTH.md).
 
 ## Review boundary and sources
 
-No P09 comments/review mutations, P10 archive/recovery/purge,
+Historical P08 boundary: no P09 comments/review mutations, P10 archive/recovery/purge,
 P11 background refresh, hosted migration, DNS change, mail-provider change,
 dependency, paid service, commit, push or publication is included. Hosted P06–P08
 rollout, actual company hostname configuration, Inbox placement and the final
 HTTPS callback remain outstanding before live use. No material unanswered
-question blocks the agreed local P08 scope. Review P08; P09 is next only when selected.
+question blocked the agreed local P08 scope. P09 was subsequently selected;
+its current contract and review boundary are in [ACTIVITY](ACTIVITY.md).
 
 Official references rechecked 2026-09-22:
 [database functions](https://supabase.com/docs/guides/database/functions),

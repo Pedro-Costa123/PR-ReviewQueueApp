@@ -14,8 +14,13 @@ editing/deletion and retained drafts on conflicts. See [QUEUE](../docs/QUEUE.md)
 for its preview and checks. Email is visible only to self/shared active teammates
 through the server. P08 adds sprint/priority group headings, admin drag handles
 and keyboard move controls with revision conflict recovery. The server orders
-before the 100-entry display limit; manual refresh remains. No P06–P08 hosted
+before the 100-entry display limit; manual refresh remains. No P06–P09 hosted
 deployment has been performed. See QUEUE for ordering checks and preview fixtures.
+
+P09 adds expandable comments/review panels: plain text, author edits/deletion,
+admin removal, check/X/clear, complete counts and reviewer/time display. Self-review
+is prohibited; comments stay allowed. Run `flutter test test/activity_test.dart`;
+see [ACTIVITY](../docs/ACTIVITY.md) for the server contract and local QA.
 
 Verified SDK: **Flutter 3.47.4 stable / Dart 3.13.3** on Windows. Only the web platform is scaffolded. Application dependencies and the lockfile are pinned; no global backend tooling is required.
 

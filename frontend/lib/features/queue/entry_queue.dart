@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../shared/widgets.dart';
 import 'entry_repository.dart';
+import 'entry_activity.dart';
 import 'open_link.dart';
 
 String entryError(Object error) {
@@ -436,6 +437,15 @@ class _EntryQueueState extends State<EntryQueue> {
               ],
             ],
           ),
+          EntryActivity(
+            key: ValueKey('activity-${entry['id']}'),
+            repository: widget.repository,
+            teamId: widget.teamId,
+            entryId: entry['id'] as String,
+            admin: widget.admin,
+            members: widget.members,
+            viewProfile: widget.viewProfile,
+          ),
         ],
       ),
     );
@@ -614,6 +624,13 @@ class _EntryEditorState extends State<EntryEditor> {
                       ? null
                       : (value) => setState(() => _sprint = value!),
                 ),
+                if (widget.entry != null)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: Text(
+                      'Changing the PR link clears all review signals. Comments are kept.',
+                    ),
+                  ),
                 if (_error != null)
                   Semantics(liveRegion: true, child: SelectableText(_error!)),
                 if (_saving)

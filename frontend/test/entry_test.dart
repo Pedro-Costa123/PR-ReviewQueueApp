@@ -20,6 +20,38 @@ EntryData row({String owner = 'self'}) => {
 
 class TestEntries implements EntryRepository {
   @override
+  Future<EntryData> activity(String teamId, String entryId) async => {
+    'entry_version': 1,
+    'submitter_id': 'self',
+    'state': 'active',
+    'comments': <EntryData>[],
+    'reviews': <EntryData>[],
+    'comments_count': 0,
+    'looks_good_count': 0,
+    'comments_left_count': 0,
+    'my_signal': null,
+  };
+  @override
+  Future<void> comment(
+    String teamId,
+    String entryId,
+    String body, {
+    EntryData? original,
+  }) async {}
+  @override
+  Future<void> deleteComment(
+    String teamId,
+    String entryId,
+    EntryData comment,
+  ) async {}
+  @override
+  Future<void> review(
+    String teamId,
+    String entryId,
+    int version,
+    String? signal,
+  ) async {}
+  @override
   String get userId => 'self';
   List<EntryData> entries = [row()];
   EntryData? saved, original;

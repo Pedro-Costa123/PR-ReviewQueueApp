@@ -63,11 +63,90 @@ abstract interface class EntryRepository {
   });
   Future<void> save(String teamId, EntryData fields, {EntryData? original});
   Future<void> delete(String teamId, EntryData entry);
+  Future<EntryData> activity(String teamId, String entryId);
+  Future<void> comment(
+    String teamId,
+    String entryId,
+    String body, {
+    EntryData? original,
+  });
+  Future<void> deleteComment(String teamId, String entryId, EntryData comment);
+  Future<void> review(
+    String teamId,
+    String entryId,
+    int version,
+    String? signal,
+  );
 }
 
 class SupabaseEntryRepository implements EntryRepository {
   SupabaseEntryRepository(this.client);
   final SupabaseClient client;
+  @override
+  Future<EntryData> activity(String teamId, String entryId) async =>
+      Map<String, dynamic>.from(
+        await client.rpc(
+          'entry_activity',
+          params: {'p_team_id': teamId, 'p_entry_id': entryId},
+        ),
+      );
+
+  @override
+  Future<void> comment(
+    String teamId,
+    String entryId,
+    String body, {
+    EntryData? original,
+  }) async {
+    await client.rpc(
+      original == null ? 'add_comment' : 'edit_comment',
+      params: {
+        'p_team_id': teamId,
+        'p_entry_id': entryId,
+        'p_body': body,
+        if (original != null) ...{
+          'p_comment_id': original['id'],
+          'p_expected_version': original['version'],
+        },
+      },
+    );
+  }
+
+  @override
+  Future<void> deleteComment(
+    String teamId,
+    String entryId,
+    EntryData comment,
+  ) async {
+    await client.rpc(
+      'delete_comment',
+      params: {
+        'p_team_id': teamId,
+        'p_entry_id': entryId,
+        'p_comment_id': comment['id'],
+        'p_expected_version': comment['version'],
+      },
+    );
+  }
+
+  @override
+  Future<void> review(
+    String teamId,
+    String entryId,
+    int version,
+    String? signal,
+  ) async {
+    await client.rpc(
+      'set_review',
+      params: {
+        'p_team_id': teamId,
+        'p_entry_id': entryId,
+        'p_expected_version': version,
+        'p_signal': signal,
+      },
+    );
+  }
+
   @override
   String get userId => client.auth.currentUser!.id;
   @override
