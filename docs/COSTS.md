@@ -4,6 +4,31 @@ Checked: **2026-09-14** using official provider documentation. Prices below are 
 
 ## Cloudflare Pages hosting recheck (2026-09-26)
 
+### P13 activation recheck
+
+Rechecked official Pages Direct Upload/static pricing, Supabase pricing, Resend
+pricing and Turnstile plans linked below on 2026-09-26. The selected Free/manual
+upload assumptions and limits remain unchanged. Supabase organization API says
+Free and project healthy; Resend usage remains 0/100 daily and 3/3,000 monthly
+before P13 sends, sender verified with tracking off. Cloudflare started with no
+projects and zero compute usage; P13 allocated the exact Pages project and the
+owner created the second managed Turnstile widget. No paid upgrade/add-on.
+
+P13 first admin and first member invitation were delivered. The next recipient's
+invitation was provisioned, but Auth `/resend` returned **429 email rate limit
+exceeded** before any hook reservation or Resend send. Do not raise the provider
+cap or clear reservation history to complete a pilot in one run. Retry that
+saved invitation after the sending window resets. This observed provider cap
+is separate from the application's 80/day and 2,500/31-day maximum budgets.
+See [PILOT](PILOT.md) for latest usage and recipient-observed delivery.
+
+The real production two-pass artifact is 43 files / 42,411,856 bytes; largest
+7,284,602 bytes. These are local bytes, not billed traffic. Owner D37 accepts
+disposable-pilot data loss without off-device backup; this does not claim the
+Free plan includes recovery. The hosted leaked-password advisor's protection is
+Pro-only; retain magic links without buying that feature. Monitor pilot usage
+and preserve the existing application send budgets and 60%/80% thresholds.
+
 ### P12 read-only account and quota evidence
 
 On 2026-09-26, Cloudflare's account UI shows **Free / Current plan**, no Workers

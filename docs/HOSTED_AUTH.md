@@ -1,5 +1,27 @@
 # P05 hosted authentication trial
 
+**Current rollout:** P13 is selected on 2026-09-26. The historical P05 state below
+is superseded where noted in STATUS/HOSTING: trial admission is permanently retired
+by the reviewed migration, exact Pages production settings are active,
+and both reviewed Edge functions are deployed. No admission reopening is allowed.
+P13 hosted versions assigned by MCP map to local reviewed files as follows:
+
+| Migration | Local version | Hosted version |
+| --- | --- | --- |
+| onboarding | 20260921132850 | 20260926204010 |
+| queue_entries | 20260921152831 | 20260926204022 |
+| queue_ordering | 20260922074958 | 20260926204029 |
+| review_activity | 20260923082808 | 20260926204043 |
+| archive_lifecycle | 20260926110053 | 20260926204046 |
+| queue_refresh | 20260926115415 | 20260926204048 |
+| retire_trial_admission | 20260926174044 | 20260926204050 |
+
+The local checkout remains unlinked; do not CLI-push duplicate migration versions.
+P13 production admin delivery reached Inbox and explicit confirmation opened the
+private workspace. User1 joined after Junk delivery. User2's saved invitation
+hit Auth's email rate limit before sending. Later delivery, returning-user checks
+and multi-day feedback are tracked in [PILOT](PILOT.md); P05 results below are historical.
+
 P05 is complete for the controlled developer trial, ready for owner review.
 P06 is the next ready item; do not start it automatically. Inbox placement remains
 a documented release follow-up. This runbook separates local and live evidence.

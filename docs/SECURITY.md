@@ -1,23 +1,50 @@
 # Security design and launch evidence
 
-Last updated: 2026-09-26. P11 adds local bounded read/refresh endpoints. P10 adds local lifecycle controls. P09 comments/review signals, P08 ordering, P07 queue mutations and P06 onboarding are verified locally. P03/P04/P04A local controls are verified. P05 controlled
-hosted login, mail, CAPTCHA replay denial and passive-scanner checks passed.
+Last updated: 2026-09-26. P13 is deployed with the reviewed P03-P12 controls.
+[PILOT](PILOT.md) distinguishes observed live gates from remaining pilot work.
+P05 controlled hosted login, mail, CAPTCHA replay denial and passive-scanner
+checks below are historical evidence.
 [AUTH](AUTH.md) and [HOSTED_AUTH](HOSTED_AUTH.md) distinguish implementation,
-provider configuration and observed behavior. P10 lifecycle is local only; launch controls remain planned.
+provider configuration and observed behavior. No multi-day pilot is claimed.
 
 The signed-in workspace now reads/writes team entries through guarded P07 RPCs;
 public demo routes still contain only fictional presentation fixtures. P04 adds
 a real local Auth client and sessionStorage adapter, with SDK cross-tab synchronization.
 There is no fake signed-in identity, role switch or company URL. Browser demo
 navigation is not an authorization test. SQL-role/Data API denial tests run against
-local Supabase. P11A prepares exact production-mode guards locally; no production auth path is deployed.
+local Supabase. P13 additionally verifies live anonymous API denials and hosted
+SQL-role denials for self-review, ownership writes, foreign-team and nonmember
+access, without adding test identities. A rolled-back hosted transaction also
+proves member ownership/recovery denials and revocation with unchanged identity
+claims. Revoked-member browser evidence remains a separate pilot gate.
 
-## P11A local hosting boundary
+## P13 hosting boundary and earlier release preparation
+
+P13 now applies the seven missing reviewed migrations and both Edge functions to
+the existing hosted project. Trial-route retirement is verified, as are anonymous
+table/RPC denials, missing-CAPTCHA denials, unsigned-hook rejection and invitation
+origin rejection. HTTPS/header checks, clean callback confirmation, initial-admin
+login, Inbox placement and portfolio-origin DOM/storage denials passed. The live
+app has no registered service worker/controller. See PILOT for remaining gates.
+
+Hosted advisor on 2026-09-26 reports seven intentional private RLS/no-policy info
+findings and 24 [authenticated SECURITY DEFINER RPC warnings](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable).
+These are the explicitly granted guarded application RPCs; reviewed source derives
+identity, checks live membership/ownership and uses fixed search paths, with local
+denial/concurrency coverage. No private helper/direct-write grant was added.
+The additional [leaked-password warning](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection)
+concerns a Pro-only setting; this release uses magic links and adds no password
+workflow or paid upgrade. Do not describe hosted advisors as warning-free.
+
+Owner D37 accepts data loss for the disposable pilot, waiving off-device backup.
+Restricted local configuration references are recorded separately; no hosted or
+fresh-machine disaster recovery is claimed. Owner-selected fictional hosts mean
+real enterprise navigation remains unverified. All retention/access rules remain.
 
 P12 adds retirement migration `20260926174044_retire_trial_admission`: mail
 eligibility no longer reads the trial table, all evidence stays revoked, and
 `revoked_at` cannot be null. Historical operator entry points fail closed. This
-is applied locally only; P13 must apply it before activation. Mail budgets,
+was applied hosted in P13 before activation. Mail budgets,
 idempotency, signatures, provider secrets and hosted revocation are unchanged.
 
 P12 adds CSP/exact API connections, anti-framing/no-referrer/no-store headers,
@@ -25,8 +52,8 @@ worker-free bootstrap, credential-pattern checks, locked clean-build comparisons
 and encrypted restricted local restore verification. See [RELEASE](RELEASE.md)
 for scope, backup custody, managed Auth limits, rollback and live gates. Scans are
 heuristic, not proof of arbitrary-secret absence. Lazy Turnstile is the only remote
-script; CanvasKit stays bundled. Actual Pages headers, live CAPTCHA, HTTPS, Inbox
-placement and portfolio-origin tests remain P13. Older P05 evidence below is
+script; CanvasKit stays bundled. Actual Pages headers, live managed CAPTCHA,
+HTTPS, first Inbox delivery and portfolio-origin tests passed in P13. Older P05 evidence below is
 historical; admission is no longer an available local release route.
 
 Explicit production mode accepts only `https://pr-review-queue.pages.dev/`,
@@ -188,7 +215,7 @@ Supabase supports magic links and PKCE and provides CAPTCHA and rate controls. T
 
 ## Browser and link safety
 
-The owner selected a dedicated **Cloudflare Pages `pages.dev` origin** on 2026-09-26; the exact `pr-review-queue.pages.dev` name was validated as available, but remains unreserved. It replaces the personal-domain web target and remains separate from the portfolio/PassGen origin. The latter's scripts cannot directly read app-origin storage or DOM, and its service workers cannot control the app origin. Keep the hostname dedicated to this app. This is a planned boundary, not a deployed/tested configuration. P11A is preparation only; see [HOSTING](HOSTING.md). [Browser same-origin policy](https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Same-origin_policy)
+The owner selected a dedicated **Cloudflare Pages `pages.dev` origin** on 2026-09-26. P13 allocated and deployed exactly `pr-review-queue.pages.dev`. It replaces the personal-domain web target and remains separate from the portfolio/PassGen origin. Live portfolio-origin attempts to read app DOM/storage raise `SecurityError`; the app has no service-worker controller or registrations. Keep the hostname dedicated to this app. See [PILOT](PILOT.md), [HOSTING](HOSTING.md) and the [browser same-origin policy](https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Same-origin_policy).
 
 Separate origins under the same parent domain are not separate sites for every browser rule. Do not use `document.domain`, parent-domain auth cookies, broad credential sharing, or permissive message handlers to reconnect them. RLS, token verification and any future CSRF protection remain necessary. Review third-party scripts loaded by the app itself; code included in the app runs with its privileges.
 

@@ -2,7 +2,59 @@
 
 Updated: 2026-09-26.
 
-## P12 local release preparation (2026-09-26)
+## P13 deployment review checkpoint; pilot in progress (2026-09-26)
+
+Owner selected P13 after P12 review. Started at clean `c24ff7a`. Cloudflare
+allocated exactly `pr-review-queue.pages.dev` through manual dashboard Direct
+Upload. The verified production artifact is live. [PILOT](PILOT.md) records the
+deployment ID, manifest, live evidence and remaining acceptance gates.
+
+- Owner explicitly accepts data loss and waived off-device backup for this
+  disposable pilot (D37). No hosted backup/restore is claimed. A references-only
+  configuration recovery inventory is ignored locally under `backups/p13-config/`,
+  restricted to the current operator and SYSTEM. Provider recovery access has
+  not been tested on a fresh machine.
+- Applied only the seven missing reviewed migrations P06-P12, in order; the
+  original P03-P05 migrations were not replayed. Ten now exist hosted. Retirement
+  verification: zero unrevoked admissions, no admission reference in the mail
+  function, non-null revocation constraint, three preserved mail reservations.
+- Deployed reviewed `send-auth-email` v4 and `invite-member` v1. Removed only
+  `TRIAL_RECIPIENTS`; set production mode and exact Pages callback. Provider keys,
+  signing secret and verified sender remain in their stores. Owner created the
+  separate managed production widget and entered its secret directly in Auth.
+- Bootstrapped the explicitly chosen existing verified owner as one admin of
+  `Pilot`; configured the owner-requested fictional PR/Jira hosts. No company
+  host or real enterprise-link check is claimed. Pilot recipients stay private.
+- Live bounded denial probes pass: unsigned hook 401, unauthenticated invitation
+  401, preview/old-origin invitation 403, anonymous queue RPC and seven table reads
+  401, both Auth send routes without CAPTCHA 400 `captcha_failed`. These denial
+  probes sent no mail; the two later authorized live deliveries are in PILOT.
+- Read-only provider recheck: Supabase Free/healthy; Resend 0/100 daily and
+  3/3,000 monthly, verified sender, tracking off; Cloudflare initially no projects
+  and zero compute usage. Source/history audit passed (141 files, 21 Markdown,
+  198 relative links, 411 history blobs); disconnected artifact integrity passed.
+- Callback/Turnstile/release-policy tests: 15 passed from `frontend/`. Initial
+  sandbox child-process denial and an incorrect working directory were corrected.
+  Hosted advisor: seven intentional private RLS/no-policy info findings,
+  24 guarded authenticated SECURITY DEFINER RPC warnings, plus leaked-password
+  protection disabled (Pro-only, magic-link flow). No grant was broadened to
+  silence findings; see SECURITY.
+
+P13 remains in progress. HTTPS, key asset hashes/headers, origin isolation,
+CAPTCHA, explicit-confirmation login and initial-admin Inbox delivery passed.
+Hosted SQL-role checks deny self-review, direct ownership writes, foreign-team
+RPCs and nonmember RLS/RPC access, with no test identity added. Admin lifecycle,
+reorder, plain-text comment, both themes, reload and sign-out passed. A separate
+rolled-back hosted SQL-role transaction proves member ownership/recovery denials
+and revocation with unchanged identity claims; it leaves real access intact.
+Initial admin and User1 are active; User1 reports Junk placement. User2's saved
+invitation hit Auth 429 before mail delivery. Final usage is 2/100 daily and
+5/3,000 monthly; budgets remain unchanged. P13 stops at this review checkpoint:
+later delivery retry, returning magic link and actual multi-day feedback remain.
+No multi-day pilot claim. No DNS, visibility,
+paid-service, integration, push or purge change.
+
+## P12 local release preparation (2026-09-26, historical checkpoint)
 
 **P12 is complete locally, ready for owner review.** Started from a clean
 worktree at `e2e3761`. P13 remains unstarted. The planned

@@ -240,6 +240,24 @@ off-device disaster recovery. Record private backup/key custody and verify hoste
 managed Auth/config recovery before real-data admission in P13. No purge or paid
 backup service is added. See [RELEASE](RELEASE.md).
 
+## D37 - P13 disposable pilot backup exception (2026-09-26)
+
+The owner selected P13 deployment and the small pilot, retaining manual Pages
+Direct Upload, magic links and the existing verified sender. During the recovery
+checkpoint the owner confirmed: "No setup for now. We can lose the data for now."
+This explicitly waives the off-device data-backup/decrypt checkpoint for the
+current disposable pilot. No hosted backup or disaster restore is claimed.
+The P12 local rehearsal remains local evidence only. Revisit backup custody before
+the owner relies on retained data; no paid backup service or automatic purge is
+authorized. Data-loss acceptance does not weaken authentication, revocation,
+email budgets, private-secret handling or configuration recovery requirements.
+
+The owner supplied the initial admin and two pilot recipients privately in the
+conversation and requested fictional enterprise hosts even in production. Use
+`git.example.test` and `jira.example.test`; team name `Pilot` is the operator
+default. Keep identities out of tracked files. Real company-host navigation is
+deferred, and this pilot must not be described as verified enterprise use.
+
 ## Alternatives evaluated (historical)
 
 Current hosting/authentication direction is D35 above. Older alternatives here

@@ -1,11 +1,12 @@
 # Product
 
-Last updated: 2026-09-26. Owner: Pedro Costa. Stage: P11 refresh/filtering/usability
-implemented locally; verification evidence is in STATUS. P12 release preparation is local; P13 is unstarted. P05 controlled
-hosted authentication is complete; Inbox placement remains a release follow-up. The
-signed-in queue now persists data locally; demo routes remain fictional.
-P11A/P12 prepare the future Cloudflare Pages frontend locally; stop for P12 review.
-Demo content and preparatory schema fields remain proposals.
+Last updated: 2026-09-26. Owner: Pedro Costa. P13 is deployed at
+`https://pr-review-queue.pages.dev/`; pilot acceptance is in progress. See
+[PILOT](PILOT.md) and STATUS for actual evidence. The signed-in hosted workspace
+persists team data; public demo routes remain fictional. Owner D37 selects a
+disposable pilot with fictional enterprise hosts and accepts data loss without
+off-device backup. Complete the recovery gate before durable company data.
+Stop at P13 review; multi-day feedback is still required.
 
 ## Problem and outcome
 
@@ -33,7 +34,7 @@ The owner additionally confirmed:
 
 - Work email invitations with **magic links**, retaining the existing verified sending domain.
 - **Revised 2026-09-26:** aim for **€0/month** and host the frontend on **Cloudflare Pages Free**, at an available `<project>.pages.dev` address. The planned `pr-review-queue.pages.dev` name passed the P11A availability check but is unreserved. This replaces the planned personal-domain website, not the email sender.
-- Preserve the portfolio, PassGen and existing Namecheap email DNS. P11A prepares the hosting change locally before P12; no publication is authorized. See [HOSTING](HOSTING.md).
+- Preserve the portfolio, PassGen and existing Namecheap email DNS. P13 deploys only this app through manual dashboard Direct Upload. See [HOSTING](HOSTING.md).
 - PRs are on GitHub Enterprise and tasks on Jira Enterprise. The app must not fetch their contents or status; users update entries and archive them manually.
 - Sprint-goal entries first, then priority; admins reorder within those groups. Multiple teams per user are allowed.
 - External hosting of the specified company data is allowed. P10 confirms retention without purge below; special regional requirements remain unspecified.

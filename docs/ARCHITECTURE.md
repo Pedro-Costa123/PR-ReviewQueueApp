@@ -1,6 +1,9 @@
 # Architecture
 
-Updated: 2026-09-26. P11 adds local revision checks, filters and bounded pages;
+Updated: 2026-09-26. P13 deploys the reviewed frontend, ten migrations and both
+Edge functions to the existing Free services. Live evidence and remaining pilot
+gates are in [PILOT](PILOT.md). The feature checkpoints below describe their
+original local verification. P11 adds local revision checks, filters and bounded pages;
 see [REFRESH](REFRESH.md). P10 adds local archive/restore/admin recovery; see [LIFECYCLE](LIFECYCLE.md).
 P09 adds local comments/review signals; see [ACTIVITY](ACTIVITY.md).
 P08 adds locally verified ordering/reordering; P07 adds queue CRUD/ownership. See [QUEUE](QUEUE.md).
@@ -13,7 +16,7 @@ revoked. Inbox placement and app publication remain release work. [AUTH](AUTH.md
 
 ## Design
 
-Use Flutter Web with Supabase for authentication, relational data, and server-side authorization. Deliver magic links through Resend using the existing verified sender. The owner selected Cloudflare Pages Free at an available `<project>.pages.dev` address for this repository's Flutter build. P11A prepares this change before P12; no deployment exists. The portfolio and PassGen remain separate deployments on their existing hostname.
+Use Flutter Web with Supabase for authentication, relational data, and server-side authorization. Deliver magic links through Resend using the existing verified sender. The production Flutter build is deployed through manual Cloudflare Pages Free Direct Upload at `pr-review-queue.pages.dev`. The portfolio and PassGen remain separate deployments on their existing hostname.
 
 ```mermaid
 flowchart TD

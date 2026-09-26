@@ -2,11 +2,13 @@
 
 Updated: 2026-09-26. **Execute one selected item, verify it, update the docs, and stop.** Do not turn this file into a single full-app implementation prompt.
 
-The owner selected only P12 after completed local P11A. Release preparation is
-complete locally for `https://pr-review-queue.pages.dev/`, whose name is still
-unreserved. Stop at P12 review. Hosted P06-P12 rollout is unperformed; P05 admission
-remains revoked. P13 is next only when explicitly selected. No deployment or hosted
-settings changed. See [HOSTING](HOSTING.md) and [RELEASE](RELEASE.md).
+The owner selected only P13 after P12 review. The exact
+`https://pr-review-queue.pages.dev/` name is now allocated. P06-P12 migrations and
+reviewed Edge functions and production frontend are deployed; pilot gates remain
+in progress. [PILOT](PILOT.md) distinguishes live checks from pending human feedback.
+P05 admission is retired and remains revoked. Owner waived off-device backup for
+this disposable pilot and selected fictional enterprise hosts (D37). Finish only
+P13 and stop at its review boundary. See [STATUS](STATUS.md) and [RELEASE](RELEASE.md).
 
 `Complete` means the item's actual deliverable exists. `Ready` means the next item can start when requested. Later items remain planned, not authorized as a batch. Smaller UI/product defaults can be settled at the item that needs them.
 
@@ -27,7 +29,7 @@ settings changed. See [HOSTING](HOSTING.md) and [RELEASE](RELEASE.md).
 | P11 | Refresh, filtering, responsive UI, and accessibility | Complete locally; ready for owner review | P10 |
 | P11A | Prepare Cloudflare Pages hosting at a free pages.dev address | Complete locally; ready for owner review | P11 |
 | P12 | Release checks and publishing preparation | Complete locally; ready for owner review | P11A |
-| P13 | Deploy the prepared release and run a small pilot | Ready only when explicitly selected after P12 review | P12 |
+| P13 | Deploy the prepared release and run a small pilot | Deployment review checkpoint; pilot started, multi-day feedback and rate-limited delivery pending | P12 |
 
 ## P02 — Local Flutter app shell
 
@@ -240,6 +242,12 @@ gates remain explicitly in P13. No cloud project, DNS, real mail or publication.
 **Acceptance:** HTTPS, sign-in, team boundaries, links, queue/reorder/comments/reviews/archive, and both themes work at the pages.dev root. The app does not redirect to the portfolio; portfolio-origin DOM/storage access fails and its service worker cannot control the app. Portfolio and PassGen remain reachable. Confirm actual costs/quotas, restore instructions, and revocation. Record the deployed revision, deployment destination, operator, and known limitations.
 
 **Boundary:** The pilot needs human feedback across real use. Do not claim a multi-day pilot passed in one run or create background monitoring unless requested. Subsequent work follows actual pilot findings.
+
+**2026-09-26 checkpoint:** Exact Pages deployment and reviewed backend rollout
+are live. Initial admin and User1 are active; User2's saved invitation awaits
+retry after Auth's sending window resets. Live checks, server-role denials,
+recovery waiver and cosmetic findings are in [PILOT](PILOT.md). Stop for P13
+review; continue this same item with actual pilot evidence, not a new backlog item.
 
 ## Later ideas (unordered; not part of this implementation)
 

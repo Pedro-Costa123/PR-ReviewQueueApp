@@ -1,8 +1,8 @@
 # P12 release preparation and recovery
 
-Updated: 2026-09-26. Local preparation only; P13 is not started. Follow
+Updated: 2026-09-26. P13 is selected and in progress; actual evidence is in STATUS. Follow
 [HOSTING](HOSTING.md) for exact destination/provider settings and
-[STATUS](STATUS.md) for actual results. Source remains private.
+[STATUS](STATUS.md) and [PILOT](PILOT.md) for actual results. Source remains private.
 
 ## Release inputs and reproducibility
 
@@ -39,7 +39,7 @@ package can pass `verify` for upload. `disconnected` contains no connection conf
 and is the first-release fallback. The build has no fake authenticated identity;
 the existing public demo routes contain only fictional presentation data.
 
-For a separately selected P13, prepare ignored `.env.production.json` privately
+For P13, prepare ignored `.env.production.json` privately
 from the [public example](../frontend/.env.production.json.example), using the
 existing project's public key and the new production widget's public site key.
 Only then run `build-release.ps1 -Mode production` and
@@ -138,7 +138,7 @@ fresh machine. DPAPI is bound to this Windows user/machine: copying this file of
 the machine alone is insufficient. It is not a production backup destination.
 There is no backup/purge scheduler and no record/audit expiry.
 
-Before P13 admits real data, the operator must record a restricted, encrypted
+For durable-data use, the operator must record a restricted, encrypted
 off-device backup location, separate recovery-key custody and a successful
 decrypt test. Keep the pre-migration checkpoint and latest verified checkpoint;
 do not automatically delete older checkpoints in this non-purging item. Proposed
@@ -146,6 +146,13 @@ pilot cadence: before every migration/release and after each day with changes;
 maximum expected loss is the interval since the last verified backup, and restore
 time is not yet measured for hosted data. Monitor storage with the same 60%/80%
 thresholds; a retention/storage change requires a later decision.
+
+**P13 owner exception (D37):** the owner has no off-device setup and explicitly
+accepts data loss for now. The data-backup/decrypt gate is waived only for the
+disposable pilot; do not claim hosted recovery or silently restore this as a
+completed checkpoint. A restricted local references-only configuration inventory
+exists; provider credentials remain in their stores. Keep the full procedure above
+for later durable-data admission. No purge or budget reset is authorized.
 
 For an authorized hosted backup/recovery, use the provider's
 [CLI backup/restore procedure](https://supabase.com/docs/guides/platform/migrating-within-supabase/backup-restore)
@@ -181,23 +188,26 @@ through provider stores; preserve `auth.pedro-costa.dev` and its DNS records.
 Different projects/keys can invalidate Auth sessions and encrypted provider data;
 verify those separately. Keep sign-in unavailable until this is resolved.
 
-## P13 rollout and rollback checklist (not executed)
+## P13 rollout and rollback checklist (execution recorded in STATUS)
 
 1. Review P12 diff/evidence; select P13 explicitly. Recheck Free plans/quotas,
    eligibility and the **unreserved** `pr-review-queue` name. If allocation differs,
    stop and update all exact-origin guards/config/tests together. No DNS change.
-2. Take the restricted pre-migration backup/config checkpoint above. Confirm zero
+2. Take the restricted pre-migration backup/config checkpoint above, subject to
+   the explicit disposable-pilot D37 exception. Confirm zero
    active trial admissions and keep mail/invitations closed during transition.
 3. Review and apply only missing migrations, in order, through
-   `20260926174044_retire_trial_admission.sql`. Hosted currently has P03-P05 only.
+   `20260926174044_retire_trial_admission.sql`. At P12 hosted had P03-P05 only;
+   P13 has now applied the seven missing migrations (see HOSTED_AUTH mapping).
    Verify the mail function no longer references admissions and all historical
-   admission rows remain revoked. P06-P11 deployment is still a future action.
+   admission rows remain revoked.
 4. Deploy the reviewed Edge functions; apply the exact [HOSTING](HOSTING.md)
    checklist privately. Remove `TRIAL_RECIPIENTS` from production configuration;
    preserve keys/sender, disabled signup, hook verification, CAPTCHA and budgets.
    Bootstrap only an explicitly chosen existing verified identity/team using the
    operator runbook; never reopen the retired admission or use first-user-wins.
-   Configure real enterprise hosts privately, never in static config or fixtures.
+   Configure enterprise hosts privately, never in static config or fixtures.
+   D37 explicitly selects fictional hosts for the current disposable pilot.
 5. Build/verify the real production package, retain the disconnected fallback,
    allocate the exact Pages hostname and manually upload the verified folder.
    Record revision, manifest hash, destination, deployment ID/time and operator.
@@ -207,7 +217,8 @@ verify those separately. Keep sign-in unavailable until this is resolved.
    enterprise links and quota headroom. Inspect portfolio/PassGen separately;
    prove their origin cannot read app storage/DOM or control its worker scope.
    Do not move tokens between origins. Inspect Inbox/Junk placement with the
-   authorized small pilot; all three P05 messages reached Junk, still unresolved.
+   authorized small pilot; all three P05 messages reached Junk. P13 initial-admin
+   mail reached Inbox; other recipients need their own observations.
 
 For a frontend-only failure, roll back to a previous compatible **production**
 Pages deployment. For a failed first release, upload the verified disconnected

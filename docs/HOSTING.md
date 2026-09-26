@@ -1,13 +1,18 @@
 # Cloudflare Pages hosting plan
 
-Updated: 2026-09-26. P12 local release preparation; no project or deployment created.
+Updated: 2026-09-26. P13 deployed at the exact Pages address; pilot in progress.
 
 P12's build, security, restricted backup/restore and activation/rollback runbook
 is [RELEASE](RELEASE.md). Use its two-clean-build commands and final integrity
-verification for publishing preparation. Local results are in STATUS. P13 is
-unstarted; the hostname remains unreserved.
+verification for publishing preparation. Current results are in STATUS. P13
+rechecked availability and allocated exactly `pr-review-queue.pages.dev` through
+the manual dashboard. The historical P11A/P12 boundaries below describe those
+earlier items; the current owner instruction authorizes P13 deployment.
+The production deployment is live; see [PILOT](PILOT.md) for the deployment ID,
+artifact and observed browser gates. The availability-only statements below
+are historical P11A/P12 evidence, not the current allocation state.
 
-## Confirmed direction
+## Confirmed direction and original pre-allocation check
 
 The owner selected **Cloudflare Pages Free**, using an available
 `<project>.pages.dev` address instead of the planned personal-domain app URL.
@@ -48,7 +53,7 @@ free limits and the distinction between website and sender are in
 
 **Depends on:** completed local P11. **State:** implemented locally; see
 [STATUS](STATUS.md) for checks and review boundary. P12 subsequently completed
-local release preparation; P13 remains unstarted.
+local release preparation; P13 has now deployed the result (see PILOT).
 
 **Scope:** prepare the local app/configuration and runbooks for a stable production
 `pages.dev` origin while retaining base href `/`, hash routes and the existing
@@ -81,7 +86,8 @@ hosted provider changes, DNS changes, real mail, public-source change or P12 wor
 
 ## Prepared configuration and activation checklist
 
-These are **future P13 actions**, after P12 release review, not applied settings.
+These are the **P13 activation settings** prepared in P11A/P12. P13 applied them
+after release review; [PILOT](PILOT.md) records the actual deployment and limits.
 The hosted project still has only P03-P05 migrations and the trial hook. P06-P11
 remain local. No production public-key file or production widget was created.
 
