@@ -4,7 +4,8 @@ A private team queue that keeps pull requests visible, makes sprint priorities c
 
 **Current stage: P11 refresh, filters and accessibility implemented locally.**
 P05's controlled hosted trial is complete. Inbox placement remains a release
-follow-up; P12 is next only when selected. P06-P11 have not been deployed to the hosted
+follow-up; P11A hosting preparation is next only when selected, then P12.
+P06-P11 have not been deployed to the hosted
 project. The signed-in queue persists entries locally; demo routes remain fictional. No
 production app is published. Work proceeds one backlog item at a time.
 
@@ -18,6 +19,7 @@ production app is published. Work proceeds one backlog item at a time.
 | [Status](docs/STATUS.md) | What actually exists and what has been verified |
 | [Next](docs/NEXT.md) | Ordered, individually reviewable implementation steps |
 | [Costs](docs/COSTS.md) | Hosting/authentication comparison, quotas, estimates, and sources |
+| [Hosting plan](docs/HOSTING.md) | Cloudflare Pages preparation before P12 and Namecheap records to retain |
 | [Security](docs/SECURITY.md) | Access rules, abuse controls, and launch checks |
 | [Local authentication](docs/AUTH.md) | P04 runbook, provider corrections, sessions, email guards and CAPTCHA design |
 | [Hosted authentication trial](docs/HOSTED_AUTH.md) | P05 configuration, provider state, evidence and limitations |
@@ -34,10 +36,10 @@ production app is published. Work proceeds one backlog item at a time.
 - Backend: Supabase Postgres, row-level security, transactional database functions, and small TypeScript Edge Functions.
 - Authentication: Supabase magic links, restricted to exact work email invitations.
 - Email: Resend Free, with server-enforced sending budgets.
-- Hosting: this app's own GitHub Pages deployment, with DNS at Namecheap.
-- Confirmed production address (not deployed): `https://reviews.pedro-costa.dev/`.
+- Hosting: Cloudflare Pages Free, selected 2026-09-26; preparation is planned as P11A before P12.
+- Future production address: an available `<project>.pages.dev` hostname; exact name pending, not deployed.
 
-Flutter Web, magic links, the dedicated subdomain, Namecheap DNS, GitHub Pages, manual updates, sprint-first ordering, and multiple team membership are confirmed. The owner selected the subdomain on 2026-09-18 to separate the app's browser origin from the portfolio and PassGen. Supabase + Resend remains the researched backend recommendation. The estimated additional service cost is **€0/month within free-plan limits**; existing domain renewal is separate. Read [Costs](docs/COSTS.md) for limits and [Security](docs/SECURITY.md) for the origin boundary.
+Flutter Web, magic links, Cloudflare Pages, manual updates, sprint-first ordering and multiple team membership are confirmed. The owner selected a free provider web address while retaining the verified `auth.pedro-costa.dev` email sender and its Namecheap DNS. Supabase + Resend remains the backend recommendation. Estimated additional service cost is **€0/month within free-plan limits**; existing sender-domain renewal remains separate. Read [Hosting](docs/HOSTING.md), [Costs](docs/COSTS.md) and [Security](docs/SECURITY.md). This update is planning only.
 
 P04A verified local root callbacks. P05 adds a separately gated hosted trial at
 the same loopback root; the owner verified the dedicated email-sending domain at
@@ -57,8 +59,9 @@ LICENSE            Existing MIT license
 ## Start the next step
 
 Read [Status](docs/STATUS.md), then [Next](docs/NEXT.md). Review the completed local
-**P11 refresh/filtering workflow** using [its runbook](docs/REFRESH.md). P12 is next
-only when separately selected. The [local authentication runbook](docs/AUTH.md) and
+**P11 refresh/filtering workflow** using [its runbook](docs/REFRESH.md). P11A hosting
+preparation is next only when separately selected; P12 follows it.
+The [local authentication runbook](docs/AUTH.md) and
 [frontend demo commands](frontend/README.md) remain available.
 
 Do not run the entire backlog in one task. Complete the selected item, verify its acceptance criteria, update the docs, and stop at its review boundary.

@@ -161,7 +161,9 @@ Those P03 tests do not claim real Auth login or delivery. P04's separate test:au
 suite checks actual local Auth and captured delivery; neither suite claims deployed security.
 
 P04A is complete locally: Auth Site URL and the sender's exact callback use
-`http://127.0.0.1:4173/`, preparing for `https://reviews.pedro-costa.dev/`.
+`http://127.0.0.1:4173/`. The later frontend hosting choice is Cloudflare Pages
+at an available pages.dev hostname, retaining the existing email sender;
+P11A preparation is planned, not implemented. See [HOSTING](../docs/HOSTING.md).
 `npm start` migrates the known old `.env` callback without rotating the secret;
 stop an already-running stack first and restart the function terminal afterward.
 The full replacement sequence and browser checks are in AUTH/STATUS.

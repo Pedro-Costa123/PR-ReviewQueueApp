@@ -5,10 +5,13 @@ not a hosted authentication deployment. P05's implemented trial code and provide
 setup are documented separately in [HOSTED_AUTH](HOSTED_AUTH.md). This runbook
 continues to use fictional recipients and local Mailpit only.
 
-## Hosting decision update (2026-09-18)
+## Hosting decision update (2026-09-26)
 
-The confirmed production URL is now **`https://reviews.pedro-costa.dev/`**. This
-document's commands now use the verified P04A local equivalent,
+The future frontend will use **Cloudflare Pages Free at an available pages.dev
+address**, replacing the personal-domain website plan. Magic links and the
+verified Resend sender stay. P11A preparation is planned before P12; no code or
+hosted setting changed. See [HOSTING](HOSTING.md). This document's commands use
+the verified P04A local equivalent,
 **`http://127.0.0.1:4173/`**. The callback scrubber, Dart local gate, preview/frame,
 Supabase Site URL, sender guard, startup helper and tests use the root together.
 Local-only authentication/mail, signup restrictions, explicit confirmation and

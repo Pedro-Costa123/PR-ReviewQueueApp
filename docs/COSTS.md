@@ -2,6 +2,46 @@
 
 Checked: **2026-09-14** using official provider documentation. Prices below are provider-listed USD, before applicable tax or currency conversion. €0 means zero additional service charges on the selected free plans, not free domain renewal or a guarantee of permanent pricing.
 
+## Cloudflare Pages hosting recheck (2026-09-26)
+
+**Selected by the owner:** Cloudflare Pages Free at an available `pages.dev`
+address for the frontend, retaining Supabase Free and existing Resend magic-link
+email. Exact hostname and account capacity remain to be verified. P11A is planning
+only and precedes P12; no new project, paid feature, subscription or deployment.
+The personal website-domain requirement is superseded; sender DNS and its existing
+domain renewal remain. This does not eliminate all personal-domain use.
+
+Cloudflare lists static asset requests as free and unlimited when they do not
+invoke Functions. Free Pages lists 500 builds/month, one concurrent build,
+20,000 files and a 25 MiB per-file maximum. Direct Upload accepts prebuilt assets
+at `<project>.pages.dev`; dashboard upload has a 1,000-file limit, while Wrangler
+supports 20,000. Direct Upload cannot switch to Git integration in place. Verify
+the release artifact and choose the upload method in P11A; no Functions are needed.
+[Static pricing](https://developers.cloudflare.com/pages/functions/pricing/),
+[Pages limits](https://developers.cloudflare.com/pages/platform/limits/),
+[Direct Upload](https://developers.cloudflare.com/pages/get-started/direct-upload/).
+
+GitHub Free Pages requires public publishing repositories and project sites
+inherit the account site's custom domain when configured. An independent
+organization was an alternative; the owner chose Cloudflare instead.
+[GitHub domain behavior and eligibility](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/about-custom-domains-and-github-pages).
+
+Moving the frontend does not replace email-sender verification. Resend's shared
+test domain sends only to the account email; Supabase's default mail is limited
+to project-team recipients and currently two messages/hour. The owner reaffirmed
+the existing verified sender after considering those constraints. Read-only
+Resend inspection confirmed `auth.pedro-costa.dev` and four verified records;
+see [HOSTING](HOSTING.md) for the Namecheap keep/remove table.
+[Resend test sender](https://resend.com/docs/knowledge-base/403-error-resend-dev-domain),
+[Supabase test mail](https://supabase.com/docs/guides/auth/auth-smtp).
+
+Supabase pricing was also rechecked: Free retains 500 MB database, 5 GB egress,
+50,000 MAU and 500,000 Edge invocations. Social OAuth is available on Free but is
+not selected; there is no authentication migration in this plan.
+[Supabase pricing](https://supabase.com/pricing).
+Older dated research below is historical where it assumes a personal web domain
+or GitHub Pages. Backend/email budgets and P11 payload estimates remain applicable.
+
 ## P11 payload check (2026-09-26)
 
 Official [Supabase pricing](https://supabase.com/pricing) rechecked: Free still
@@ -98,13 +138,13 @@ P04 enforces conservative rolling windows of 24 hours and 31 days for the daily
 and monthly application budgets below, including unknown failures. The tested
 sender is local Mailpit only; no Resend API calls or hosted costs occurred.
 
-## Hosting recheck (2026-09-18)
+## Historical hosting recheck (2026-09-18; superseded above)
 
 The owner selected **`https://reviews.pedro-costa.dev/`**, hosted independently from this app's repository on GitHub Pages with Namecheap DNS. The €0 additional-service target is unchanged: this uses the existing domain and a subdomain record, not a new domain or paid Supabase custom domain. GitHub Free supports Pages from public repositories; check the actual account/repository eligibility before publishing. A visibility change is future work. [GitHub custom-domain eligibility](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/about-custom-domains-and-github-pages), [Namecheap subdomains](https://www.namecheap.com/support/knowledgebase/article.aspx/9776/2237/how-to-create-a-subdomain-for-my-domain/)
 
 The combined portfolio artifact and repository-name/path workaround are superseded. The additional implementation work is a local root-path/callback migration (P04A), followed by the planned hosted setup and independent Pages release. This recheck covers hosting/domain assumptions only; backend/email quotas retain their dated research above. No subscription, DNS, repository visibility, or deployment setting changed.
 
-## Recommendation for the confirmed requirements
+## Original recommendation (2026-09-14; frontend hosting superseded above)
 
 P03 local implementation note, 2026-09-16: project-local Supabase CLI 2.117.0 and a Docker development stack were added. No provider account, hosted project, subscription, DNS, billing, or email-delivery configuration changed. The estimates and provider assumptions below remain the 2026-09-14 research, to recheck at P05/P12. [Current local CLI requirements](https://supabase.com/docs/guides/local-development/cli/getting-started) were checked for tooling compatibility; this is not a fresh verification of hosted pricing.
 
@@ -169,8 +209,8 @@ This protects the budget but cannot guarantee uninterrupted service under attack
 
 ## Hosting constraints and upgrade triggers
 
-Flutter builds static web files suitable for static hosting. GitHub Pages is compatible with that output; it cannot run a backend. The selected custom subdomain serves the app at `/` independently of the repository name; follow the publishing design in [Architecture](ARCHITECTURE.md). [Flutter web deployment](https://docs.flutter.dev/deployment/web), [GitHub Pages overview](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages)
+Flutter builds static web files suitable for the selected Cloudflare Pages host. Keep the app at `/` independently of the repository name; follow [HOSTING](HOSTING.md) and [Architecture](ARCHITECTURE.md). [Flutter web deployment](https://docs.flutter.dev/deployment/web)
 
-GitHub Pages is not permitted as free hosting for commercial SaaS and cautions against sensitive transactions. The planned use is an internal team utility with authentication handled by Supabase; that is an architectural interpretation, not a guarantee of policy eligibility. If the use becomes commercial or the site's policy fit is uncertain at deployment, resolve it before launch. [GitHub Pages limits](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits)
+The former GitHub Pages plan also had commercial-use policy constraints. It is no longer the selected frontend host. Check Cloudflare's current eligibility/terms and actual account quotas before publication; the planning recheck is not an account approval.
 
-Revisit the architecture if inactivity pauses are unacceptable, quotas are routinely tight, or automatic managed backups/support become required. The former shared-origin concern is addressed by the selected dedicated subdomain, subject to implementation and launch checks. Present a current priced alternative before changing subscriptions. Recheck all free-plan eligibility, existing account consumption, email domain verification, and pricing at P05 and P12.
+Revisit the architecture if inactivity pauses are unacceptable, quotas are routinely tight, or automatic managed backups/support become required. The planned dedicated pages.dev origin preserves separation from the portfolio, subject to implementation and launch checks. Present a current priced alternative before changing subscriptions. Recheck free-plan eligibility, existing account consumption, email domain verification and pricing at release.

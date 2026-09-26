@@ -2,6 +2,31 @@
 
 Updated: 2026-09-26.
 
+## Hosting planning update (2026-09-26)
+
+The owner selected **Cloudflare Pages Free at a pages.dev address**, keeping
+emailed magic links and the verified `auth.pedro-costa.dev` sender. The former
+personal-domain app URL/GitHub Pages publishing plan is superseded by D35.
+Added **P11A before P12**, ready only when selected; implementation has not started.
+The exact free hostname is pending. See [HOSTING](HOSTING.md) for scope/acceptance
+and the requested Namecheap keep/remove guidance.
+
+This task changes documentation only. Official hosting limits were researched;
+read-only Resend inspection reconfirmed the sender and four verified DNS records.
+`Resolve-DnsName` reconfirmed the P05 DMARC value and returned NXDOMAIN for
+`reviews.pedro-costa.dev`; no published app-website record was found to remove.
+Full Namecheap zone inspection was not performed, so any cleanup remains
+conditional on actual records. No DNS/provider setting, code/config, email, publication, repository
+visibility or billing change. P05 trial admission remains revoked.
+
+Updated hosting plan, backlog, product, architecture, decisions, costs, security,
+auth handoffs and READMEs. Node documentation checks passed for **20 Markdown
+files and 168 relative links**, with balanced fences, no trailing whitespace and
+the P11A-before-P12 dependency present. `git diff --check` passed. Source/config,
+lockfiles and license are unchanged. No application tests/builds were run or
+claimed for this documentation update. Next: P11A only when separately selected;
+choose/check the exact pages.dev name then.
+
 ## Current implementation
 
 P00-P04A are complete locally. P05 is complete for the controlled hosted trial.
@@ -112,7 +137,8 @@ multi-request snapshot, cross-page reorder tool or full screen-reader certificat
 Existing onboarding roster/invitation lists retain their 100-row limits. No new
 private persistent cache, Realtime, dependency, service, email or hosted operation.
 P09 no-self-review/plain text/local signals and P10 retained records/no purge hold.
-P05 admission remains revoked. P12 is next only when selected; stop for P11 review.
+P05 admission remains revoked. The later planning update inserts P11A before P12;
+both remain unstarted. Stop for P11 review.
 
 ## P10 implementation and evidence on 2026-09-26 (historical)
 
@@ -729,5 +755,6 @@ No backend tests were applicable during P02; P03 results are above. No productio
 ## Next
 
 Review **P11: refresh, filtering, responsive UI and accessibility**.
-The next item is **P12: release checks and subdomain publishing preparation**, only when selected. Keep trial admission revoked;
-carry the documented delivery and production callback checks into P12/P13.
+The next item is **P11A: Cloudflare Pages hosting preparation**, only when selected.
+P12 follows P11A. Keep trial admission revoked; carry the documented delivery and
+production callback checks into P11A/P12/P13. See [HOSTING](HOSTING.md).

@@ -8,12 +8,12 @@ Updated: 2026-09-26. **Confirmed** means specified/answered by the owner. **Prop
 | D02 | Confirmed | Plan/research first, then one backlog item at a time. Persistent repository docs carry context between planning and implementation. |
 | D03 | Confirmed | GitHub Enterprise and Jira Enterprise links only. Users maintain status and archive manually; no integrations, credentials, crawlers, or URL fetches. |
 | D04 | Confirmed | Invite exact work emails and use magic links. Username remains profile data. |
-| D05 | Confirmed; address revised by D27 | Aim for €0/month with Namecheap DNS and GitHub Pages. The original `pedro-costa.dev/PR-Review-App-Queue/` address was replaced by `reviews.pedro-costa.dev/` on 2026-09-18. |
+| D05 | Budget confirmed; address superseded by D35 | Aim for €0/month. D27's personal-domain deployment is replaced by the free-provider-address requirement. |
 | D06 | Confirmed | Sprint first, then priority; admins reorder within groups. Users may belong to multiple teams. |
 | D07 | Confirmed | External hosting of the stated company data is permitted. D33 confirms retention without purge; special regional constraints remain unspecified. |
 | D08 | Proposed | Supabase Free for Auth/Postgres/RLS/Edge Functions plus Resend Free for mail. Fits magic links with a plausible zero-cost workload; see dated limits in COSTS. |
 | D09 | Proposed | Use a signed Send Email Hook with invitation checks and atomic budgets. Direct Auth calls must not bypass mail controls. Tokens remain provider-managed. |
-| D10 | Superseded by D27 | The proposed combined portfolio/app Pages artifact is no longer needed. Deploy this repository's app independently with its own custom subdomain. |
+| D10 | Superseded by D27/D35 | The proposed combined portfolio/app artifact is no longer needed. Plan an independent Cloudflare Pages frontend under D35. |
 | D11 | Proposed | Use hash routing with the required Flutter base href. It avoids relying on unsupported Pages rewrites; callback compatibility is an early test. |
 | D12 | Proposed | Enforce permissions in RLS and transactional functions. Privileged Edge Functions are narrowly scoped to invitation/provisioning and mail. No second general-purpose backend server. |
 | D13 | Superseded by D30/D32/D33 | P07 confirms title, owner/admin edits and priorities. P09 confirms no self-review. P10 confirms owner/admin archive/restore and admin-only deleted recovery. |
@@ -21,7 +21,7 @@ Updated: 2026-09-26. **Confirmed** means specified/answered by the owner. **Prop
 | D15 | Proposed | Operator bootstraps teams/initial admins; team admins manage invitations and roles. Prevent last-admin removal and cross-team admin authority. |
 | D16 | Proposed | Review theme/layout locally first, then validate invitation/security design before building the full queue. |
 | D17 | Proposed | Use revision checks and bounded refresh, not continuous full-list polling or Realtime. This reduces bandwidth and implementation scope. |
-| D18 | Updated by D27 | Keep theme locally and minimize session persistence. The selected subdomain separates app storage/service-worker origin from the portfolio; preserve backend access checks and avoid parent-domain auth cookies or shared scripts that undo this boundary. |
+| D18 | Updated by D35 | Keep theme locally and minimize session persistence. The planned dedicated pages.dev origin separates app storage/service workers from the portfolio; preserve backend access checks and avoid shared scripts that undo this boundary. |
 | D19 | Deferred | Paid subscriptions, automatic provider integration, notifications, attachments, AI review, and self-service organization creation. |
 | D20 | Implemented in P02, 2026-09-14 | Use `go_router` 18.0.1 and `shared_preferences` 2.5.5 with a pinned lockfile; no extra state-management package. Theme uses the async preferences API. The shell has public fictional presentation fixtures and no fake identity or login bypass. This realizes the local shell without granting or simulating server access. |
 | D21 | Implemented in P03, 2026-09-16 | Pin project-local Supabase CLI 2.117.0; run the minimal Docker stack on a dedicated bridge requesting loopback binding. Actual all-interface bindings on this Docker Desktop are reported, not treated as isolation; stop the stack after verification. Reset applies migrations without fixtures. Node built-in tests and Docker `psql` verify SQL roles, the Data API, and concurrency; test identities/JWTs are isolated from migrations, deployment seeds, and Flutter. |
@@ -44,7 +44,7 @@ Updated: 2026-09-26. **Confirmed** means specified/answered by the owner. **Prop
 
 Evidence, observed limitations and official references are in [AUTH](AUTH.md).
 
-## D27 — Dedicated app subdomain (confirmed 2026-09-18)
+## D27 — Dedicated app subdomain (historical; superseded by D35)
 
 The owner selected **`https://reviews.pedro-costa.dev/`** on GitHub Pages, retaining Namecheap DNS. This replaces D05's original shared URL path and D10's proposed combined-site deployment. It updates D18's security assumptions: the app and portfolio have separate browser origins, while app authentication and team authorization remain essential.
 
@@ -193,7 +193,25 @@ new dependencies, auth/provider/billing changes or hosted operation. P09/P10
 confirmed rules remain intact. See [REFRESH](REFRESH.md) for contract and limits.
 P12 stays unstarted until separately selected; P05 admission remains revoked.
 
+## D35 — Cloudflare Pages frontend, existing magic-link sender (2026-09-26)
+
+**Confirmed:** the owner selected Cloudflare Pages Free and a provider-supplied
+`pages.dev` address for this experiment, replacing D27's personal-domain website
+and GitHub Pages deployment. Exact project name/address is pending availability.
+The owner then clarified that emailed magic links and the existing sender should
+remain; only the web host changes. D04/D28's authentication and sender roles remain.
+Read-only Resend inspection reconfirmed `auth.pedro-costa.dev` is verified.
+
+**Planning only:** add P11A before P12. No implementation, provider/DNS setting,
+repository visibility, deployment, email or billing change. Keep the portfolio,
+PassGen, Supabase backend, server permissions, Resend budgets and revoked trial
+admission. No OAuth migration, new domain purchase or Cloudflare backend service.
+See [HOSTING](HOSTING.md) for scope/acceptance and [COSTS](COSTS.md) for dated sources.
+
 ## Alternatives evaluated
+
+Current hosting/authentication direction is D35 above. Older alternatives here
+record earlier decisions, not authorization to use the personal domain again.
 
 P02 package references: [go_router](https://pub.dev/packages/go_router), [shared_preferences](https://pub.dev/packages/shared_preferences), checked 2026-09-14. Resolved versions were verified against the installed Flutter 3.47.4 / Dart 3.13.3 SDK. Provider, pricing, and product proposals have not been promoted to confirmed requirements by implementing the shell.
 

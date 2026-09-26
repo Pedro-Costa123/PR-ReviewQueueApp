@@ -315,12 +315,14 @@ command above only for a deliberately reopened trial; the old admission is revok
 
 ## Production handoff (P12/P13)
 
-Use `https://reviews.pedro-costa.dev/` for production Site URL/callback and a
-separate Turnstile widget restricted to `reviews.pedro-costa.dev`. Remove trial
-admissions and loopback/obsolete redirects. The current code intentionally accepts
-only local and hosted-trial modes; production gates must be changed and tested
-with that release. Do not deploy the current trial as the final app. DNS/Pages
-publication and live-subdomain verification remain P13.
+The owner selected Cloudflare Pages Free on 2026-09-26, retaining magic links and
+the verified `auth.pedro-costa.dev` sender. P11A, before P12, will prepare the exact
+available pages.dev Site URL/callback and specific Turnstile hostname. See
+[HOSTING](HOSTING.md) for scope and the Namecheap records to retain. Remove trial
+admissions and loopback/obsolete redirects for production. Current code accepts
+only local and hosted-trial modes; production gates need implementation/tests.
+Do not deploy the current trial as the final app. Publication and live-hostname
+verification remain P13; no hosted settings changed in the planning update.
 
 ## Sources checked 2026-09-18
 

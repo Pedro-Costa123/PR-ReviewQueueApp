@@ -7,6 +7,10 @@ pagination and accessibility are complete locally with automated and browser
 verification. Hosted P06-P11 rollout is unperformed. Stop at P11 review; do not execute
 P12 or publish automatically. P05 hosted admission remains revoked.
 
+**Planning update 2026-09-26:** the owner selected Cloudflare Pages Free for the
+future website, keeping existing magic-link email. Added **P11A before P12**;
+implementation is not authorized by this planning request. See [HOSTING](HOSTING.md).
+
 `Complete` means the item's actual deliverable exists. `Ready` means the next item can start when requested. Later items remain planned, not authorized as a batch. Smaller UI/product defaults can be settled at the item that needs them.
 
 | ID | Item | State | Depends on |
@@ -24,7 +28,8 @@ P12 or publish automatically. P05 hosted admission remains revoked.
 | P09 | Comments and per-user review signals | Complete locally; ready for owner review | P08 |
 | P10 | Archive, restore, and data lifecycle | Complete locally; ready for owner review | P09 |
 | P11 | Refresh, filtering, responsive UI, and accessibility | Complete locally; ready for owner review | P10 |
-| P12 | Release checks and subdomain publishing preparation | Ready; not started | P11 |
+| P11A | Prepare Cloudflare Pages hosting at a free pages.dev address | Ready when selected; not started | P11 |
+| P12 | Release checks and publishing preparation | Planned; follows P11A | P11A |
 | P13 | Deploy the prepared release and run a small pilot | Planned | P12 |
 
 ## P02 — Local Flutter app shell
@@ -76,6 +81,9 @@ email confirmation uses a new document. Commands/evidence are in AUTH and STATUS
 P05 was subsequently selected by the owner; its current progress is below.
 
 ## P05 — Small hosted authentication/cost validation
+
+Historical deliverable below retains its original hostname. D35/P11A supersedes
+the future website destination; existing magic-link email remains selected.
 
 **Deliver:** Implement the reviewed Resend sender and Turnstile widget, replace P04's explicit local-only gates with validated hosted configuration, and prepare then configure a Free Supabase project, Resend Free sending domain, and Turnstile for a small developer trial when the owner selects this stage and supplies account access. After P04A, use the exact root-path loopback callback initially, with no real company content. Prepare the production Site URL/callback `https://reviews.pedro-costa.dev/` and specific Turnstile hostname for rollout, without wildcard or old portfolio redirects. Keep trial settings distinct from production and validate the live subdomain callback in P13. Confirm account quotas, sender-domain DNS additions at Namecheap, and no paid add-ons. The owner supplies secrets through secret storage, not docs/chat.
 
@@ -186,22 +194,41 @@ labelled controls. User-reported comment alignment and action spacing are fixed.
 Verification and measured costs are recorded in [STATUS](STATUS.md),
 [REFRESH](REFRESH.md) and [COSTS](COSTS.md). P12 remains unstarted; stop for review.
 
-## P12 — Release checks and subdomain publishing preparation
+## P11A — Cloudflare Pages hosting preparation
 
-**Deliver:** Prepare this repository's independent GitHub Pages workflow and Flutter artifact with base href `/`. Document the app-specific custom domain, domain verification, exact Namecheap record, HTTPS setup, callback/Turnstile configuration, and rollback/decommissioning sequence from ARCHITECTURE. Inspect the actual repo/account's Pages eligibility; if a public repository is required, prepare for that visibility change without performing it here. Add reproducible build checks, secret handling, backup/export and restore procedure, and versioned release instructions. Review scripts/service workers on the app origin and current hosting terms/quotas.
+**Deliver:** Prepare the existing root Flutter build and exact callback/origin
+configuration for Cloudflare Pages Free at an available `pages.dev` hostname.
+Keep Supabase, magic links, the verified `auth.pedro-costa.dev` sender, Turnstile,
+invitations and mail budgets. Confirm the name, prepare static upload/runbooks,
+and record the precise future provider settings. See [HOSTING](HOSTING.md) for
+scope, DNS keep/remove guidance and acceptance details.
 
-**Acceptance:** Preview of the standalone app artifact serves `/` and hash routes; callback URLs match the confirmed subdomain. Relevant security matrix checks pass; release assets and any history to be published contain no secrets/private fixtures; restore is tested; provider configuration/usage is documented. The deployment targets this app's repository, not the portfolio. DNS changes are limited to the dedicated hostname and necessary verification records. Document how P13 will verify origin separation and preserve the existing sites. Resolve concrete release blockers before launch.
+**Acceptance:** root/hash-route preview, relevant Flutter/callback/hook checks and
+browser/keyboard login checks pass. Reject obsolete personal-domain, unexpected
+and preview-host callbacks. Existing team/invitation/mail protections remain.
+Document upload limits, rollback and the remaining live checks for P13.
 
-**Boundary:** Prepare a reviewable release and publishing diff; P13 owns applying it. No DNS provider change, automatic billing upgrade, or repository rename is needed. No access to the portfolio's source repository is required for combining builds, because the combined-site plan is superseded.
+**Boundary:** implementation has not started.
+When separately selected, this item is local preparation only: no cloud project
+creation, deployment, hosted settings, real mail, DNS, visibility or paid-service
+change. Stop for review before P12.
+
+## P12 — Release checks and publishing preparation
+
+**Deliver:** After P11A, finish the Cloudflare Pages release workflow and Flutter artifact with base href `/`. Document the exact free hostname, HTTPS, callback/Turnstile configuration and rollout/rollback from HOSTING. Verify actual account eligibility and artifact limits without making the source repository public. Add reproducible build checks, secret handling, backup/export and restore procedure, and versioned release instructions. Review scripts/service workers on the app origin and current hosting terms/quotas.
+
+**Acceptance:** Preview of the standalone app artifact serves `/` and hash routes; callback URLs match the planned pages.dev hostname. Relevant security matrix checks pass; release assets contain no secrets/private fixtures; restore is tested; provider configuration/usage is documented. The release uses this app's artifact independently of the portfolio. No Namecheap website record is required; retain the existing email records. Document how P13 will verify origin separation and preserve the existing sites. Resolve concrete release blockers before launch.
+
+**Boundary:** Prepare a reviewable release and publishing diff; P13 owns applying it. No DNS-provider change, automatic billing upgrade, repository rename or public-source change. No combined portfolio build.
 
 ## P13 — Deploy and pilot
 
-**Deliver:** When the owner selects this deployment step, publish the prepared release from this app's repository, apply the verified app-specific Pages/Namecheap settings, and enforce HTTPS at `https://reviews.pedro-costa.dev/`. Apply any needed repository visibility change only within the selected publication scope. Validate the live callback and Turnstile hostname, and remove development-only/obsolete callbacks from production configuration. Roll back the app-specific change if rollout fails. Pilot with 2-3 invited users before adding the rest of the team.
+**Deliver:** When the owner selects this deployment step, publish the prepared artifact to its own Cloudflare Pages Free project and verify HTTPS at the confirmed pages.dev hostname. Apply the reviewed callback/Turnstile settings and remove development-only/obsolete callbacks from production configuration. Preserve the existing verified email sender and Namecheap email DNS. Roll back the app-specific change if rollout fails. Pilot with 2-3 invited users before adding the rest of the team.
 
-**Acceptance:** HTTPS, sign-in, team boundaries, links, queue/reorder/comments/reviews/archive, and both themes work at the production subdomain root. The app does not redirect to the portfolio; portfolio-origin DOM/storage access fails and its service worker cannot control the app. Portfolio and PassGen remain reachable. Confirm actual costs/quotas, restore instructions, and revocation. Record the deployed revision, deployment destination, operator, and known limitations.
+**Acceptance:** HTTPS, sign-in, team boundaries, links, queue/reorder/comments/reviews/archive, and both themes work at the pages.dev root. The app does not redirect to the portfolio; portfolio-origin DOM/storage access fails and its service worker cannot control the app. Portfolio and PassGen remain reachable. Confirm actual costs/quotas, restore instructions, and revocation. Record the deployed revision, deployment destination, operator, and known limitations.
 
 **Boundary:** The pilot needs human feedback across real use. Do not claim a multi-day pilot passed in one run or create background monitoring unless requested. Subsequent work follows actual pilot findings.
 
 ## Later ideas (unordered; not part of this implementation)
 
-Email-free company SSO, optional stale-review resets after manual code-update marking, notification preferences, and richer analytics. The dedicated subdomain is now confirmed, not a later idea. GitHub/Jira synchronization remains excluded unless the owner changes the manual-only requirement.
+Email-free company SSO, optional stale-review resets after manual code-update marking, notification preferences, and richer analytics. Cloudflare Pages is selected for hosting; magic links remain selected for login. GitHub/Jira synchronization remains excluded unless the owner changes the manual-only requirement.

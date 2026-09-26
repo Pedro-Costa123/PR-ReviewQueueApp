@@ -155,11 +155,11 @@ Supabase supports magic links and PKCE and provides CAPTCHA and rate controls. T
 
 ## Browser and link safety
 
-The owner replaced the shared-path design on 2026-09-18. The planned PR app origin is **`https://reviews.pedro-costa.dev`**, separate from the portfolio/PassGen origin `https://pedro-costa.dev`. The latter's scripts cannot directly read app-origin storage or DOM, and its service workers cannot control the app origin. Keep the subdomain dedicated to this app. This is a planned browser boundary, not evidence of a deployed or tested configuration. [Browser same-origin policy](https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Same-origin_policy)
+The owner selected a dedicated **Cloudflare Pages `pages.dev` origin** on 2026-09-26; the exact hostname is pending. It replaces the personal-domain web target and remains separate from the portfolio/PassGen origin. The latter's scripts cannot directly read app-origin storage or DOM, and its service workers cannot control the app origin. Keep the hostname dedicated to this app. This is a planned boundary, not a deployed/tested configuration. P11A is preparation only; see [HOSTING](HOSTING.md). [Browser same-origin policy](https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Same-origin_policy)
 
 Separate origins under the same parent domain are not separate sites for every browser rule. Do not use `document.domain`, parent-domain auth cookies, broad credential sharing, or permissive message handlers to reconnect them. RLS, token verification and any future CSRF protection remain necessary. Review third-party scripts loaded by the app itself; code included in the app runs with its privileges.
 
-P04 uses sessionStorage with memory fallback and SDK synchronization across open same-origin app tabs, as documented in AUTH. That synchronization will stay inside the new app origin; the tab-isolation limitation still applies among app tabs. GitHub Pages has limited custom response-header control; use a compatible CSP meta policy where effective and do not claim it supplies every header-based protection.
+P04 uses sessionStorage with memory fallback and SDK synchronization across open same-origin app tabs, as documented in AUTH. That synchronization will stay inside the new app origin; the tab-isolation limitation still applies among app tabs. Review and verify the chosen host's response headers/CSP during release preparation; no new header protection is claimed by this plan.
 
 P04A migrated callback validation and fragment cleanup to `/` with local-only gates intact. Its tests reject old paths, unexpected origins and mixed callback parameters. In-page callback navigation is scrubbed and rejected, while a new-document email link still requires explicit confirmation. P05 must use exact trial/production callback settings and the specific Turnstile hostname; do not allow the old portfolio callback or wildcard redirects. P13 verifies the final hostname, HTTPS, origin separation, and login flow. Never copy or redirect login tokens from the old origin to the new one. Domain verification and removing stale DNS mappings on decommissioning belong in the deployment runbook.
 
@@ -228,7 +228,7 @@ concurrency coverage. No broad privilege was added to silence either finding.
 | Concurrent admin reorder / last-admin removal | Conflict handled; invariants preserved |
 | Malicious links and HTML-like comments | Rejected or displayed safely; no backend fetch |
 | Quota/provider outage | Clear failure, no unbounded retry, no paid fallback |
-| Static build / subdomain boundary | No embedded secrets; app remains on reviews.pedro-costa.dev with HTTPS; portfolio-origin DOM/storage access is denied and its service worker does not control the app |
+| Static build / hostname boundary | No embedded secrets; app remains on its exact selected pages.dev host with HTTPS; portfolio-origin DOM/storage access is denied and its service worker does not control the app |
 | Callback / hostname configuration | Only intended app/trial callbacks accepted; fragment cleanup and explicit confirmation work at `/`; no parent-domain session sharing or redirect through the portfolio |
 
 Run synthetic abuse tests locally with mocked mail first. Hosted checks use a small controlled set of developer accounts, not load tests against real inboxes.

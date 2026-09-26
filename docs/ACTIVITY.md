@@ -107,7 +107,8 @@ authority, retention/recovery/audit policy still to settle before permanent purg
 Hosted P06–P09 rollout, real enterprise hosts, Inbox placement and final HTTPS
 callback remain release work. No provider, authentication, dependency, hosting,
 billing, Namecheap DNS or GitHub Pages assumption changed. Confirmed destination:
-`https://reviews.pedro-costa.dev/`.
+`https://reviews.pedro-costa.dev/` at the time of P09. The later D35 hosting
+decision supersedes that web destination; see [HOSTING](HOSTING.md).
 
 Official references checked 2026-09-23:
 [database functions](https://supabase.com/docs/guides/database/functions),

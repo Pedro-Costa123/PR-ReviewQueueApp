@@ -13,11 +13,11 @@ revoked. Inbox placement and app publication remain release work. [AUTH](AUTH.md
 
 ## Design
 
-Use Flutter Web with Supabase for authentication, relational data, and server-side authorization. Deliver magic links through Resend. Publish this repository's Flutter build as its own GitHub Pages site at `https://reviews.pedro-costa.dev/`, with DNS at Namecheap. The portfolio and PassGen remain separate deployments on the existing hostname.
+Use Flutter Web with Supabase for authentication, relational data, and server-side authorization. Deliver magic links through Resend using the existing verified sender. The owner selected Cloudflare Pages Free at an available `<project>.pages.dev` address for this repository's Flutter build. P11A prepares this change before P12; no deployment exists. The portfolio and PassGen remain separate deployments on their existing hostname.
 
 ```mermaid
 flowchart TD
-    U[Team member's browser] -->|Namecheap DNS| APP[GitHub Pages: reviews.pedro-costa.dev - Flutter app]
+    U[Team member's browser] --> APP[Cloudflare Pages: selected pages.dev host - Flutter app]
     U -->|Separate browser origin| OTHER[GitHub Pages: pedro-costa.dev - portfolio and PassGen]
     U -->|Magic-link sign-in + CAPTCHA| AU[Supabase Auth]
     AU --> EH[Signed Send Email Hook]
@@ -32,31 +32,31 @@ flowchart TD
 
 The browser never receives database admin credentials or Resend credentials. No backend request goes to GitHub Enterprise or Jira. The public HTML/Flutter bundle is not confidential; team data requires authorization.
 
-## Hosting on the dedicated subdomain
+## Hosting on Cloudflare Pages (selected 2026-09-26; not implemented)
 
-Confirmed 2026-09-18: **`https://reviews.pedro-costa.dev/`**, with production base href `/`. Keep hash routes, such as `/#/teams/<id>`, so screen refreshes need no Pages rewrites. The root entry document is also the magic-link callback, retaining P04's fragment cleanup and explicit confirmation. [Flutter URL configuration](https://docs.flutter.dev/ui/navigation/url-strategies)
+Use an available **`https://<project>.pages.dev/`** with base href `/`. Keep hash routes, such as `/#/teams/<id>`, and the root entry document as the magic-link callback, retaining fragment cleanup and explicit confirmation. The exact project name is pending. [Flutter URL configuration](https://docs.flutter.dev/ui/navigation/url-strategies)
 
-Publish this app's `frontend/build/web` artifact through its own repository's Pages workflow. Configure the repository-specific custom domain to override any inherited account domain. No combined portfolio artifact, new organization, or repository rename is needed. A rename or visibility change remains a separate action; verify free Pages eligibility before publication. [GitHub custom domains](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/about-custom-domains-and-github-pages)
+Prepare this app's `frontend/build/web` artifact independently, using a prebuilt upload workflow. No combined portfolio artifact, personal-domain CNAME, new organization or repository visibility change is needed for Direct Upload. See [HOSTING](HOSTING.md) for P11A scope and [COSTS](COSTS.md) for current limits.
 
-Planned P12/P13 setup, not performed by this documentation update:
+Planned P11A/P12/P13 work, not performed by this documentation update:
 
-1. Verify domain ownership with GitHub and configure this repository's Pages custom domain as `reviews.pedro-costa.dev` before adding the DNS record.
-2. At Namecheap, add a **CNAME** with Host **`reviews`** and target **`Pedro-Costa123.github.io`**, matching the current repository owner. The target has no scheme, repository path, or trailing URL path. Recheck the owner if the repo moves. Preserve existing apex/www and mail records; use no wildcard or URL forwarding.
-3. For branch publishing, maintain the required `CNAME` file. For a custom GitHub Actions Pages workflow, use the Pages setting; GitHub does not require that file. Validate DNS and enable HTTPS after certificate issuance.
+1. Confirm an available project name and prepare root build/upload configuration and exact callback/origin guards locally in P11A.
+2. Finish release, restore and rollout checks in P12. Keep Namecheap sender/portfolio records; the old app-specific `reviews` CNAME is unnecessary if it was added.
+3. In separately selected P13, create/publish the Cloudflare Pages project, apply reviewed provider settings and verify live HTTPS, login and origin separation.
 
-Sources: [GitHub custom-domain setup](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site), [Namecheap subdomain setup](https://www.namecheap.com/support/knowledgebase/article.aspx/9776/2237/how-to-create-a-subdomain-for-my-domain/).
+Source: [Cloudflare Pages Direct Upload](https://developers.cloudflare.com/pages/get-started/direct-upload/). D35 supersedes D27's custom-domain publishing plan; the local root implementation remains useful.
 
 P04A now uses `http://127.0.0.1:4173/` consistently for the build/preview, early callback handler, client gate, Supabase local Site URL, sender validation, startup environment and tests. The old preview prefix returns 404 without a redirect; callback guards reject old paths and other origins. AUTH/frontend README contain tested replacement commands. This is a working local root build, not a deployed or hosted-auth-enabled subdomain.
 
 P05 uses only `http://127.0.0.1:4173/` and a separate managed Turnstile widget for
-`127.0.0.1`. Production Site URL/callback `https://reviews.pedro-costa.dev/` and
-its separate widget are prepared in the runbook, with code/config activation and
-verification deferred to P12/P13. Current production mode fails closed. Do not
+`127.0.0.1`. The selected pages.dev production Site URL/callback and its separate
+widget need preparation in P11A and live activation/verification in P13.
+Current production mode fails closed. Do not
 accept wildcard/portfolio redirects or forward login fragments between origins.
 
-GitHub Pages serves static files and does not run Supabase/backend code. It has restrictions on commercial SaaS and sensitive transactions. This plan is for the requested internal utility, not a commercial SaaS launch; revisit hosting if the use changes. See [GitHub Pages limits](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits).
+Cloudflare Pages serves the static frontend; Supabase runs backend code. No Pages Functions, Workers backend or paid service is proposed. Recheck actual account limits and the release artifact before publication.
 
-The subdomain creates a distinct browser origin from the portfolio and PassGen. Its app storage and service workers are origin-scoped. Keep this hostname dedicated to the PR app and retain backend authorization; different origins under one parent domain are still same-site for some browser rules. See [Security](SECURITY.md).
+The dedicated pages.dev hostname creates a distinct browser origin from the portfolio and PassGen. Its app storage and service workers are origin-scoped. Keep this hostname dedicated to the PR app and retain backend authorization. See [Security](SECURITY.md).
 
 ## Frontend
 

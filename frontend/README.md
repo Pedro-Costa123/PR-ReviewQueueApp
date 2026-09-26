@@ -38,8 +38,9 @@ Verified SDK: **Flutter 3.47.4 stable / Dart 3.13.3** on Windows. Only the web p
 
 ## Run the verified release preview
 
-The production target is now `https://reviews.pedro-costa.dev/` (confirmed
-2026-09-18), with base href `/`. P04A migrated and tested the local preview and
+The future production target is an available Cloudflare Pages `pages.dev`
+hostname (selected 2026-09-26), with base href `/`. P11A preparation is planned,
+not implemented; see [HOSTING](../docs/HOSTING.md). P04A tested the local preview and
 callback flow together. These commands build the disconnected local demo;
 HOSTED_AUTH records the completed P05 trial and its separate configuration.
 

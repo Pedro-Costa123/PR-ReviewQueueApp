@@ -20,15 +20,18 @@ The repository documents are the shared source of context. A planning conversati
 ```text
 Work in the existing PR-ReviewQueueApp repository. Read AGENTS.md and the
 project docs, especially STATUS.md, NEXT.md, REFRESH.md, COSTS.md and SECURITY.md.
-Implement only P12: release checks and subdomain publishing preparation.
+Implement only P11A: Cloudflare Pages hosting preparation, following HOSTING.md.
+The owner selected a free pages.dev frontend while keeping magic links and the
+verified auth.pedro-costa.dev sender. Confirm the exact available hostname.
 P06-P11 are verified locally, not deployed. Preserve revoked P05 trial admission,
 provider/secret storage, exact callbacks, explicit confirmation, disabled signup,
 server membership and email budgets. Preserve private enterprise hosts,
 Low/Medium/High/Critical priorities, no self-review, plain-text local comments and
 signals, owner/admin archive/restore, admin-only deleted recovery, and retained
-records/audit without purge. Complete the concrete release preparation and checks,
+records/audit without purge. Complete the local hosting preparation and checks,
 update docs and stop for review. Do not deploy, make the repository public,
-change DNS, send real mail or start P13 as incidental preparation.
+change DNS or hosted settings, create a cloud project, send real mail, or start
+P12/P13 as incidental preparation.
 
 ```
 
@@ -40,7 +43,8 @@ Check its dependencies and identify any material unanswered question.
 Complete that item's deliverables and relevant verification, update the
 durable docs, and stop at its review boundary. Preserve the confirmed
 requirements: Flutter Web, invited-email magic links, manual enterprise
-links, Namecheap DNS, GitHub Pages, and https://reviews.pedro-costa.dev/.
+links, the existing verified email sender/Namecheap email DNS, and Cloudflare
+Pages Free at an available pages.dev address. See HOSTING.md and D35.
 Do not execute the rest of the backlog automatically.
 ```
 
@@ -54,7 +58,8 @@ The final reply should name the completed item, give the useful result/link, sum
 
 P00-P04A are complete locally; P05 is complete for the controlled hosted trial.
 P11 is implemented locally with automated and browser checks; see STATUS for evidence.
-Stop at P11 review; P12 is next only when selected.
+Stop at P11 review. The later hosting request was planning only: P11A is now next
+when selected, before P12. No hosting implementation or live settings changed.
 See [REFRESH](REFRESH.md) for polling, filters, pages, accessibility and limitations.
 See [QUEUE](QUEUE.md) for entry/ordering contracts, private hosts, preview and limitations.
 See [ACTIVITY](ACTIVITY.md) for comments/reviews, contracts and review boundary.
@@ -70,8 +75,8 @@ placement or assume the admission is still active. The final artifact is the
 disconnected demo; rebuild explicit trial configuration only when needed.
 
 [AUTH](AUTH.md) retains the local runbook. Hosted/local builds share the exact
-loopback root but use distinct explicit modes. Production publication at
-`https://reviews.pedro-costa.dev/` remains P12/P13. The signed-in queue now persists
+loopback root but use distinct explicit modes. A pages.dev production hostname
+will be prepared in P11A and released through P12/P13. The signed-in queue now persists
 and orders entries locally, with comments/reviews and archive/recovery; demo routes remain fictional.
 The owner confirmed no self-review, email visibility to active
 teammates, title/owner-admin entry edits and Low/Medium/High/Critical priorities.
