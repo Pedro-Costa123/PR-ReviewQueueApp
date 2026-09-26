@@ -63,6 +63,17 @@ abstract interface class EntryRepository {
   });
   Future<void> save(String teamId, EntryData fields, {EntryData? original});
   Future<void> delete(String teamId, EntryData entry);
+  Future<EntryData> lifecyclePage(
+    String teamId, {
+    bool deleted = false,
+    EntryData? cursor,
+  });
+  Future<void> lifecycle(
+    String teamId,
+    EntryData entry,
+    String action, {
+    String? reason,
+  });
   Future<EntryData> activity(String teamId, String entryId);
   Future<void> comment(
     String teamId,
@@ -82,6 +93,44 @@ abstract interface class EntryRepository {
 class SupabaseEntryRepository implements EntryRepository {
   SupabaseEntryRepository(this.client);
   final SupabaseClient client;
+  @override
+  Future<EntryData> lifecyclePage(
+    String teamId, {
+    bool deleted = false,
+    EntryData? cursor,
+  }) async => Map<String, dynamic>.from(
+    await client.rpc(
+      'lifecycle_snapshot',
+      params: {
+        'p_team_id': teamId,
+        'p_deleted': deleted,
+        'p_before_time': cursor?['time'],
+        'p_before_id': cursor?['id'],
+      },
+    ),
+  );
+
+  @override
+  Future<void> lifecycle(
+    String teamId,
+    EntryData entry,
+    String action, {
+    String? reason,
+  }) async {
+    if (!['archive', 'restore', 'recover', 'delete'].contains(action)) {
+      throw ArgumentError.value(action);
+    }
+    await client.rpc(
+      '${action}_entry',
+      params: {
+        'p_team_id': teamId,
+        'p_entry_id': entry['id'],
+        'p_expected_version': entry['version'],
+        if (action == 'archive') 'p_reason': reason,
+      },
+    );
+  }
+
   @override
   Future<EntryData> activity(String teamId, String entryId) async =>
       Map<String, dynamic>.from(

@@ -1,6 +1,7 @@
 # Architecture
 
-Updated: 2026-09-23. P09 adds local comments/review signals; see [ACTIVITY](ACTIVITY.md).
+Updated: 2026-09-26. P10 adds local archive/restore/admin recovery; see [LIFECYCLE](LIFECYCLE.md).
+P09 adds local comments/review signals; see [ACTIVITY](ACTIVITY.md).
 P08 adds locally verified ordering/reordering; P07 adds queue CRUD/ownership. See [QUEUE](QUEUE.md).
 P06 adds locally verified onboarding; see [ONBOARDING](ONBOARDING.md).
 P04/P04A local authentication and root callbacks are verified.
@@ -192,10 +193,11 @@ endpoint with event idempotency, bounded timeouts and no automatic retry. See D2
 ## Mutations and consistency
 
 - Read identity from the verified session, derive ownership server-side, and recheck current membership in the database transaction.
-- P06 implements transactional `claim_invites`. P07 implements `create_entry`, `update_entry` and `delete_entry`; P08 implements `move_entry`; P09 implements `set_review` and comment mutations. `archive_entry` and `restore_entry` remain proposed contracts.
+- P06 implements transactional `claim_invites`. P07 implements `create_entry`, `update_entry` and `delete_entry`; P08 implements `move_entry`; P09 implements `set_review` and comment mutations. P10 implements `archive_entry`, `restore_entry`, admin-only `recover_entry` and 25-row cursor `lifecycle_snapshot`; deletion also accepts archives. All share guarded team serialization and mutation budgets.
 - Entry edits carry an expected version; stale writes return a conflict and the latest version. Do not silently overwrite another user's change.
 - A reorder reserves the existing user budget, locks the team's queue revision, rechecks admin authority, validates the expected revision and same-group target, and shifts the affected position interval atomically. It advances queue/data revisions separately from entry content versions. No fractional-rank infrastructure is needed.
 - Changing sprint flag/priority appends to the destination group and advances the queue revision. Restore behaves similarly. Database uniqueness detects an active duplicate during restore.
+- Lifecycle changes retain comments/signals and private minimal audit events. Recovery returns deleted entries to their prior state; active recovery also appends and checks duplicates/current private hosts. Archive and deleted records have no automatic expiry or purge. Deleted activity stays hidden until parent recovery; separately deleted comments remain hidden.
 - All user-visible mutations also advance a team data revision. Background refresh checks this small value and reloads queue details only after a change, keeping transfer usage low. Comments/reviews do not unnecessarily invalidate a reorder's queue revision.
 - Mutation rate limits live in the same guarded server path as mutations, so raw Data API writes cannot bypass them. Pagination and bounded response fields constrain read size.
 

@@ -31,6 +31,11 @@ author/admin deletion and per-user check/X/clear signals with no self-review.
 Run `npm run test:activity` for direct API denials, concurrency and count/reset
 checks. See [ACTIVITY](../docs/ACTIVITY.md). No hosted migration or external posting.
 
+P10 adds the eighth local migration: submitter/admin archive/restore, admin-only
+deleted recovery, cursor pages, retained audit/history and no permanent purge.
+Run `npm run test:lifecycle`; [LIFECYCLE](../docs/LIFECYCLE.md) covers the confirmed
+policy, API, browser fixtures, verification and review boundary. No hosted change.
+
 Follow [AUTH](../docs/AUTH.md) for the complete P04 setup/test/preview sequence.
 Use [HOSTED_AUTH](../docs/HOSTED_AUTH.md) for P05; never run local fixtures/tests
 against the hosted project or link this local test checkout to it.

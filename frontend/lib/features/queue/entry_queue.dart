@@ -6,11 +6,19 @@ import 'entry_repository.dart';
 import 'entry_activity.dart';
 import 'open_link.dart';
 
+const archiveReasons = {
+  'merged': 'Merged',
+  'closed': 'Closed',
+  'no_longer_needed': 'No longer needed',
+  'other': 'Other',
+};
+
 String entryError(Object error) {
   if (error is PostgrestException) {
     return switch (error.code) {
       'PT409' => 'This entry changed. Your draft is kept here. Close and refresh the queue to review the latest version before editing again.',
       '23505' => 'This PR is already in this team’s active queue.',
+      'PT422' => 'This PR is archived. Open Archive and ask its submitter or a team admin to restore it.',
       'PT429' => 'Too many changes. Wait a minute before trying again.',
       '22023' => 'Check the title, priority and allowed enterprise links.',
       '42501' => 'Your access changed or this entry is no longer available. Refresh the queue.',
@@ -47,8 +55,15 @@ class _EntryQueueState extends State<EntryQueue> {
   final Map<String, FocusNode> _moveFocus = {};
   String? _message;
   int _generation = 0;
+  String _view = 'active';
+  EntryData? _cursor, _nextCursor;
+  final List<EntryData?> _previousCursors = [];
+  final _viewFocus = FocusNode();
+  final _pageFocus = FocusNode();
   @override
   void dispose() {
+    _viewFocus.dispose();
+    _pageFocus.dispose();
     for (final node in _moveFocus.values) {
       node.dispose();
     }
@@ -66,7 +81,12 @@ class _EntryQueueState extends State<EntryQueue> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.teamId != widget.teamId ||
         oldWidget.repository != widget.repository) {
+      _view = 'active';
+      _cursor = null;
+      _previousCursors.clear();
       _load();
+    } else if (oldWidget.admin && !widget.admin && _view == 'deleted') {
+      _selectView('active');
     }
   }
 
@@ -80,13 +100,25 @@ class _EntryQueueState extends State<EntryQueue> {
     });
     try {
       final hosts = await widget.repository.hosts(widget.teamId);
-      final entries = await widget.repository.list(widget.teamId);
+      final entries = _view == 'active'
+          ? await widget.repository.list(widget.teamId)
+          : null;
+      final page = entries == null
+          ? await widget.repository.lifecyclePage(
+              widget.teamId,
+              deleted: _view == 'deleted',
+              cursor: _cursor,
+            )
+          : null;
       if (!mounted || generation != _generation) return;
       setState(() {
         _hosts = hosts;
-        _entries = entries.entries;
-        _revision = entries.revision;
-        _hasMore = entries.hasMore;
+        _entries = entries?.entries ?? List<EntryData>.from(page!['entries']);
+        _revision = entries?.revision ?? 0;
+        _hasMore = entries?.hasMore ?? page!['has_more'] as bool;
+        _nextCursor = page?['next_cursor'] == null
+            ? null
+            : EntryData.from(page!['next_cursor']);
       });
     } catch (_) {
       if (!mounted || generation != _generation) return;
@@ -97,6 +129,127 @@ class _EntryQueueState extends State<EntryQueue> {
     } finally {
       if (mounted && generation == _generation) setState(() => _busy = false);
     }
+  }
+
+  Future<void> _selectView(String view) async {
+    _view = view;
+    _cursor = null;
+    _previousCursors.clear();
+    await _loadAndFocus(_viewFocus);
+  }
+
+  Future<void> _loadAndFocus(FocusNode node) async {
+    final team = widget.teamId;
+    await _load();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && team == widget.teamId) node.requestFocus();
+    });
+  }
+
+  Future<void> _changeLifecycle(EntryData entry, String action) async {
+    final team = widget.teamId;
+    final generation = _generation;
+    final label = switch (action) {
+      'archive' => 'Archive entry',
+      'restore' => 'Restore entry',
+      'recover' => 'Recover entry',
+      _ => 'Delete entry',
+    };
+    String? reason;
+    final yes = await showDialog<bool>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, update) => AlertDialog(
+          title: Text('$label?'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('“${entry['title']}”'),
+                const SizedBox(height: 12),
+                Text(switch (action) {
+                  'archive' => 'Keep the entry, comments and local signals in the read-only archive. Choose a manually reported reason; this does not verify or change the PR.',
+                  'restore' => 'Return to the end of its current sprint and priority group. Comments and local signals are kept and may be outdated.',
+                  'recover' =>
+                    'Return to its previous ${entry['state'] ?? 'active'} state. Active entries append to their current group. Individually deleted comments stay deleted.',
+                  _ => 'Hide this entry and its activity. Team admins can recover it from Deleted entries. No permanent purge is scheduled.',
+                }),
+                if (action == 'archive') ...[
+                  const SizedBox(height: 16),
+                  DropdownButtonFormField<String>(
+                    decoration: const InputDecoration(
+                      labelText: 'Archive reason',
+                    ),
+                    items: [
+                      for (final item in archiveReasons.entries)
+                        DropdownMenuItem(
+                          value: item.key,
+                          child: Text(item.value),
+                        ),
+                    ],
+                    onChanged: (value) => update(() => reason = value),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: action == 'archive' && reason == null
+                  ? null
+                  : () => Navigator.pop(context, true),
+              child: Text(label),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (yes != true ||
+        !mounted ||
+        generation != _generation ||
+        team != widget.teamId) {
+      return;
+    }
+    setState(() => _busy = true);
+    String message;
+    try {
+      if (action == 'delete') {
+        await widget.repository.delete(team, entry);
+      } else {
+        await widget.repository.lifecycle(team, entry, action, reason: reason);
+      }
+      message = switch (action) {
+        'archive' => 'Entry archived.',
+        'restore' => 'Entry restored.',
+        'recover' => 'Entry recovered.',
+        _ => 'Entry deleted.',
+      };
+    } catch (error) {
+      message = error is PostgrestException
+          ? switch (error.code) {
+              '23505' => 'This PR already has an active entry. Nothing was restored or recovered. Review the active queue first.',
+              'PT409' => 'This entry changed. The action was not applied. Review the refreshed list before trying again.',
+              '22023' => 'The saved links no longer match this team’s allowed hosts, or the archive reason is invalid. Ask the operator to check configuration.',
+              '42501' => 'Your access changed or this entry is unavailable. Refresh your teams.',
+              'PT429' => 'Too many changes. Wait a minute before trying again.',
+              _ => 'Could not confirm the action. Check the refreshed list before trying again.',
+            }
+          : 'Could not confirm the action. Check the refreshed list before trying again.';
+    }
+    if (!mounted || generation != _generation) return;
+    await _load();
+    if (!mounted || team != widget.teamId) return;
+    setState(
+      () => _message = _message == null ? message : '$message $_message',
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _viewFocus.requestFocus();
+    });
   }
 
   Future<void> _move(List<EntryData> group, int from, int to) async {
@@ -265,42 +418,6 @@ class _EntryQueueState extends State<EntryQueue> {
     }
   }
 
-  Future<void> _delete(EntryData entry) async {
-    final yes = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete entry?'),
-        content: Text(
-          '“${entry['title']}” will be hidden from this team’s queue. The PR and Jira issue are unchanged.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete entry'),
-          ),
-        ],
-      ),
-    );
-    if (yes != true || !mounted) return;
-    setState(() => _busy = true);
-    String result;
-    try {
-      await widget.repository.delete(widget.teamId, entry);
-      result = 'Entry deleted.';
-    } catch (error) {
-      result = entryError(
-        error,
-      ).replaceFirst('Your draft is kept here. Close and refresh', 'Refresh');
-    }
-    if (!mounted) return;
-    await _load();
-    if (mounted) setState(() => _message = result);
-  }
-
   Widget _link(String label, String url, String kind) {
     final normalized = normalizeEnterpriseLink(
       url,
@@ -328,18 +445,50 @@ class _EntryQueueState extends State<EntryQueue> {
       ),
       const SizedBox(height: 12),
       Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: [
+          for (final view in [
+            'active',
+            'archived',
+            if (widget.admin) 'deleted',
+          ])
+            ChoiceChip(
+              focusNode: view == _view ? _viewFocus : null,
+              label: Text(switch (view) {
+                'active' => 'Active queue',
+                'archived' => 'Archive',
+                _ => 'Deleted entries',
+              }),
+              selected: _view == view,
+              onSelected: _busy ? null : (_) => _selectView(view),
+            ),
+        ],
+      ),
+      const SizedBox(height: 12),
+      if (_view != 'active')
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Text(
+            _view == 'archived'
+                ? 'Read-only history · Archive reasons are manually reported, never provider-verified. Entries and activity are retained without automatic expiry.'
+                : 'Admin recovery · Deleted entries are separate from the archive. Records and minimal audit metadata are retained; no permanent purge is scheduled.',
+          ),
+        ),
+      Wrap(
         spacing: 12,
         runSpacing: 8,
         children: [
-          FilledButton.icon(
-            onPressed: _busy || !_hosts.configured ? null : () => _edit(),
-            icon: const Icon(Icons.add),
-            label: const Text('Add entry'),
-          ),
+          if (_view == 'active')
+            FilledButton.icon(
+              onPressed: _busy || !_hosts.configured ? null : () => _edit(),
+              icon: const Icon(Icons.add),
+              label: const Text('Add entry'),
+            ),
           OutlinedButton.icon(
-            onPressed: _busy ? null : _load,
+            onPressed: _busy ? null : () => _selectView(_view),
             icon: const Icon(Icons.refresh),
-            label: const Text('Refresh queue'),
+            label: Text(_view == 'active' ? 'Refresh queue' : 'Refresh list'),
           ),
         ],
       ),
@@ -363,19 +512,58 @@ class _EntryQueueState extends State<EntryQueue> {
       if (!_busy && _entries.isEmpty && _message == null)
         const Padding(
           padding: EdgeInsets.symmetric(vertical: 16),
-          child: Text('No entries yet. Add a PR to start the queue.'),
+          child: Text('No entries in this view.'),
         ),
-      if (widget.admin && _entries.isNotEmpty)
+      if (_view == 'active' && widget.admin && _entries.isNotEmpty)
         const Padding(
           padding: EdgeInsets.only(top: 12),
           child: Text(
             'Drag the handle or use Move up / Move down within a group. Sprint goals come first, then Critical, High, Medium and Low.',
           ),
         ),
-      for (final sprint in [true, false])
-        for (final priority in ['critical', 'high', 'medium', 'low'])
-          _group(context, sprint, priority),
-      if (_hasMore)
+      if (_view == 'active')
+        for (final sprint in [true, false])
+          for (final priority in ['critical', 'high', 'medium', 'low'])
+            _group(context, sprint, priority),
+      if (_view != 'active') ...[
+        for (final entry in _entries)
+          Padding(
+            key: ValueKey(entry['id']),
+            padding: const EdgeInsets.only(top: 12),
+            child: _card(context, entry),
+          ),
+        const SizedBox(height: 16),
+        Wrap(
+          spacing: 12,
+          runSpacing: 8,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            Text('Page ${_previousCursors.length + 1} · Up to 25 entries'),
+            OutlinedButton(
+              focusNode: _previousCursors.isNotEmpty ? _pageFocus : null,
+              onPressed: _busy || _previousCursors.isEmpty
+                  ? null
+                  : () {
+                      _cursor = _previousCursors.removeLast();
+                      _loadAndFocus(_pageFocus);
+                    },
+              child: const Text('Previous page'),
+            ),
+            OutlinedButton(
+              focusNode: _previousCursors.isEmpty ? _pageFocus : null,
+              onPressed: _busy || !_hasMore
+                  ? null
+                  : () {
+                      _previousCursors.add(_cursor);
+                      _cursor = _nextCursor;
+                      _loadAndFocus(_pageFocus);
+                    },
+              child: const Text('Next page'),
+            ),
+          ],
+        ),
+      ],
+      if (_view == 'active' && _hasMore)
         const Text(
           'Showing the first 100 active entries in queue order. Moves are limited to visible entries in each group.',
         ),
@@ -408,6 +596,17 @@ class _EntryQueueState extends State<EntryQueue> {
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
+          if (_view != 'active') ...[
+            Text(
+              _view == 'archived'
+                  ? 'Manually archived: ${archiveReasons[entry['archive_reason']] ?? entry['archive_reason']}'
+                  : 'Deleted · Previous state: ${entry['state']}',
+            ),
+            Text(
+              'By ${_actorName(entry[_view == 'archived' ? 'archived_by' : 'deleted_by'])} · ${_displayTime(entry[_view == 'archived' ? 'archived_at' : 'deleted_at'])}',
+            ),
+            const SizedBox(height: 8),
+          ],
           if (member != null)
             TextButton(
               onPressed: _busy
@@ -423,32 +622,67 @@ class _EntryQueueState extends State<EntryQueue> {
             children: [
               _link('Open PR', entry['pr_url'] as String, 'pr'),
               _link('Open Jira', entry['jira_url'] as String, 'jira'),
-              if (editable) ...[
+              if (_view == 'deleted' && widget.admin)
                 TextButton(
-                  onPressed: _busy || !_hosts.configured
+                  onPressed: _busy
                       ? null
-                      : () => _edit(entry),
-                  child: const Text('Edit entry'),
+                      : () => _changeLifecycle(entry, 'recover'),
+                  child: const Text('Recover entry'),
+                ),
+              if (editable && _view != 'deleted') ...[
+                if (_view == 'active')
+                  TextButton(
+                    onPressed: _busy || !_hosts.configured
+                        ? null
+                        : () => _edit(entry),
+                    child: const Text('Edit entry'),
+                  ),
+                TextButton(
+                  onPressed: _busy
+                      ? null
+                      : () => _changeLifecycle(
+                          entry,
+                          _view == 'active' ? 'archive' : 'restore',
+                        ),
+                  child: Text(
+                    _view == 'active' ? 'Archive entry' : 'Restore entry',
+                  ),
                 ),
                 TextButton(
-                  onPressed: _busy ? null : () => _delete(entry),
+                  onPressed: _busy
+                      ? null
+                      : () => _changeLifecycle(entry, 'delete'),
                   child: const Text('Delete entry'),
                 ),
               ],
             ],
           ),
-          EntryActivity(
-            key: ValueKey('activity-${entry['id']}'),
-            repository: widget.repository,
-            teamId: widget.teamId,
-            entryId: entry['id'] as String,
-            admin: widget.admin,
-            members: widget.members,
-            viewProfile: widget.viewProfile,
-          ),
+          if (_view != 'deleted')
+            EntryActivity(
+              key: ValueKey('activity-${entry['id']}'),
+              repository: widget.repository,
+              teamId: widget.teamId,
+              entryId: entry['id'] as String,
+              admin: widget.admin,
+              readOnly: _view != 'active',
+              members: widget.members,
+              viewProfile: widget.viewProfile,
+            ),
         ],
       ),
     );
+  }
+
+  String _actorName(Object? id) {
+    final member = widget.members.where((m) => m['user_id'] == id).firstOrNull;
+    return member?['name'] as String? ?? 'Former teammate ($id)';
+  }
+
+  String _displayTime(Object? value) {
+    final time = DateTime.tryParse('$value')?.toLocal();
+    return time == null
+        ? ''
+        : '${time.toIso8601String().substring(0, 16).replaceFirst('T', ' ')} (local time)';
   }
 }
 

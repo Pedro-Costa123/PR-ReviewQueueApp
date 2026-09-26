@@ -22,10 +22,12 @@ class EntryActivity extends StatefulWidget {
     required this.admin,
     required this.members,
     required this.viewProfile,
+    this.readOnly = false,
   });
   final EntryRepository repository;
   final String teamId, entryId;
   final bool admin;
+  final bool readOnly;
   final List<EntryData> members;
   final void Function(String) viewProfile;
   @override
@@ -202,7 +204,7 @@ class _EntryActivityState extends State<EntryActivity> {
     final data = _data;
     final notes = List<EntryData>.from(data?['comments'] ?? []);
     final reviews = List<EntryData>.from(data?['reviews'] ?? []);
-    final active = data?['state'] == 'active';
+    final active = !widget.readOnly && data?['state'] == 'active';
     final canReview =
         active && data?['submitter_id'] != widget.repository.userId;
     final enabled = !_busy && !_blocked && data != null;
@@ -247,7 +249,7 @@ class _EntryActivityState extends State<EntryActivity> {
             Text(
               'Reviewed, looks good: ${data['looks_good_count']} · Comments left on PR: ${data['comments_left_count']}',
             ),
-            if (data['submitter_id'] == widget.repository.userId)
+            if (active && data['submitter_id'] == widget.repository.userId)
               const Text('You can comment, but cannot review your own entry.'),
             if (!active) const Text('This entry is read-only.'),
             Wrap(

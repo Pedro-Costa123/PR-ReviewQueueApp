@@ -1,9 +1,9 @@
 # Security design and launch evidence
 
-Last updated: 2026-09-23. P09 adds local comments/review signals. P08 ordering, P07 queue mutations and P06 onboarding are verified locally. P03/P04/P04A local controls are verified. P05 controlled
+Last updated: 2026-09-26. P10 adds local lifecycle controls. P09 comments/review signals, P08 ordering, P07 queue mutations and P06 onboarding are verified locally. P03/P04/P04A local controls are verified. P05 controlled
 hosted login, mail, CAPTCHA replay denial and passive-scanner checks passed.
 [AUTH](AUTH.md) and [HOSTED_AUTH](HOSTED_AUTH.md) distinguish implementation,
-provider configuration and observed behavior. Lifecycle/launch controls remain planned.
+provider configuration and observed behavior. P10 lifecycle is local only; launch controls remain planned.
 
 The signed-in workspace now reads/writes team entries through guarded P07 RPCs;
 public demo routes still contain only fictional presentation fixtures. P04 adds
@@ -11,6 +11,16 @@ a real local Auth client and sessionStorage adapter, with SDK cross-tab synchron
 There is no fake signed-in identity, role switch or company URL. Browser demo
 navigation is not an authorization test. SQL-role/Data API denial tests run against
 local Supabase. The release build remains a local preview, not a production auth path.
+
+## P10 implemented evidence and limits
+
+P10 subsequently adds the [confirmed lifecycle policy](LIFECYCLE.md): live
+submitter/admin archive, restore and soft deletion; admin-only deleted listing
+and recovery. Nine lifecycle tests cover anonymous/foreign/non-owner/forged
+denials, same-token revocation, post-lock revocation/demotion, stale/concurrent
+transitions, retained history, pagination, duplicate/host checks and atomic quotas.
+Private helpers and direct writes remain denied. Advisor results remain seven
+intentional info findings and zero warnings/errors. No hosted/auth change.
 
 ## P09 implemented evidence and limits
 
@@ -28,7 +38,7 @@ Tests also cover PR replacement resets and stale review denial. Flutter Text
 renders HTML-like content literally; no network fetch or external posting occurs.
 See [ACTIVITY](ACTIVITY.md) for contracts and limits. SQL lint passes; the advisor
 has seven intentional private RLS/no-policy info findings and zero warnings/errors.
-Retention/purge remains P10; no hosted change.
+P10 subsequently confirmed retained records without purge; no hosted change.
 
 ## P08 implemented evidence and limits
 
@@ -67,7 +77,7 @@ The shared audit uses no URL/title copies. See [QUEUE](QUEUE.md) for exact
 grammar, budget semantics, operator configuration, runbook and limitations.
 
 P07 adds no real company hosts or production access. Actual company navigation,
-hosted P06/P07 deployment and retention/recovery remain future work. Rate budgets
+hosted P06/P07 deployment remains future work; P10 now supplies local recovery. Rate budgets
 cap successful writes, not read traffic or all failed request attempts.
 
 ## P03 implemented evidence and limits
@@ -143,7 +153,13 @@ No confidential data in static build assets, public fixtures, service-worker cac
 
 ## Data lifecycle and incident handling
 
-Proposed defaults pending lifecycle confirmation: retain archived entries until deliberately removed; soft-delete recovery for 30 days; audit metadata retained for 90 days. Do not implement automatic purges before P10 settles these defaults. Email budgets need only the records necessary for their time windows and idempotency.
+Confirmed in P10 on 2026-09-26: retain archives, deleted records and minimal audit
+metadata without automatic expiry or permanent purge; only active team admins
+recover deleted entries. This supersedes proposed 30-day recovery and 90-day audit
+retention. Recovery preserves previous state and does not revive individually
+deleted comments. There is no purge SQL/API/job. A later destructive item must
+settle cutoff, recovery, audit and restricted backup/restore policy before explicit
+purge approval. Email-control records/budgets remain unchanged.
 
 Create restricted backups/export instructions, retention, and a restore test before the pilot. Database restore is not necessarily full Supabase Auth/config/secret recovery; document those separately. Store no exports in the public repository. Select an available EU database region by default; do not equate this with a guarantee that all auth/email/log processing stays in the EU.
 

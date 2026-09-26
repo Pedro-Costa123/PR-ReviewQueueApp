@@ -1,7 +1,7 @@
 # Product
 
-Last updated: 2026-09-23. Owner: Pedro Costa. Stage: P09 comments/review signals
-complete locally, ready for review. P10 is next when selected. P05 controlled
+Last updated: 2026-09-26. Owner: Pedro Costa. Stage: P10 archive/lifecycle
+complete locally, ready for review. P11 is next when selected. P05 controlled
 hosted authentication is complete; Inbox placement remains a release follow-up. The
 signed-in queue now persists data locally; demo routes remain fictional. The production subdomain is confirmed but
 not published. Demo content and preparatory schema fields remain proposals.
@@ -35,7 +35,7 @@ The owner additionally confirmed:
 - DNS stays on Namecheap; the app gets its own GitHub Pages deployment. The portfolio and PassGen keep their existing hosting. A repository rename or new GitHub organization is not needed for this URL.
 - PRs are on GitHub Enterprise and tasks on Jira Enterprise. The app must not fetch their contents or status; users update entries and archive them manually.
 - Sprint-goal entries first, then priority; admins reorder within those groups. Multiple teams per user are allowed.
-- External hosting of the specified company data is allowed. Exact retention/region requirements have not been specified.
+- External hosting of the specified company data is allowed. P10 confirms retention without purge below; special regional requirements remain unspecified.
 
 ## Proposed version 1 behavior
 
@@ -73,9 +73,9 @@ Confirmed rules above take precedence. Additional details below are proposed def
 
 ### Archive, deletion, and PR closure
 
-- An authorized submitter or team admin can archive and restore an entry. Archiving records who did it, when, and a reason: merged, closed, no longer needed, or other.
+- **Confirmed in P10:** an active submitter or team admin can archive and restore an entry. Archiving records who did it, when, and a reason: merged, closed, no longer needed, or other.
 - Archived entries keep comments and signals and become read-only until restored. Archive is not deletion.
-- P07 deletion hides an erroneous active entry with actor/time/version and minimal audit metadata, as confirmed by the owner. Recovery, retention and purge policy remain unconfirmed P10 work; no recovery period or automatic purge is implemented.
+- **Confirmed in P10:** retain archives, deleted records and minimal audit metadata without expiry or permanent purge. Only active team admins list/recover deleted entries. Recovery returns to the previous active/archive state; separately deleted comments stay deleted. P10 also allows owner/admin soft deletion from the archive. See [LIFECYCLE](LIFECYCLE.md).
 - Archive manually, as confirmed by the owner. Show that state is manually maintained, with the last updater and timestamp. An archived entry must not be represented as provider-verified merged/closed just because someone archived it.
 - Do not add GitHub/Jira integrations, link previews, server-side URL fetches, webhooks, credentials, or network tunnels. The user's browser opens the enterprise links directly.
 
@@ -96,6 +96,7 @@ All permissions below require active membership of the entry's team.
 | Read queue/archive and teammate profiles | Yes | Yes | Yes |
 | Add entry or comment | Yes | Yes | Yes |
 | Edit/archive/restore/delete entry | No | Own entry | Any entry in own team |
+| List/recover deleted entries | No | No | Yes, own team only |
 | Set/change/clear review signal | Own signal | Own signal, except own PR | Own signal, except own PR |
 | Edit comment | Own comment | Own comment | Own comment |
 | Delete comment | Own comment | Own comment | Any comment in own team |
@@ -114,10 +115,10 @@ Native mobile/desktop apps, payments, attachments/avatar uploads, Teams messages
 | Q02 answered | Invitation identity and sign-in? | Exact work email + magic link. |
 | Q03 answered, revised 2026-09-18 | Budget and hosting address? | Aim for €0; use reviews.pedro-costa.dev at `/`, with Namecheap DNS and this app's own GitHub Pages deployment. The prior shared-path/combined-site plan is superseded. |
 | Q04 answered | Ordering and teams? | Sprint first, then priority, admin reorder within groups; multiple teams allowed. |
-| Q05 answered | External hosting permission? | Owner says allowed. Region/retention remain unspecified; select an available EU project region unless a different requirement emerges. |
+| Q05 answered | External hosting permission? | Owner says allowed. P10 confirms retention without purge; select an available EU region unless a different requirement emerges. |
 | Q06 | Who creates teams and appoints initial admins? | Deployment operator bootstraps them. Team admins manage their own members. |
-| Q07 partially answered | Who may archive/edit, should emails be visible to teammates, and can submitters review their own PR? | Email visible to all active teammates and submitter/team-admin edits confirmed 2026-09-21; no self-review confirmed 2026-09-23. Archive authority remains P10. |
-| Q08 partially answered | Are the title field, priority labels, deletion recovery, and retention acceptable? | Title and Low/Medium/High/Critical confirmed in P07. Soft deletion with audit metadata now; recovery/retention/purge remain P10. |
+| Q07 answered | Who may archive/edit, should emails be visible to teammates, and can submitters review their own PR? | Email visible to active teammates, submitter/team-admin edits and no self-review confirmed. P10 confirms submitter/team-admin archive/restore. |
+| Q08 answered | Are the title field, priority labels, deletion recovery, and retention acceptable? | Title and Low/Medium/High/Critical confirmed in P07. P10 confirms admin-only deleted recovery and retained records/audit without purge. |
 
 ## Pilot success criteria
 

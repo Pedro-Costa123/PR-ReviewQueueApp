@@ -19,15 +19,16 @@ The repository documents are the shared source of context. A planning conversati
 
 ```text
 Work in the existing PR-ReviewQueueApp repository. Read AGENTS.md and the
-project docs, especially STATUS.md, NEXT.md and QUEUE.md. Implement only
-P10: archive, restore, and data lifecycle. P06–P09 are verified locally, not deployed. P05's
+project docs, especially STATUS.md, NEXT.md, QUEUE.md and LIFECYCLE.md. Implement only
+P11: refresh, filtering, responsive UI and accessibility. P06–P10 are verified locally, not deployed. P05's
 hosted trial admission remains revoked; preserve that state.
 Keep credentials in provider/secret storage, exact callbacks, explicit confirmation,
 disabled signup, server-side membership and email budgets. Preserve confirmed
 Low/Medium/High/Critical priorities and private enterprise host configuration.
 Preserve P09's confirmed no-self-review rule, plain-text comments and local signals.
-Resolve archive authority and retention/recovery/audit policy before permanent
-purges. Verify P10, update the docs and stop for review. Do not start P11 or publish.
+Preserve P10 owner/admin archive/restore, admin-only deleted recovery and retained
+records/audit without purge. Verify P11, update the docs and stop for review.
+Do not start P12 or publish.
 ```
 
 ## Prompt for any later item
@@ -51,10 +52,11 @@ The final reply should name the completed item, give the useful result/link, sum
 ## Current handoff
 
 P00-P04A are complete locally; P05 is complete for the controlled hosted trial.
-P09 is complete locally with automated and browser checks; ready for review.
-Stop at P09 review; P10 is next only when selected.
+P10 is complete locally with automated and browser checks; ready for review.
+Stop at P10 review; P11 is next only when selected.
 See [QUEUE](QUEUE.md) for entry/ordering contracts, private hosts, preview and limitations.
 See [ACTIVITY](ACTIVITY.md) for comments/reviews, contracts and review boundary.
+See [LIFECYCLE](LIFECYCLE.md) for archive, admin recovery and confirmed no-purge retention.
 See [ONBOARDING](ONBOARDING.md) for implementation, local evidence and limits, and
 [HOSTED_AUTH](HOSTED_AUTH.md) for provider state, acceptance evidence and limits.
 Three requested messages arrived in Junk; recipient SPF/DMARC passed on the third.
@@ -68,11 +70,11 @@ disconnected demo; rebuild explicit trial configuration only when needed.
 [AUTH](AUTH.md) retains the local runbook. Hosted/local builds share the exact
 loopback root but use distinct explicit modes. Production publication at
 `https://reviews.pedro-costa.dev/` remains P12/P13. The signed-in queue now persists
-and orders entries locally, with comments/reviews; demo routes remain fictional.
-Archive remains P10. The owner confirmed no self-review, email visibility to active
+and orders entries locally, with comments/reviews and archive/recovery; demo routes remain fictional.
+The owner confirmed no self-review, email visibility to active
 teammates, title/owner-admin entry edits and Low/Medium/High/Critical priorities.
 
-P08 is committed as `61fe31e`; P09 began from a clean worktree. P09 changes are
-uncommitted. No commit, push or app publication was performed during P09.
+P09 is committed as `5326510`; P10 began from a clean worktree. P10 changes are
+uncommitted. No commit, push or app publication was performed during P10.
 Inspect Git for earlier history rather than assuming another
 checkout or conversation has synchronized it.

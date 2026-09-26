@@ -1,6 +1,6 @@
 # Decisions
 
-Updated: 2026-09-23. **Confirmed** means specified/answered by the owner. **Proposed** means a researched design choice for staged validation. **Deferred** means deliberately outside current work. **Superseded** records an earlier choice replaced by a later decision.
+Updated: 2026-09-26. **Confirmed** means specified/answered by the owner. **Proposed** means a researched design choice for staged validation. **Deferred** means deliberately outside current work. **Superseded** records an earlier choice replaced by a later decision.
 
 | ID | Status | Decision and reasoning |
 | --- | --- | --- |
@@ -10,13 +10,13 @@ Updated: 2026-09-23. **Confirmed** means specified/answered by the owner. **Prop
 | D04 | Confirmed | Invite exact work emails and use magic links. Username remains profile data. |
 | D05 | Confirmed; address revised by D27 | Aim for €0/month with Namecheap DNS and GitHub Pages. The original `pedro-costa.dev/PR-Review-App-Queue/` address was replaced by `reviews.pedro-costa.dev/` on 2026-09-18. |
 | D06 | Confirmed | Sprint first, then priority; admins reorder within groups. Users may belong to multiple teams. |
-| D07 | Confirmed | External hosting of the stated company data is permitted by the owner. Retention and any special regional constraints remain unspecified. |
+| D07 | Confirmed | External hosting of the stated company data is permitted. D33 confirms retention without purge; special regional constraints remain unspecified. |
 | D08 | Proposed | Supabase Free for Auth/Postgres/RLS/Edge Functions plus Resend Free for mail. Fits magic links with a plausible zero-cost workload; see dated limits in COSTS. |
 | D09 | Proposed | Use a signed Send Email Hook with invitation checks and atomic budgets. Direct Auth calls must not bypass mail controls. Tokens remain provider-managed. |
 | D10 | Superseded by D27 | The proposed combined portfolio/app Pages artifact is no longer needed. Deploy this repository's app independently with its own custom subdomain. |
 | D11 | Proposed | Use hash routing with the required Flutter base href. It avoids relying on unsupported Pages rewrites; callback compatibility is an early test. |
 | D12 | Proposed | Enforce permissions in RLS and transactional functions. Privileged Edge Functions are narrowly scoped to invitation/provisioning and mail. No second general-purpose backend server. |
-| D13 | Partly superseded by D30/D32 | P07 confirms title and owner/admin entry edits and replaces the proposed priorities. P09 confirms no self-review. Archive authority remains proposed for P10. |
+| D13 | Superseded by D30/D32/D33 | P07 confirms title, owner/admin edits and priorities. P09 confirms no self-review. P10 confirms owner/admin archive/restore and admin-only deleted recovery. |
 | D14 | Proposed | Active/archive are queue lifecycle states, not provider-verified PR states. Review signals are local indicators, not GitHub approvals. |
 | D15 | Proposed | Operator bootstraps teams/initial admins; team admins manage invitations and roles. Prevent last-admin removal and cross-team admin authority. |
 | D16 | Proposed | Review theme/layout locally first, then validate invitation/security design before building the full queue. |
@@ -157,6 +157,24 @@ counts and explicit manual refresh. See [ACTIVITY](ACTIVITY.md) for contracts.
 No new dependency, provider, authentication, pricing, hosting, external posting,
 DNS or publishing decision. Flutter Web, invited-email magic links, manual links,
 Namecheap DNS, GitHub Pages and `https://reviews.pedro-costa.dev/` are preserved.
+
+## D33 — P10 archive and retained lifecycle (confirmed 2026-09-26)
+
+The owner selected P10 only and confirmed submitter/team-admin archive and
+restore, team-admin deleted recovery, and retention of archives/deleted records
+and minimal audit metadata without permanent purge. The proposed 30-day recovery
+and 90-day audit expiry are superseded; no automatic expiry is implemented.
+
+Implemented locally: manual enumerated archive reasons with actor/time, read-only
+history, 25-entry cursor pages, expected versions, shared budgets and post-lock
+authority checks. Restore/active recovery append to the existing sprint/priority
+group, revalidate private hosts and reject active duplicates. Recovery preserves
+the previous state and does not revive separately deleted comments. Soft deletion
+also works from the archive. Archived resubmission directs an authorized restore.
+
+Audit retains minimal transition metadata without URL/title/comment copies.
+There is no purge job/API, audit export, external integration, provider change or
+publication. Restricted disaster recovery remains P12. See [LIFECYCLE](LIFECYCLE.md).
 
 ## Alternatives evaluated
 

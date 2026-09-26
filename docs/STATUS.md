@@ -1,12 +1,13 @@
 # Current status
 
-Updated: 2026-09-23.
+Updated: 2026-09-26.
 
 ## Current implementation
 
 P00-P04A are complete locally. P05 is complete for the controlled hosted trial.
-**P09 is complete locally, ready for owner review.** The signed-in
-Flutter queue now includes plain-text comments and per-user review signals,
+**P10 is complete locally, ready for owner review.** The signed-in
+Flutter queue now includes manual archive/restore and admin-only deleted recovery,
+alongside plain-text comments and per-user review signals,
 alongside P08 ordering/reordering and P07 edits/deletion; separate demo routes remain
 fictional and read-only. The selected Supabase Free project still has the
 three versioned migrations and one operator-provisioned trial identity, without
@@ -14,6 +15,7 @@ fixtures or memberships. No production app is
 deployed. See [HOSTED_AUTH](HOSTED_AUTH.md) for the trial and [AUTH](AUTH.md) for
 local development. [ONBOARDING](ONBOARDING.md) covers P06; [QUEUE](QUEUE.md) covers P07/P08;
 [ACTIVITY](ACTIVITY.md) covers P09.
+[LIFECYCLE](LIFECYCLE.md) covers P10 and its confirmed retained-data/no-purge policy.
 
 - P02 shell: desktop/narrow navigation, Atlas/Orbit fixtures, profile/archive
   placeholders, dark default and saved theme preference.
@@ -35,11 +37,76 @@ local development. [ONBOARDING](ONBOARDING.md) covers P06; [QUEUE](QUEUE.md) cov
   preview denial tests, and verified replacement runbook commands.
 
 Not complete: reliable Inbox placement and production-hostname acceptance,
-hosted P06–P09 deployment, archive,
+hosted P06–P10 deployment,
 CI, independent Pages release or deployment. Authentication alone grants no team;
 the guarded P06 claim transaction creates invited memberships.
 
-## P09 implementation and evidence on 2026-09-23
+## P10 implementation and evidence on 2026-09-26
+
+- P09 dependency is committed as `5326510`; P10 began with a clean worktree.
+  Owner confirmed submitter/team-admin archive/restore, team-admin deleted
+  recovery, and retaining records/minimal audit without expiry or permanent purge.
+  No material lifecycle policy question remains for this non-purging scope.
+- Added eighth migration: guarded lifecycle functions, 25-row cursor archive and
+  admin-only deleted snapshots, archive/deleted/PR lookup indexes and archived
+  resubmission guidance. Existing delete now accepts archives. Restores/active
+  recovery append within existing sprint/priority groups, revalidate private hosts
+  and reject duplicates. Expected versions, shared mutation budgets, post-lock
+  authority, direct-write denial, independent data/queue revisions and audit hold.
+- Connected existing Material UI: manual reason confirmation, actor/time,
+  read-only retained activity, separate admin recovery, cursor navigation,
+  explicit conflict/permission/quota/network feedback and keyboard focus.
+  Comments/signals remain intact; separately deleted comments stay hidden.
+  Added a local-only fictional 2020 retention/pagination preview helper.
+- Clean `npm run reset` applied all eight migrations without hosts/fixtures.
+  `npm test`: **19 passed**; `npm run test:queue`: **11 passed**;
+  `npm run test:ordering`: **8 passed**; `npm run test:activity`: **9 passed**;
+  `npm run test:lifecycle`: **9 passed**, including direct authority/forgery,
+  same-token revocation, post-lock demotion/revocation, stale/concurrent changes,
+  sorting, duplicate rollback, current host validation, pagination ties and quotas.
+  P10 tests passed again after final index addition and clean reset.
+- SQL lint: no schema errors. Local security advisor: **seven informational**
+  intentional private RLS/no-policy findings; **zero warnings/errors**.
+  No private helper, direct-write, public-signup or email-budget grant expanded.
+- **50 Flutter tests passed** (six new lifecycle tests). Analysis has no issues;
+  format checks **38 files unchanged**. After browser fixes, the **20 lifecycle,
+  activity and entry tests** passed again. Configured root release build and
+  Wasm dry run passed, retaining the existing unused Cupertino font warning.
+- Browser: real local captured-mail login with explicit keyboard confirmation,
+  fictional profile, Orbit member-only controls, Atlas archive with required
+  reason, retained literal HTML-like note/signal, restore, two-page navigation,
+  old deleted recovery, reload persistence, narrow soft deletion/recovery and
+  Escape cancellation passed. 390 × 844 layouts in both themes inspected.
+  Found pagination focus fallback and misleading own-comment hint in archives;
+  fixed both, rebuilt, and browser verified Previous/Next focus restoration.
+- Final signed-in browser warning/error log was empty. Keyboard sign-out cleared
+  the private workspace; reset the temporary viewport. The default root release
+  build/Wasm dry run passed without environment defines; browser inspection
+  confirmed disconnected sign-in with no email form. Stopped preview/functions;
+  `npm run stop` passed and preserved the fictional local database.
+- Documentation checks passed for **18 Markdown files and 129 relative links**,
+  balanced fences and whitespace. Secret-pattern scan passed across **108 source,
+  config and docs files**. New test/helper syntax, unchanged lockfiles/license and
+  `git diff --check` passed. Updated lifecycle runbook, product, architecture,
+  decisions, security, queue, status/backlog, handoff and READMEs.
+- Tool/test corrections: CLI telemetry, Node workers and local fixture helpers
+  needed sandbox escalation. Changelog Markdown required curl after web MIME
+  rejection. Corrected read working-directory/glob and docs patch contexts.
+  The exact authorization RPC allowlist needed four new endpoints; updated and
+  reran the clean suite. Combined Flutter check delayed output; standalone
+  analysis exposed two brace lints, corrected. Initial browser preview opened
+  before server startup; reloaded after build. Flutter email field required
+  screenshot-guided focus before typing. No auth workaround was introduced.
+
+Remaining limits: active queue/activity detail pagination and background refresh
+remain P11; archive cursor browsing is not a frozen multi-request snapshot.
+Soft recovery is not disaster recovery; restricted backup/restore remains P12.
+Retained data needs existing storage monitoring; there is no purge implementation.
+No hosted operation, real company host/mail, provider/auth/DNS/Pages/billing,
+dependency/lockfile/license, commit, push or publication change. P05 hosted
+admission remains revoked. Stop for P10 review; P11 is next only when selected.
+
+## P09 implementation and evidence on 2026-09-23 (historical)
 
 - P08 dependency is committed as `61fe31e`; P09 began with a clean worktree.
   Owner confirmed no self-review (both signals, including admins); submitters
@@ -538,8 +605,8 @@ Workspace: C:\Users\pedro\Projects\PR-ReviewQueueApp. Branch: main. P03 is
 committed as c2b44c8 and P04 as 1ff6c13. P04A began from a clean worktree at
 bd8e62c (the hosting-decision documentation commit) and was committed as 99c68f3.
 P05 is committed as 5ad5235 and P06 as 4c96d27. P07 is committed as 9fa4565
-and P08 as 61fe31e. P09 began from a clean worktree and remains uncommitted.
-No fetch, push or app publication was performed during P09.
+and P08 as 61fe31e. P09 is committed as 5326510. P10 began from a clean worktree
+and remains uncommitted. No fetch, push or app publication was performed during P10.
 
 Tooling remains Flutter 3.47.4/Dart 3.13.3, Node 26.5.0/npm 11.17.0, Supabase CLI
 2.117.0 and Postgres 17.6.1.167. P04 also exercised local Edge Runtime 1.74.3
@@ -547,8 +614,8 @@ Tooling remains Flutter 3.47.4/Dart 3.13.3, Node 26.5.0/npm 11.17.0, Supabase CL
 started for verification. P05 selected the existing hosted project and configured
 the sender domain; no global tool upgrade or paid subscription was added.
 
-Remaining product defaults include archive privileges,
-operator-created teams and retention. P06 confirmed profile email visibility;
+Remaining product defaults include operator-created teams. P10 confirmed
+archive privileges and retention without purge. P06 confirmed profile email visibility;
 P07 confirmed title, entry edit privileges, soft deletion and the revised priorities.
 Exact enterprise hostnames will be supplied privately before live use; P07 uses
 fictional local configuration as confirmed. This app's Pages setup, domain
@@ -588,6 +655,6 @@ No backend tests were applicable during P02; P03 results are above. No productio
 
 ## Next
 
-Review **P09: comments and per-user review signals**.
-The next item is **P10: archive and lifecycle**, only when selected. Keep trial admission revoked;
+Review **P10: archive, restore and data lifecycle**.
+The next item is **P11: usability and efficient refresh**, only when selected. Keep trial admission revoked;
 carry the documented delivery and production callback checks into P12/P13.

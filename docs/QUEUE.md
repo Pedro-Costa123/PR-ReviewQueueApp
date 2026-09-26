@@ -1,8 +1,10 @@
 # P07/P08 queue entries and ordering
 
-Updated: 2026-09-23. Local implementation only; no hosted migration or publication.
+Updated: 2026-09-26. Local implementation only; no hosted migration or publication.
 P08 builds on completed local P07. See [STATUS](STATUS.md) for final evidence.
 P09 adds [comments and review signals](ACTIVITY.md) to the connected entries.
+P10 adds [archive, restore and admin recovery](LIFECYCLE.md), including the
+confirmed retained-data/no-purge policy and separate paginated lifecycle views.
 
 ## Confirmed scope
 
@@ -10,7 +12,7 @@ The owner confirmed a required title of 1–160 characters and submitter/team-ad
 editing. The owner's later priority correction supersedes High/Normal/Low:
 **Low, Medium, High, Critical**, with Medium replacing Normal as the default.
 Deletion hides the entry with actor/time/version and a minimal audit event.
-Recovery, retention and purge remain P10. Real enterprise hostnames will be
+P10 now implements admin recovery and retained records/audit without purge. Real enterprise hostnames will be
 configured privately; local tests use fictional exact hosts.
 
 The signed-in root workspace now lists, adds, edits and deletes real database
@@ -71,11 +73,12 @@ by any API role. Every public mutation delegates to this guarded transaction.
 | `queue_link_hosts(p_team_id)` | Return this team's PR/Jira exact-host lists only to its active members |
 | `create_entry(p_team_id,p_title,p_pr_url,p_jira_url,p_sprint_goal,p_priority)` | Derive submitter from `auth.uid()`, validate and return saved row |
 | `update_entry(p_team_id,p_entry_id,p_expected_version, …same fields…)` | Require active submitter or team admin; preserve resource identity |
-| `delete_entry(p_team_id,p_entry_id,p_expected_version)` | Same ownership/version checks; hide active entry and preserve history |
+| `delete_entry(p_team_id,p_entry_id,p_expected_version)` | Same ownership/version checks; hide entry and preserve history; P10 also accepts archives |
 
 Mutations acquire the per-user budget, then the team lock, then the entry lock.
 Membership/role checks run again after locking. Entry/team IDs must match even
-for a user belonging to both teams. Only active, non-deleted entries can change.
+for a user belonging to both teams. P07 edits require active, non-deleted entries;
+P10 adds separate lifecycle transitions and archived soft deletion.
 Versions advance on edits/deletion. Stale saves/deletions return HTTP 409/code
 `PT409`, with `current_version` only after authorization. The UI retains a stale
 draft, disables blind resubmission and asks the user to refresh/review the latest
@@ -145,10 +148,11 @@ npm test
 npm run test:queue
 npm run test:ordering
 npm run test:activity
+npm run test:lifecycle
 npm run lint
 ```
 
-Reset is destructive to this project's local test database. It applies all seven
+Reset is destructive to this project's local test database. It applies all eight
 migrations without seeding hosts/users. `npm test` requires a clean database and
 loads fictional fixtures. Queue tests create isolated identities/teams, refuse
 linked/remote targets, and never send email. Run the security advisor with:

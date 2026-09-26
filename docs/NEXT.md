@@ -1,11 +1,11 @@
 # Ordered implementation backlog
 
-Updated: 2026-09-23. **Execute one selected item, verify it, update the docs, and stop.** Do not turn this file into a single full-app implementation prompt.
+Updated: 2026-09-26. **Execute one selected item, verify it, update the docs, and stop.** Do not turn this file into a single full-app implementation prompt.
 
-The owner selected only P09 after completed local P08. Self-review is confirmed
-as prohibited, including admins; submitters can comment. P09 implementation,
-automated checks and browser verification are complete locally. Hosted
-P06–P09 rollout is unperformed. Stop at P09 review; do not execute P10 automatically.
+The owner selected only P10 after completed local P09 and confirmed owner/admin
+archive/restore, admin-only deleted recovery and retention without purge. P10 is
+complete locally with automated and browser verification. Hosted P06–P10 rollout
+is unperformed. Stop at P10 review; do not execute P11 automatically.
 
 `Complete` means the item's actual deliverable exists. `Ready` means the next item can start when requested. Later items remain planned, not authorized as a batch. Smaller UI/product defaults can be settled at the item that needs them.
 
@@ -22,8 +22,8 @@ P06–P09 rollout is unperformed. Stop at P09 review; do not execute P10 automat
 | P07 | Create/read/edit queue entries and protected deletion | Complete locally; ready for owner review | P06 |
 | P08 | Sprint/priority ordering and admin reordering | Complete locally; ready for owner review | P07 |
 | P09 | Comments and per-user review signals | Complete locally; ready for owner review | P08 |
-| P10 | Archive, restore, and data lifecycle | Ready; not started | P09 |
-| P11 | Refresh, filtering, responsive UI, and accessibility | Planned | P10 |
+| P10 | Archive, restore, and data lifecycle | Complete locally; ready for owner review | P09 |
+| P11 | Refresh, filtering, responsive UI, and accessibility | Ready; not started | P10 |
 | P12 | Release checks and subdomain publishing preparation | Planned | P11 |
 | P13 | Deploy the prepared release and run a small pilot | Planned | P12 |
 
@@ -166,6 +166,13 @@ No P10+ work or hosted/DNS/Pages operation. Stop for P09 review.
 **Deliver:** Manual archive with reason/updater/time; paginated read-only archive; authorized restore with duplicate conflict handling; distinguish deleted entries from archived ones. Confirm retention, recovery, and audit policy before implementing permanent purges.
 
 **Acceptance:** Archive preserves history; restore applies current ordering rules; unauthorized actions fail; conflicting active duplicates are explained; all PR state is labeled manually maintained. Lifecycle changes can be demonstrated with fictional dates/data. No unapproved destructive purge.
+
+**Completed locally 2026-09-26:** eighth migration, manual owner/admin archive and
+restore, admin-only deleted recovery, 25-row cursor pages, read-only history,
+duplicate/host/version conflicts, shared budgets, minimal retained audit and
+keyboard confirmation/focus. Owner confirmed no expiry or permanent purge.
+See [LIFECYCLE](LIFECYCLE.md) and [STATUS](STATUS.md) for verification and limits.
+No P11, hosted migration, real mail, provider change or publication. Stop for review.
 
 ## P11 — Usability and efficient refresh
 

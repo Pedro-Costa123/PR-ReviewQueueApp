@@ -20,6 +20,23 @@ EntryData row({String owner = 'self'}) => {
 
 class TestEntries implements EntryRepository {
   @override
+  Future<EntryData> lifecyclePage(
+    String teamId, {
+    bool deleted = false,
+    EntryData? cursor,
+  }) async => {
+    'entries': <EntryData>[],
+    'has_more': false,
+    'next_cursor': null,
+  };
+  @override
+  Future<void> lifecycle(
+    String teamId,
+    EntryData entry,
+    String action, {
+    String? reason,
+  }) async {}
+  @override
   Future<EntryData> activity(String teamId, String entryId) async => {
     'entry_version': 1,
     'submitter_id': 'self',
