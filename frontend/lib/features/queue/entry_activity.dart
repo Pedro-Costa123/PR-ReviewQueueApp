@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'entry_repository.dart';
+import 'visible_refresh.dart';
 
 String activityError(Object error) => error is PostgrestException
     ? switch (error.code) {
@@ -23,11 +24,15 @@ class EntryActivity extends StatefulWidget {
     required this.members,
     required this.viewProfile,
     this.readOnly = false,
+    this.dataRevision,
+    this.onInteraction,
   });
   final EntryRepository repository;
   final String teamId, entryId;
   final bool admin;
   final bool readOnly;
+  final int? dataRevision;
+  final void Function(bool)? onInteraction;
   final List<EntryData> members;
   final void Function(String) viewProfile;
   @override
@@ -41,9 +46,22 @@ class _EntryActivityState extends State<EntryActivity> {
   bool _open = false, _busy = false, _blocked = false;
   String? _message;
   int _generation = 0;
+  int _commentsOffset = 0, _reviewsOffset = 0;
+  final _commentsFocus = FocusNode(), _reviewsFocus = FocusNode();
+  @override
+  void initState() {
+    super.initState();
+    _body.addListener(_interaction);
+  }
+
+  void _interaction() => widget.onInteraction?.call(
+    _body.text.isNotEmpty || _editing != null || _busy,
+  );
   @override
   void dispose() {
     _body.dispose();
+    _commentsFocus.dispose();
+    _reviewsFocus.dispose();
     _inputFocus.dispose();
     super.dispose();
   }
@@ -62,33 +80,56 @@ class _EntryActivityState extends State<EntryActivity> {
       _blocked = false;
       _busy = false;
       if (_open) _load();
+    } else if (oldWidget.dataRevision != widget.dataRevision) {
+      if (_open && !_busy && _body.text.isEmpty && _editing == null) {
+        _load(background: true);
+      } else if (!_open) {
+        _data = null;
+      }
     }
   }
 
-  Future<void> _load({String? message}) async {
+  Future<void> _load({
+    String? message,
+    bool paging = false,
+    bool background = false,
+  }) async {
     final generation = ++_generation;
+    final revision = paging ? (_data?['data_revision'] as int?) : null;
+    if (!paging) {
+      _commentsOffset = 0;
+      _reviewsOffset = 0;
+    }
     setState(() {
-      _busy = true;
-      _data = null;
+      _busy = !background;
+      if (!background) _data = null;
       _message = message;
     });
+    _interaction();
     try {
-      final data = await widget.repository.activity(
-        widget.teamId,
-        widget.entryId,
-      );
+      final data = await widget.repository
+          .activityPage(
+            widget.teamId,
+            widget.entryId,
+            commentsOffset: _commentsOffset,
+            reviewsOffset: _reviewsOffset,
+            revision: revision,
+          )
+          .timeout(const Duration(seconds: 15));
       if (!mounted || generation != _generation) return;
       setState(() {
         _data = data;
         if (_editing == null) _blocked = false;
       });
-    } catch (_) {
+    } catch (error) {
       if (!mounted || generation != _generation) return;
-      setState(
-        () => _message = 'Could not load activity. Check your connection or team access, then refresh.',
-      );
+      setState(() {
+        _message = readError(error);
+        if (readAccessError(error)) _data = null;
+      });
     } finally {
       if (mounted && generation == _generation) setState(() => _busy = false);
+      if (mounted) _interaction();
     }
   }
 
@@ -102,6 +143,7 @@ class _EntryActivityState extends State<EntryActivity> {
       _busy = true;
       _message = null;
     });
+    _interaction();
     try {
       await action();
       if (!mounted || generation != _generation) return;
@@ -125,6 +167,7 @@ class _EntryActivityState extends State<EntryActivity> {
             !['PT429', '22023'].contains(error.code);
         if (error is PostgrestException && error.code == '42501') _data = null;
       });
+      _interaction();
     }
   }
 
@@ -185,6 +228,11 @@ class _EntryActivityState extends State<EntryActivity> {
     return member == null
         ? const Text('Former teammate')
         : TextButton(
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.zero,
+              alignment: Alignment.centerLeft,
+              minimumSize: const Size(48, 48),
+            ),
             onPressed: _busy ? null : () => widget.viewProfile(id),
             child: Text(
               '${member['name'] ?? 'Teammate'}${id == widget.repository.userId ? ' (you)' : ''}',
@@ -311,12 +359,11 @@ class _EntryActivityState extends State<EntryActivity> {
                   ],
                 ),
               ),
-            if ((data['looks_good_count'] as int) +
-                    (data['comments_left_count'] as int) >
-                reviews.length)
-              const Text(
-                'Showing the latest 100 reviewers. Counts include all signals.',
-              ),
+            _pages(
+              false,
+              (data['looks_good_count'] as int) +
+                  (data['comments_left_count'] as int),
+            ),
             const SizedBox(height: 16),
             Text(
               'Comments (${data['comments_count']})',
@@ -339,6 +386,7 @@ class _EntryActivityState extends State<EntryActivity> {
                   helperMaxLines: 2,
                 ),
               ),
+              const SizedBox(height: 12),
               Wrap(
                 spacing: 8,
                 children: [
@@ -388,11 +436,17 @@ class _EntryActivityState extends State<EntryActivity> {
                     ),
                     // Text widgets never parse HTML or Markdown or fetch embedded URLs.
                     Text(note['body'] as String),
+                    const SizedBox(height: 4),
                     Wrap(
-                      spacing: 8,
+                      spacing: 16,
                       children: [
                         if (note['author_id'] == widget.repository.userId)
                           TextButton(
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                              alignment: Alignment.centerLeft,
+                              minimumSize: const Size(48, 48),
+                            ),
                             onPressed: enabled && active
                                 ? () {
                                     setState(() {
@@ -400,6 +454,7 @@ class _EntryActivityState extends State<EntryActivity> {
                                       _body.text = note['body'] as String;
                                       _message = null;
                                     });
+                                    _interaction();
                                     _inputFocus.requestFocus();
                                   }
                                 : null,
@@ -408,6 +463,11 @@ class _EntryActivityState extends State<EntryActivity> {
                         if (note['author_id'] == widget.repository.userId ||
                             widget.admin)
                           TextButton(
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                              alignment: Alignment.centerLeft,
+                              minimumSize: const Size(48, 48),
+                            ),
                             onPressed: enabled && active
                                 ? () => _delete(note)
                                 : null,
@@ -423,10 +483,47 @@ class _EntryActivityState extends State<EntryActivity> {
                   ],
                 ),
               ),
-            if ((data['comments_count'] as int) > notes.length)
-              const Text('Showing the latest 100 comments, newest first.'),
+            _pages(true, data['comments_count'] as int),
           ],
         ],
+      ],
+    );
+  }
+
+  Widget _pages(bool comments, int total) {
+    final offset = comments ? _commentsOffset : _reviewsOffset;
+    final label = comments ? 'comments' : 'reviewers';
+    final focus = comments ? _commentsFocus : _reviewsFocus;
+    Future<void> move(int delta) async {
+      if (comments) {
+        _commentsOffset += delta;
+      } else {
+        _reviewsOffset += delta;
+      }
+      await _load(paging: true);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) focus.requestFocus();
+      });
+    }
+
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        Text(
+          '${comments ? 'Comments' : 'Reviewers'} page ${offset ~/ 25 + 1} · $total total',
+        ),
+        TextButton(
+          focusNode: offset > 0 ? focus : null,
+          onPressed: _busy || offset == 0 ? null : () => move(-25),
+          child: Text('Previous $label'),
+        ),
+        TextButton(
+          focusNode: offset == 0 ? focus : null,
+          onPressed: _busy || offset + 25 >= total ? null : () => move(25),
+          child: Text('Next $label'),
+        ),
       ],
     );
   }

@@ -5,6 +5,7 @@ import '../../shared/widgets.dart';
 import 'entry_repository.dart';
 import 'entry_activity.dart';
 import 'open_link.dart';
+import 'visible_refresh.dart';
 
 const archiveReasons = {
   'merged': 'Merged',
@@ -36,12 +37,14 @@ class EntryQueue extends StatefulWidget {
     required this.admin,
     required this.members,
     required this.viewProfile,
+    this.refreshPeople,
   });
   final EntryRepository repository;
   final String teamId;
   final bool admin;
   final List<EntryData> members;
   final void Function(String) viewProfile;
+  final Future<void> Function()? refreshPeople;
   @override
   State<EntryQueue> createState() => _EntryQueueState();
 }
@@ -56,12 +59,29 @@ class _EntryQueueState extends State<EntryQueue> {
   String? _message;
   int _generation = 0;
   String _view = 'active';
-  EntryData? _cursor, _nextCursor;
-  final List<EntryData?> _previousCursors = [];
+  int _offset = 0;
+  int? _dataRevision;
+  final _search = TextEditingController();
+  String _query = '';
+  String? _priority, _submitter;
+  bool? _sprint;
+  String? _appliedPriority, _appliedSubmitter;
+  bool? _appliedSprint;
+  DateTime? _updated, _checked;
+  late final VisibleRefresh _refresh;
+  bool _checking = false;
+  final Set<String> _interacting = {};
+  bool get _filtered =>
+      _query.isNotEmpty ||
+      _appliedPriority != null ||
+      _appliedSprint != null ||
+      _appliedSubmitter != null;
   final _viewFocus = FocusNode();
   final _pageFocus = FocusNode();
   @override
   void dispose() {
+    _refresh.dispose();
+    _search.dispose();
     _viewFocus.dispose();
     _pageFocus.dispose();
     for (final node in _moveFocus.values) {
@@ -73,6 +93,7 @@ class _EntryQueueState extends State<EntryQueue> {
   @override
   void initState() {
     super.initState();
+    _refresh = VisibleRefresh(_checkRevision);
     _load();
   }
 
@@ -82,71 +103,144 @@ class _EntryQueueState extends State<EntryQueue> {
     if (oldWidget.teamId != widget.teamId ||
         oldWidget.repository != widget.repository) {
       _view = 'active';
-      _cursor = null;
-      _previousCursors.clear();
+      _offset = 0;
+      _dataRevision = null;
+      _search.clear();
+      _query = '';
+      _priority = _submitter = null;
+      _sprint = null;
+      _appliedPriority = _appliedSubmitter = null;
+      _appliedSprint = null;
+      _interacting.clear();
+      _updated = _checked = null;
+      _refresh.reset();
       _load();
     } else if (oldWidget.admin && !widget.admin && _view == 'deleted') {
       _selectView('active');
     }
   }
 
-  Future<void> _load() async {
-    final generation = ++_generation;
+  Future<void> _checkRevision() async {
+    if (_busy || _checking || ModalRoute.of(context)?.isCurrent == false) {
+      return;
+    }
+    final generation = _generation;
+    _checking = true;
+    try {
+      final revision = await widget.repository
+          .dataRevision(widget.teamId)
+          .timeout(const Duration(seconds: 15));
+      if (!mounted || generation != _generation) return;
+      setState(() => _checked = DateTime.now());
+      if (revision != _dataRevision) {
+        if (_interacting.isNotEmpty) {
+          setState(
+            () => _message = 'Updates available. Finish or clear your comment draft, then refresh.',
+          );
+          return;
+        }
+        await widget.refreshPeople?.call().timeout(const Duration(seconds: 15));
+        if (!mounted || generation != _generation) return;
+        _offset = 0;
+        await _load(background: true);
+      }
+    } catch (error) {
+      if (mounted && generation == _generation) _readFailed(error);
+      rethrow;
+    } finally {
+      _checking = false;
+    }
+  }
+
+  void _readFailed(Object error) {
     setState(() {
-      _busy = true;
-      _entries = [];
-      _hasMore = false;
+      _message = readError(error);
+      if (readAccessError(error)) {
+        _entries = [];
+        _interacting.clear();
+        _hosts = const LinkHosts(pr: [], jira: []);
+        _dataRevision = null;
+      }
+    });
+    if (readAccessError(error) || readQuotaError(error)) _refresh.pause();
+  }
+
+  Future<void> _load({bool background = false, bool paging = false}) async {
+    final generation = ++_generation;
+    if (!paging) _offset = 0;
+    setState(() {
+      _busy = !background;
+      if (!background) {
+        _entries = [];
+        _interacting.clear();
+      }
+      if (!background) _hasMore = false;
       _message = null;
     });
     try {
-      final hosts = await widget.repository.hosts(widget.teamId);
-      final entries = _view == 'active'
-          ? await widget.repository.list(widget.teamId)
-          : null;
-      final page = entries == null
-          ? await widget.repository.lifecyclePage(
-              widget.teamId,
-              deleted: _view == 'deleted',
-              cursor: _cursor,
-            )
-          : null;
+      final hosts = await widget.repository
+          .hosts(widget.teamId)
+          .timeout(const Duration(seconds: 15));
+      final page = await widget.repository
+          .page(
+            widget.teamId,
+            view: _view,
+            search: _query,
+            priority: _appliedPriority,
+            sprint: _appliedSprint,
+            submitter: _appliedSubmitter,
+            offset: _offset,
+            revision: paging ? _dataRevision : null,
+          )
+          .timeout(const Duration(seconds: 15));
       if (!mounted || generation != _generation) return;
       setState(() {
         _hosts = hosts;
-        _entries = entries?.entries ?? List<EntryData>.from(page!['entries']);
-        _revision = entries?.revision ?? 0;
-        _hasMore = entries?.hasMore ?? page!['has_more'] as bool;
-        _nextCursor = page?['next_cursor'] == null
-            ? null
-            : EntryData.from(page!['next_cursor']);
+        _entries = List<EntryData>.from(page['entries']);
+        _revision = page['revision'] as int? ?? 0;
+        _dataRevision = page['data_revision'] as int? ?? 0;
+        _hasMore = page['has_more'] as bool;
+        _updated = _checked = DateTime.now();
       });
-    } catch (_) {
+    } catch (error) {
       if (!mounted || generation != _generation) return;
-      setState(() {
-        _hosts = const LinkHosts(pr: [], jira: []);
-        _message = 'Could not load the queue. Check your connection or team access, then refresh.';
-      });
+      _readFailed(error);
+      if (background) rethrow;
     } finally {
       if (mounted && generation == _generation) setState(() => _busy = false);
     }
   }
 
   Future<void> _selectView(String view) async {
+    if (_interacting.isNotEmpty) {
+      setState(
+        () => _message =
+            'Finish or clear your comment draft before changing the list.',
+      );
+      return;
+    }
     _view = view;
-    _cursor = null;
-    _previousCursors.clear();
+    _offset = 0;
+    _refresh.reset();
     await _loadAndFocus(_viewFocus);
   }
 
   Future<void> _loadAndFocus(FocusNode node) async {
     final team = widget.teamId;
-    await _load();
+    await _load(paging: node == _pageFocus);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && team == widget.teamId) node.requestFocus();
     });
   }
 
   Future<void> _changeLifecycle(EntryData entry, String action) async {
+    if (_interacting.isNotEmpty) {
+      setState(
+        () => _message =
+            'Finish or clear your comment draft before changing the list.',
+      );
+      return;
+    }
     final team = widget.teamId;
     final generation = _generation;
     final label = switch (action) {
@@ -253,7 +347,7 @@ class _EntryQueueState extends State<EntryQueue> {
   }
 
   Future<void> _move(List<EntryData> group, int from, int to) async {
-    if (_busy || !widget.admin || from == to) return;
+    if (_busy || !widget.admin || from == to || _interacting.isNotEmpty) return;
     final generation = _generation;
     final team = widget.teamId;
     final id = group[from]['id'] as String;
@@ -308,7 +402,7 @@ class _EntryQueueState extends State<EntryQueue> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (widget.admin)
+            if (widget.admin && !_filtered)
               Wrap(
                 crossAxisAlignment: WrapCrossAlignment.center,
                 spacing: 8,
@@ -360,7 +454,7 @@ class _EntryQueueState extends State<EntryQueue> {
           ],
         ),
       );
-      if (!widget.admin) return card;
+      if (!widget.admin || _filtered) return card;
       return DragTarget<String>(
         key: ValueKey('drop-$id'),
         onWillAcceptWithDetails: (details) =>
@@ -401,6 +495,13 @@ class _EntryQueueState extends State<EntryQueue> {
   }
 
   Future<void> _edit([EntryData? entry]) async {
+    if (_interacting.isNotEmpty) {
+      setState(
+        () => _message =
+            'Finish or clear your comment draft before changing the list.',
+      );
+      return;
+    }
     final saved = await showDialog<bool>(
       context: context,
       builder: (_) => EntryEditor(
@@ -466,15 +567,145 @@ class _EntryQueueState extends State<EntryQueue> {
         ],
       ),
       const SizedBox(height: 12),
-      if (_view != 'active')
-        Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: Text(
-            _view == 'archived'
-                ? 'Read-only history · Archive reasons are manually reported, never provider-verified. Entries and activity are retained without automatic expiry.'
-                : 'Admin recovery · Deleted entries are separate from the archive. Records and minimal audit metadata are retained; no permanent purge is scheduled.',
+      ExpansionTile(
+        title: const Text('Search and filters'),
+        childrenPadding: const EdgeInsets.only(top: 8, bottom: 16),
+        children: [
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: [
+              SizedBox(
+                width: 280,
+                child: TextField(
+                  controller: _search,
+                  maxLength: 160,
+                  decoration: const InputDecoration(
+                    labelText: 'Search title or links',
+                    counterText: '',
+                  ),
+                  onSubmitted: (_) => _applyFilters(),
+                ),
+              ),
+              SizedBox(
+                width: 200,
+                child: DropdownButtonFormField<String>(
+                  isExpanded: true,
+                  initialValue: _priority ?? 'all',
+                  key: ValueKey('priority-$_priority'),
+                  decoration: const InputDecoration(
+                    labelText: 'Filter priority',
+                  ),
+                  items: [
+                    for (final p in [
+                      'all',
+                      'critical',
+                      'high',
+                      'medium',
+                      'low',
+                    ])
+                      DropdownMenuItem(
+                        value: p,
+                        child: Text(
+                          p == 'all'
+                              ? 'All priorities'
+                              : '${p[0].toUpperCase()}${p.substring(1)}',
+                        ),
+                      ),
+                  ],
+                  onChanged: _busy
+                      ? null
+                      : (v) =>
+                            setState(() => _priority = v == 'all' ? null : v),
+                ),
+              ),
+              SizedBox(
+                width: 200,
+                child: DropdownButtonFormField<String>(
+                  isExpanded: true,
+                  initialValue: _sprint == null ? 'all' : '$_sprint',
+                  key: ValueKey('sprint-$_sprint'),
+                  decoration: const InputDecoration(
+                    labelText: 'Filter sprint goal',
+                  ),
+                  items: const [
+                    DropdownMenuItem(value: 'all', child: Text('All work')),
+                    DropdownMenuItem(
+                      value: 'true',
+                      child: Text('Sprint goals'),
+                    ),
+                    DropdownMenuItem(value: 'false', child: Text('Other work')),
+                  ],
+                  onChanged: _busy
+                      ? null
+                      : (v) => setState(
+                          () => _sprint = v == 'all' ? null : v == 'true',
+                        ),
+                ),
+              ),
+              SizedBox(
+                width: 240,
+                child: DropdownButtonFormField<String>(
+                  initialValue: _submitter ?? 'all',
+                  key: ValueKey('submitter-$_submitter'),
+                  isExpanded: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Filter submitter',
+                  ),
+                  items: [
+                    const DropdownMenuItem(
+                      value: 'all',
+                      child: Text('All submitters'),
+                    ),
+                    for (final m in widget.members)
+                      DropdownMenuItem(
+                        value: m['user_id'] as String,
+                        child: Text(
+                          m['name'] as String? ?? 'Teammate',
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                  ],
+                  onChanged: _busy
+                      ? null
+                      : (v) =>
+                            setState(() => _submitter = v == 'all' ? null : v),
+                ),
+              ),
+              OutlinedButton(
+                onPressed: _busy ? null : _applyFilters,
+                child: const Text('Apply filters'),
+              ),
+              TextButton(
+                onPressed: _busy
+                    ? null
+                    : () {
+                        _search.clear();
+                        _priority = _submitter = null;
+                        _sprint = null;
+                        _applyFilters();
+                      },
+                child: const Text('Clear filters'),
+              ),
+            ],
           ),
+        ],
+      ),
+      const SizedBox(height: 12),
+      Text(
+        'Visible tabs check every 60 seconds. Last updated: ${_clock(_updated)} · Last checked: ${_clock(_checked)}',
+      ),
+      if (_filtered)
+        const Text(
+          'Filters apply across all pages. Clear filters to reorder entries.',
         ),
+      if (_view != 'active')
+        Text(
+          _view == 'archived'
+              ? 'Read-only history · Archive reasons are manually reported, never provider-verified. Entries and activity are retained without automatic expiry.'
+              : 'Admin recovery · Deleted entries are separate from the archive. Records and minimal audit metadata are retained; no permanent purge is scheduled.',
+        ),
+      const SizedBox(height: 12),
       Wrap(
         spacing: 12,
         runSpacing: 8,
@@ -514,7 +745,10 @@ class _EntryQueueState extends State<EntryQueue> {
           padding: EdgeInsets.symmetric(vertical: 16),
           child: Text('No entries in this view.'),
         ),
-      if (_view == 'active' && widget.admin && _entries.isNotEmpty)
+      if (_view == 'active' &&
+          widget.admin &&
+          !_filtered &&
+          _entries.isNotEmpty)
         const Padding(
           padding: EdgeInsets.only(top: 12),
           child: Text(
@@ -532,43 +766,56 @@ class _EntryQueueState extends State<EntryQueue> {
             padding: const EdgeInsets.only(top: 12),
             child: _card(context, entry),
           ),
-        const SizedBox(height: 16),
-        Wrap(
-          spacing: 12,
-          runSpacing: 8,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            Text('Page ${_previousCursors.length + 1} · Up to 25 entries'),
-            OutlinedButton(
-              focusNode: _previousCursors.isNotEmpty ? _pageFocus : null,
-              onPressed: _busy || _previousCursors.isEmpty
-                  ? null
-                  : () {
-                      _cursor = _previousCursors.removeLast();
-                      _loadAndFocus(_pageFocus);
-                    },
-              child: const Text('Previous page'),
-            ),
-            OutlinedButton(
-              focusNode: _previousCursors.isEmpty ? _pageFocus : null,
-              onPressed: _busy || !_hasMore
-                  ? null
-                  : () {
-                      _previousCursors.add(_cursor);
-                      _cursor = _nextCursor;
-                      _loadAndFocus(_pageFocus);
-                    },
-              child: const Text('Next page'),
-            ),
-          ],
-        ),
       ],
-      if (_view == 'active' && _hasMore)
-        const Text(
-          'Showing the first 100 active entries in queue order. Moves are limited to visible entries in each group.',
-        ),
+      const SizedBox(height: 16),
+      Wrap(
+        spacing: 12,
+        runSpacing: 8,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          Text('Page ${_offset ~/ 25 + 1} · Up to 25 entries'),
+          OutlinedButton(
+            focusNode: _offset > 0 ? _pageFocus : null,
+            onPressed: _busy || _offset == 0 || _interacting.isNotEmpty
+                ? null
+                : () {
+                    _offset -= 25;
+                    _loadAndFocus(_pageFocus);
+                  },
+            child: const Text('Previous page'),
+          ),
+          OutlinedButton(
+            focusNode: _offset == 0 ? _pageFocus : null,
+            onPressed: _busy || !_hasMore || _interacting.isNotEmpty
+                ? null
+                : () {
+                    _offset += 25;
+                    _loadAndFocus(_pageFocus);
+                  },
+            child: const Text('Next page'),
+          ),
+        ],
+      ),
     ],
   );
+  String _clock(DateTime? time) => time == null
+      ? 'not yet'
+      : '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}:${time.second.toString().padLeft(2, '0')} (local)';
+  void _applyFilters() {
+    if (_interacting.isNotEmpty) {
+      setState(
+        () => _message =
+            'Finish or clear your comment draft before changing the list.',
+      );
+      return;
+    }
+    _query = _search.text.trim();
+    _appliedPriority = _priority;
+    _appliedSprint = _sprint;
+    _appliedSubmitter = _submitter;
+    _selectView(_view);
+  }
+
   Widget _card(BuildContext context, EntryData entry) {
     final editable =
         widget.admin || entry['submitter_id'] == widget.repository.userId;
@@ -667,6 +914,17 @@ class _EntryQueueState extends State<EntryQueue> {
               readOnly: _view != 'active',
               members: widget.members,
               viewProfile: widget.viewProfile,
+              dataRevision: _dataRevision,
+              onInteraction: (value) {
+                final changed = value
+                    ? _interacting.add(entry['id'] as String)
+                    : _interacting.remove(entry['id']);
+                if (changed) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted) setState(() {});
+                  });
+                }
+              },
             ),
         ],
       ),

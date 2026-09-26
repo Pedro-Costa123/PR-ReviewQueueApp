@@ -2,6 +2,35 @@
 
 Checked: **2026-09-14** using official provider documentation. Prices below are provider-listed USD, before applicable tax or currency conversion. €0 means zero additional service charges on the selected free plans, not free domain renewal or a guarantee of permanent pricing.
 
+## P11 payload check (2026-09-26)
+
+Official [Supabase pricing](https://supabase.com/pricing) rechecked: Free still
+lists 5 GB egress and 500 MB database. No plan/provider/deployment assumption or
+account setting changed. This is local measurement, not hosted billed usage.
+
+The P11 integration fixture measured uncompressed JSON bodies: scalar revision
+**1 byte** at its small local revision (digit count grows), a 25-entry page
+**14,256 bytes**, and 25 comments plus 25 reviewers **8,527-8,528 bytes**. Entry
+links/titles and comment lengths change these sizes. HTTP headers, TLS, preflight,
+authentication, people/host reads, compression and rendering assets are excluded.
+No request bodies, JWTs or real company data were logged for measurements.
+
+At 20 users x 22 days x 8 visible hours, 60-second checks mean **211,200 revision
+requests/month**. Budgeting 1 KB per check including an illustrative overhead
+allowance gives **211.2 MB/month**. At 60 changed snapshots/person/day, measured
+queue bodies add **376.36 MB/month**; if each also loads one measured activity page,
+add **225.14 MB**, totaling about **813 MB** before the other traffic above.
+For comparison, a full measured queue body every minute would consume **3.01 GB**
+before activity and overhead. More open panels/tabs and maximum-length comments
+increase usage; hidden tabs stop polling and failures back off. A worst-case
+25-comment page alone can carry 50,000 Unicode characters, far above this fixture.
+
+These are extrapolations, not quotas or a zero-cost guarantee. Keep the existing
+60%/80% monitoring thresholds, mutation/email budgets and no-upgrade policy.
+Read traffic uses Data API RPCs, not new Edge calls or Realtime subscriptions.
+Retained records/audit still consume database space; P11 adds no purge. Measure
+actual provider egress/database growth during a separately authorized pilot.
+
 ## P06 recheck (2026-09-21)
 
 Before invitation provisioning, official [Supabase pricing](https://supabase.com/pricing)

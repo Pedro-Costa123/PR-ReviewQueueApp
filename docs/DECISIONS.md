@@ -176,6 +176,23 @@ Audit retains minimal transition metadata without URL/title/comment copies.
 There is no purge job/API, audit export, external integration, provider change or
 publication. Restricted disaster recovery remains P12. See [LIFECYCLE](LIFECYCLE.md).
 
+## D34 - P11 bounded refresh and usability (2026-09-26)
+
+The owner selected P11 only after local P10. Implemented defaults: literal
+case-insensitive title/link search, sprint/priority/submitter filters across all
+views, 25-entry/comment/reviewer pages and 60-second visible-tab revision checks.
+Unchanged revisions avoid full payloads. Changed data restarts browsing at page
+one; page requests require the observed data revision to reject drift. Bounded
+offsets trade simpler consistency for deeper-page scan cost in this small-team
+scope; no frozen snapshot or unlimited scale is claimed. Filtered moves are
+hidden to avoid moving across unseen matching/nonmatching rows.
+
+Drafts and dialogs defer automatic replacement. Network failures back off to five
+minutes; access/session/quota failures pause checks. No mutation retries, Realtime,
+new dependencies, auth/provider/billing changes or hosted operation. P09/P10
+confirmed rules remain intact. See [REFRESH](REFRESH.md) for contract and limits.
+P12 stays unstarted until separately selected; P05 admission remains revoked.
+
 ## Alternatives evaluated
 
 P02 package references: [go_router](https://pub.dev/packages/go_router), [shared_preferences](https://pub.dev/packages/shared_preferences), checked 2026-09-14. Resolved versions were verified against the installed Flutter 3.47.4 / Dart 3.13.3 SDK. Provider, pricing, and product proposals have not been promoted to confirmed requirements by implementing the shell.

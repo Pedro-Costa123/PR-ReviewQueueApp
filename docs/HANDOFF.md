@@ -19,16 +19,17 @@ The repository documents are the shared source of context. A planning conversati
 
 ```text
 Work in the existing PR-ReviewQueueApp repository. Read AGENTS.md and the
-project docs, especially STATUS.md, NEXT.md, QUEUE.md and LIFECYCLE.md. Implement only
-P11: refresh, filtering, responsive UI and accessibility. P06–P10 are verified locally, not deployed. P05's
-hosted trial admission remains revoked; preserve that state.
-Keep credentials in provider/secret storage, exact callbacks, explicit confirmation,
-disabled signup, server-side membership and email budgets. Preserve confirmed
-Low/Medium/High/Critical priorities and private enterprise host configuration.
-Preserve P09's confirmed no-self-review rule, plain-text comments and local signals.
-Preserve P10 owner/admin archive/restore, admin-only deleted recovery and retained
-records/audit without purge. Verify P11, update the docs and stop for review.
-Do not start P12 or publish.
+project docs, especially STATUS.md, NEXT.md, REFRESH.md, COSTS.md and SECURITY.md.
+Implement only P12: release checks and subdomain publishing preparation.
+P06-P11 are verified locally, not deployed. Preserve revoked P05 trial admission,
+provider/secret storage, exact callbacks, explicit confirmation, disabled signup,
+server membership and email budgets. Preserve private enterprise hosts,
+Low/Medium/High/Critical priorities, no self-review, plain-text local comments and
+signals, owner/admin archive/restore, admin-only deleted recovery, and retained
+records/audit without purge. Complete the concrete release preparation and checks,
+update docs and stop for review. Do not deploy, make the repository public,
+change DNS, send real mail or start P13 as incidental preparation.
+
 ```
 
 ## Prompt for any later item
@@ -52,8 +53,9 @@ The final reply should name the completed item, give the useful result/link, sum
 ## Current handoff
 
 P00-P04A are complete locally; P05 is complete for the controlled hosted trial.
-P10 is complete locally with automated and browser checks; ready for review.
-Stop at P10 review; P11 is next only when selected.
+P11 is implemented locally with automated and browser checks; see STATUS for evidence.
+Stop at P11 review; P12 is next only when selected.
+See [REFRESH](REFRESH.md) for polling, filters, pages, accessibility and limitations.
 See [QUEUE](QUEUE.md) for entry/ordering contracts, private hosts, preview and limitations.
 See [ACTIVITY](ACTIVITY.md) for comments/reviews, contracts and review boundary.
 See [LIFECYCLE](LIFECYCLE.md) for archive, admin recovery and confirmed no-purge retention.
@@ -74,7 +76,7 @@ and orders entries locally, with comments/reviews and archive/recovery; demo rou
 The owner confirmed no self-review, email visibility to active
 teammates, title/owner-admin entry edits and Low/Medium/High/Critical priorities.
 
-P09 is committed as `5326510`; P10 began from a clean worktree. P10 changes are
-uncommitted. No commit, push or app publication was performed during P10.
+P10 is committed as `c5700a4`; P11 began from a clean worktree. P11 changes are
+uncommitted. No commit, push or app publication was performed during P11.
 Inspect Git for earlier history rather than assuming another
 checkout or conversation has synchronized it.

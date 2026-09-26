@@ -1,6 +1,7 @@
 # Architecture
 
-Updated: 2026-09-26. P10 adds local archive/restore/admin recovery; see [LIFECYCLE](LIFECYCLE.md).
+Updated: 2026-09-26. P11 adds local revision checks, filters and bounded pages;
+see [REFRESH](REFRESH.md). P10 adds local archive/restore/admin recovery; see [LIFECYCLE](LIFECYCLE.md).
 P09 adds local comments/review signals; see [ACTIVITY](ACTIVITY.md).
 P08 adds locally verified ordering/reordering; P07 adds queue CRUD/ownership. See [QUEUE](QUEUE.md).
 P06 adds locally verified onboarding; see [ONBOARDING](ONBOARDING.md).
@@ -93,8 +94,8 @@ and team/entry lock order with post-lock membership/role checks. Authors may edi
 authors/admins may soft-delete comments with optimistic comment versions. Signals
 derive identity and reject self-review, including admins. A PR-link-change trigger
 clears signals in the same entry-edit transaction; stale review requests conflict
-on entry version. Activity advances only data revision. Details are bounded at 100
-comments/reviewers with full counts. Flutter renders plain text in expandable
+on entry version. Activity advances only data revision. P11 pages details at 25
+comments/reviewers with full counts and stable revision checks. Flutter renders plain text in expandable
 entry panels; no external posting or new service is involved.
 
 P06 now connects the signed-in root workspace to real teams and profiles.
@@ -200,6 +201,21 @@ endpoint with event idempotency, bounded timeouts and no automatic retry. See D2
 - Lifecycle changes retain comments/signals and private minimal audit events. Recovery returns deleted entries to their prior state; active recovery also appends and checks duplicates/current private hosts. Archive and deleted records have no automatic expiry or purge. Deleted activity stays hidden until parent recovery; separately deleted comments remain hidden.
 - All user-visible mutations also advance a team data revision. Background refresh checks this small value and reloads queue details only after a change, keeping transfer usage low. Comments/reviews do not unnecessarily invalidate a reorder's queue revision.
 - Mutation rate limits live in the same guarded server path as mutations, so raw Data API writes cannot bypass them. Pagination and bounded response fields constrain read size.
+
+## P11 refresh and bounded reads
+
+Three stable authenticated RPCs return small revisions and filtered 25-entry/
+activity pages. Live membership and deleted-view admin checks precede data and
+conflict responses. Rows/revisions share a statement snapshot. Revision-checked,
+bounded offsets detect page drift; old RPCs stay compatible. Private triggers
+also advance team data revisions for profile and host changes. No grants change
+for writes or private helpers. See [REFRESH](REFRESH.md) for limits.
+
+The Flutter queue owns one visible-tab timer, 60-second checks, capped network
+backoff and pauses on access/session/quota failures. Drafts and dialogs defer
+replacement. Unchanged revisions cause no full downloads; changed revisions
+refresh page one, people/roles/hosts and open activity. No Realtime, dependency,
+private browser cache, provider change or deployment is introduced.
 
 ## Environments and operations
 

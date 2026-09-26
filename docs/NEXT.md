@@ -2,10 +2,10 @@
 
 Updated: 2026-09-26. **Execute one selected item, verify it, update the docs, and stop.** Do not turn this file into a single full-app implementation prompt.
 
-The owner selected only P10 after completed local P09 and confirmed owner/admin
-archive/restore, admin-only deleted recovery and retention without purge. P10 is
-complete locally with automated and browser verification. Hosted P06–P10 rollout
-is unperformed. Stop at P10 review; do not execute P11 automatically.
+The owner selected only P11 after completed local P10. P11 refresh, filtering,
+pagination and accessibility are complete locally with automated and browser
+verification. Hosted P06-P11 rollout is unperformed. Stop at P11 review; do not execute
+P12 or publish automatically. P05 hosted admission remains revoked.
 
 `Complete` means the item's actual deliverable exists. `Ready` means the next item can start when requested. Later items remain planned, not authorized as a batch. Smaller UI/product defaults can be settled at the item that needs them.
 
@@ -23,8 +23,8 @@ is unperformed. Stop at P10 review; do not execute P11 automatically.
 | P08 | Sprint/priority ordering and admin reordering | Complete locally; ready for owner review | P07 |
 | P09 | Comments and per-user review signals | Complete locally; ready for owner review | P08 |
 | P10 | Archive, restore, and data lifecycle | Complete locally; ready for owner review | P09 |
-| P11 | Refresh, filtering, responsive UI, and accessibility | Ready; not started | P10 |
-| P12 | Release checks and subdomain publishing preparation | Planned | P11 |
+| P11 | Refresh, filtering, responsive UI, and accessibility | Complete locally; ready for owner review | P10 |
+| P12 | Release checks and subdomain publishing preparation | Ready; not started | P11 |
 | P13 | Deploy the prepared release and run a small pilot | Planned | P12 |
 
 ## P02 — Local Flutter app shell
@@ -179,6 +179,12 @@ No P11, hosted migration, real mail, provider change or publication. Stop for re
 **Deliver:** Search/filters, bounded pagination, small revision checks, visible-tab refresh, last-updated display, offline/session/quota errors, mobile layout, and accessibility improvements. Changes to relevant rows advance the data revision.
 
 **Acceptance:** Two sessions see saved changes within the stated refresh window; hidden tabs stop polling; unchanged queues do not download full snapshots; no retry storms; keyboard/screen-reader labels and both themes are usable. Measure payloads and extrapolate usage against COSTS.
+
+**Completed 2026-09-26:** Revision-only visible checks, server filters, 25-row queue
+and activity pages, draft/focus preservation, bounded retries and responsive,
+labelled controls. User-reported comment alignment and action spacing are fixed.
+Verification and measured costs are recorded in [STATUS](STATUS.md),
+[REFRESH](REFRESH.md) and [COSTS](COSTS.md). P12 remains unstarted; stop for review.
 
 ## P12 — Release checks and subdomain publishing preparation
 

@@ -18,10 +18,11 @@ configured privately; local tests use fictional exact hosts.
 The signed-in root workspace now lists, adds, edits and deletes real database
 entries for the selected team. Demo routes retain public fictional content.
 Submitter names open the existing teammate profile dialog. Explicit refresh and
-successful mutations reload the list. Failed refresh clears the old rows;
-switching teams or signing out discards the displayed queue. P08 shows the first
+successful mutations reload the list. Failed explicit refresh clears old rows; background network failure marks retained rows stale;
+switching teams or signing out discards the displayed queue. The original P08 endpoint shows the first
 100 active entries in server-defined queue order with a visible truncation notice.
-P11 still owns pagination/background refresh.
+P11 now replaces this UI limit with 25-entry filtered pages and visible-tab
+revision checks; see [REFRESH](REFRESH.md). The legacy RPC remains compatible.
 
 ## P08 ordering contract
 
@@ -152,7 +153,7 @@ npm run test:lifecycle
 npm run lint
 ```
 
-Reset is destructive to this project's local test database. It applies all eight
+Reset is destructive to this project's local test database. It applies all nine
 migrations without seeding hosts/users. `npm test` requires a clean database and
 loads fictional fixtures. Queue tests create isolated identities/teams, refuse
 linked/remote targets, and never send email. Run the security advisor with:

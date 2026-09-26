@@ -14,7 +14,7 @@ editing/deletion and retained drafts on conflicts. See [QUEUE](../docs/QUEUE.md)
 for its preview and checks. Email is visible only to self/shared active teammates
 through the server. P08 adds sprint/priority group headings, admin drag handles
 and keyboard move controls with revision conflict recovery. The server orders
-before the 100-entry display limit; manual refresh remains. No P06–P10 hosted
+before paging; P11 replaces the original 100-entry display limit. No P06-P11 hosted
 deployment has been performed. See QUEUE for ordering checks and preview fixtures.
 
 P09 adds expandable comments/review panels: plain text, author edits/deletion,
@@ -26,6 +26,13 @@ P10 adds Active queue / Archive / admin-only Deleted entries views, explicit
 lifecycle confirmation, manual reason/actor/time, read-only retained activity,
 25-entry cursor pages and restore/recovery conflict handling. Run
 `flutter test test/lifecycle_test.dart`; see [LIFECYCLE](../docs/LIFECYCLE.md).
+
+P11 adds literal title/link search, sprint/priority/submitter filters, 25-entry and
+activity pages, last-updated/checked status and a 60-second visible-tab scheduler.
+Unchanged revisions avoid full downloads; drafts defer replacement; access/session/
+quota failures pause refresh and network errors back off. Narrow layouts and
+keyboard/semantic checks use both themes. Run `flutter test test/refresh_test.dart`;
+see [REFRESH](../docs/REFRESH.md). No P12 or publication work is included.
 
 Verified SDK: **Flutter 3.47.4 stable / Dart 3.13.3** on Windows. Only the web platform is scaffolded. Application dependencies and the lockfile are pinned; no global backend tooling is required.
 

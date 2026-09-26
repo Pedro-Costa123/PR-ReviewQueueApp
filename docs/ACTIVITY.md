@@ -1,6 +1,6 @@
 # P09 comments and review signals
 
-Updated: 2026-09-23. Local implementation; no hosted migration or publication.
+Updated: 2026-09-26. Local implementation; no hosted migration or publication.
 P08 is complete and supplies P09's dependency. The owner confirmed **no self-review**:
 submitters, including admins, cannot set either signal on their own entries.
 They may still comment. No material P09 product question remains unanswered.
@@ -14,7 +14,7 @@ is no HTML/Markdown parser, link preview, backend URL fetch or external posting.
 Authors can edit/delete their own comments; team admins can remove another
 author's comment but cannot rewrite it. Entry ownership alone grants no moderation.
 Deletion hides the comment with actor/time/version; permanent retention, recovery
-and purge policy remain P10. Audit events contain identifiers/actions, no text copies.
+and purge policy are confirmed in P10: retain records without purge. Audit events contain identifiers/actions, no text copies.
 
 Each member has one current signal per entry: **Reviewed, looks good** (check),
 **Comments left on PR** (X), or unset. Setting replaces the person's current signal;
@@ -26,12 +26,12 @@ They can become outdated when code changes. Changing the canonical PR link clear
 all signals atomically; title/Jira/group edits preserve them. Comments are kept.
 
 Activity loads on demand, after a successful mutation and on explicit refresh.
-Details are bounded to the latest 100 comments and 100 reviewers, with visible
-truncation messages; counts include all current records. Comments appear newest
-first with stable ID ties. Pagination/background refresh remain P11. The panel
-does not persist private activity/drafts in browser storage. Queue refresh, team
-switch and sign-out discard its mounted state. Failed activity refresh clears old
-data; drafts survive a save failure while the panel stays mounted.
+P11 adds 25-comment and 25-reviewer pages, complete counts and revision-based
+refresh of open panels; see [REFRESH](REFRESH.md). The legacy 100-row RPC remains
+compatible. Comments appear newest first with stable ID ties. Private activity
+and drafts are not persisted in browser storage. Automatic queue replacement
+waits for comment drafts/saves; access denial clears private rows. Team switches
+and sign-out discard the mounted panel. Drafts survive save conflicts.
 
 ## Server contract
 

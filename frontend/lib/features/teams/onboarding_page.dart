@@ -25,6 +25,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   RecordData? _me;
   String? _teamId, _message;
   bool _busy = true;
+  bool _profileLoading = false;
   int _generation = 0;
   bool get _admin =>
       _teams.any((t) => t['id'] == _teamId && t['role'] == 'admin');
@@ -108,6 +109,27 @@ class _OnboardingPageState extends State<OnboardingPage> {
     if (mounted) await _load();
   }
 
+  Future<void> _refreshPeople() async {
+    final generation = _generation;
+    final team = _teamId;
+    if (team == null || _busy) return;
+    final teams = await widget.repository.teams();
+    final selected = teams.where((t) => t['id'] == team).firstOrNull;
+    final members = selected == null
+        ? <RecordData>[]
+        : await widget.repository.members(team);
+    final invites = selected?['role'] == 'admin'
+        ? await widget.repository.invites(team)
+        : <RecordData>[];
+    if (!mounted || generation != _generation || team != _teamId) return;
+    setState(() {
+      _teams = teams;
+      _members = members;
+      _invites = invites;
+      if (selected == null) _teamId = null;
+    });
+  }
+
   Future<void> _editProfile() async {
     final value = await showDialog<List<String>>(
       context: context,
@@ -162,11 +184,14 @@ class _OnboardingPageState extends State<OnboardingPage> {
   }
 
   Future<void> _viewProfile(String id) async {
-    setState(() => _busy = true);
+    if (_profileLoading) return;
+    _profileLoading = true;
+    final generation = _generation;
     try {
-      final profile = await widget.repository.profile(id);
-      if (!mounted) return;
-      setState(() => _busy = false);
+      final profile = await widget.repository
+          .profile(id)
+          .timeout(const Duration(seconds: 15));
+      if (!mounted || generation != _generation) return;
       await showDialog<void>(
         context: context,
         builder: (context) => AlertDialog(
@@ -198,7 +223,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
         setState(() => _message = 'This profile is no longer available.');
       }
     } finally {
-      if (mounted) setState(() => _busy = false);
+      _profileLoading = false;
     }
   }
 
@@ -308,6 +333,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
               admin: _admin,
               members: _members,
               viewProfile: _viewProfile,
+              refreshPeople: _refreshPeople,
             ),
           const SizedBox(height: 24),
           Text('Members', style: Theme.of(context).textTheme.titleLarge),

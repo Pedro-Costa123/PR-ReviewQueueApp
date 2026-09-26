@@ -1,7 +1,7 @@
 # Product
 
-Last updated: 2026-09-26. Owner: Pedro Costa. Stage: P10 archive/lifecycle
-complete locally, ready for review. P11 is next when selected. P05 controlled
+Last updated: 2026-09-26. Owner: Pedro Costa. Stage: P11 refresh/filtering/usability
+implemented locally; verification evidence is in STATUS. P12 remains unstarted. P05 controlled
 hosted authentication is complete; Inbox placement remains a release follow-up. The
 signed-in queue now persists data locally; demo routes remain fictional. The production subdomain is confirmed but
 not published. Demo content and preparatory schema fields remain proposals.
@@ -60,7 +60,7 @@ Confirmed rules above take precedence. Additional details below are proposed def
 - **Confirmed in P07:** only submitters and team admins edit an entry. P09 adds other members' comments/review signals; see [ACTIVITY](ACTIVITY.md).
 - An active entry with the same normalized PR URL in the same team is rejected as a duplicate. The same PR in another team is permitted. Re-adding an archived PR prompts restoration by an authorized user.
 - Suggested queue columns: order, title, sprint-goal badge, priority, submitter, review counts, age, and link/actions menu.
-- Include text search and filters for sprint goal, priority, and submitter. Keep paginated archive views separate from the active queue.
+- P11 implements literal title/link search and sprint-goal, priority and submitter filters across 25-entry pages. Archive and admin-only deleted views remain separate from the active queue.
 
 ### Comments and review signals
 
@@ -83,7 +83,7 @@ Confirmed rules above take precedence. Additional details below are proposed def
 
 - Responsive layout for desktop and mobile browsers, with desktop as the primary workflow.
 - Store theme preference locally; do not follow the OS light theme on the first visit.
-- Refresh after mutations and when returning to the tab. Proposed background refresh: at most once per 60 seconds while visible; stop on hidden tabs, authentication errors, or rate limits. Provide a manual refresh button and last-updated time.
+- Refresh after mutations and when returning to the tab. P11 background refresh: at most once per 60 seconds while visible; stop on hidden tabs, authentication errors, or rate limits. Manual refresh and last-updated/last-checked times are available. Drafts/dialogs defer replacement; network errors back off to five minutes. See [REFRESH](REFRESH.md).
 - Show explicit loading, empty, permission-denied, expired-session, offline, and save-conflict states. Do not claim a change saved before the API confirms it.
 - Links open with protections against opener/referrer leakage. Existing company sign-in/VPN requirements still apply when following them.
 

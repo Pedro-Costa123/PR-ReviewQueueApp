@@ -36,6 +36,12 @@ deleted recovery, cursor pages, retained audit/history and no permanent purge.
 Run `npm run test:lifecycle`; [LIFECYCLE](../docs/LIFECYCLE.md) covers the confirmed
 policy, API, browser fixtures, verification and review boundary. No hosted change.
 
+P11 adds the ninth local migration: `team_revision`, `queue_page`, `activity_page`,
+profile/host revision triggers and activity page indexes. Reads check live access;
+nonfirst pages require a matching revision. Run `npm run test:refresh` for denial,
+filter, pagination, invalidation and payload checks; see [REFRESH](../docs/REFRESH.md).
+The hosted project remains untouched with its three migrations and revoked trial.
+
 Follow [AUTH](../docs/AUTH.md) for the complete P04 setup/test/preview sequence.
 Use [HOSTED_AUTH](../docs/HOSTED_AUTH.md) for P05; never run local fixtures/tests
 against the hosted project or link this local test checkout to it.

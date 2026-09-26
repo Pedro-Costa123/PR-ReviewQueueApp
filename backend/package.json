@@ -18,6 +18,7 @@
     "test:queue": "node --test --test-concurrency=1 tests/queue.test.cjs",
     "test:ordering": "node --test --test-concurrency=1 tests/ordering.test.cjs",
     "test:activity": "node --test --test-concurrency=1 tests/activity.test.cjs",
+    "test:refresh": "node --test --test-concurrency=1 tests/refresh.test.cjs",
     "test:lifecycle": "node --test --test-concurrency=1 tests/lifecycle.test.cjs"
   },
   "devDependencies": { "supabase": "2.117.0" }

@@ -20,6 +20,45 @@ EntryData row({String owner = 'self'}) => {
 
 class TestEntries implements EntryRepository {
   @override
+  Future<int> dataRevision(String teamId) async => 0;
+  @override
+  Future<EntryData> page(
+    String teamId, {
+    String view = 'active',
+    String search = '',
+    String? priority,
+    bool? sprint,
+    String? submitter,
+    int offset = 0,
+    int? revision,
+  }) async {
+    if (view != 'active') {
+      return lifecyclePage(
+        teamId,
+        deleted: view == 'deleted',
+        cursor: offset == 0
+            ? null
+            : {'time': '2020-01-01T00:00:00Z', 'id': 'entry'},
+      );
+    }
+    final result = await list(teamId);
+    return {
+      'entries': result.entries,
+      'revision': result.revision,
+      'data_revision': 0,
+      'has_more': result.hasMore,
+    };
+  }
+
+  @override
+  Future<EntryData> activityPage(
+    String teamId,
+    String entryId, {
+    int commentsOffset = 0,
+    int reviewsOffset = 0,
+    int? revision,
+  }) => activity(teamId, entryId);
+  @override
   Future<EntryData> lifecyclePage(
     String teamId, {
     bool deleted = false,
@@ -301,7 +340,7 @@ void main() {
       await tester.tap(find.text('Refresh queue'));
       await tester.pumpAndSettle();
       expect(find.text('Durable PR'), findsNothing);
-      expect(find.textContaining('Could not load the queue'), findsOneWidget);
+      expect(find.textContaining('Could not refresh'), findsOneWidget);
       repo.offline = false;
       await showQueue(tester, repo, team: 'orbit');
       expect(find.text('Durable PR'), findsNothing);

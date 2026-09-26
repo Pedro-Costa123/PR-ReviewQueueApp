@@ -5,8 +5,9 @@ Updated: 2026-09-26.
 ## Current implementation
 
 P00-P04A are complete locally. P05 is complete for the controlled hosted trial.
-**P10 is complete locally, ready for owner review.** The signed-in
-Flutter queue now includes manual archive/restore and admin-only deleted recovery,
+**P11 is complete locally, ready for owner review.** The signed-in
+Flutter queue now includes visible-tab refresh, filtering and bounded pages,
+alongside manual archive/restore and admin-only deleted recovery,
 alongside plain-text comments and per-user review signals,
 alongside P08 ordering/reordering and P07 edits/deletion; separate demo routes remain
 fictional and read-only. The selected Supabase Free project still has the
@@ -16,6 +17,7 @@ deployed. See [HOSTED_AUTH](HOSTED_AUTH.md) for the trial and [AUTH](AUTH.md) fo
 local development. [ONBOARDING](ONBOARDING.md) covers P06; [QUEUE](QUEUE.md) covers P07/P08;
 [ACTIVITY](ACTIVITY.md) covers P09.
 [LIFECYCLE](LIFECYCLE.md) covers P10 and its confirmed retained-data/no-purge policy.
+[REFRESH](REFRESH.md) covers P11 refresh, filters, pagination and accessibility.
 
 - P02 shell: desktop/narrow navigation, Atlas/Orbit fixtures, profile/archive
   placeholders, dark default and saved theme preference.
@@ -37,11 +39,82 @@ local development. [ONBOARDING](ONBOARDING.md) covers P06; [QUEUE](QUEUE.md) cov
   preview denial tests, and verified replacement runbook commands.
 
 Not complete: reliable Inbox placement and production-hostname acceptance,
-hosted P06–P10 deployment,
+hosted P06-P11 deployment,
 CI, independent Pages release or deployment. Authentication alone grants no team;
 the guarded P06 claim transaction creates invited memberships.
 
-## P10 implementation and evidence on 2026-09-26
+## P11 implementation and evidence on 2026-09-26
+
+- P10 dependency is committed as `c5700a4`; P11 began with a clean worktree.
+  The owner selected only P11. No material product question blocks this scope.
+- Added ninth migration with authenticated `team_revision`, `queue_page` and
+  `activity_page`, live membership/admin checks, 25-row bounds, literal search,
+  sprint/priority/submitter filters and revision-checked pages. Profile/host changes
+  now advance data revision too. No direct-write/private helper grant expanded.
+- Flutter now checks revisions every 60 seconds while visible, skips unchanged
+  payloads, stops hidden-tab polling, handles return/reload, preserves focus/drafts,
+  pages comments/reviewers independently, shows last-updated/checked status and
+  handles offline/access/session/quota errors with capped backoff or pause.
+  Filter/page controls wrap; 320px/200% text semantic/layout checks cover both themes.
+- Clean `npm run reset` applied all nine migrations without fixtures/hosts.
+  `npm test`: **19 passed**. Combined queue/ordering/activity/lifecycle/refresh
+  run: **44 passed** (11 + 8 + 9 + 9 + 7). P11 tests cover direct anonymous,
+  foreign/revoked/forged denials, parent/team isolation, 103-entry traversal,
+  literal combined filters, invalid bounds, stable ties, second-session revision
+  changes, stale-page conflicts, profile/host changes and lifecycle separation.
+- `npm run lint`: no schema errors. Local security advisor: **seven informational**
+  intentional private RLS/no-policy findings; **zero warnings/errors**.
+- **56 Flutter tests passed**, including six P11 tests for unchanged payloads,
+  changed rows/focus, hidden tabs/return/single flight, backoff/access/quota pauses,
+  keyboard search/paging, stale-page recovery, draft/dialog deferral and semantics.
+  After final draft/profile fixes, the **36 relevant widget tests passed again**.
+  After the owner-reported comment alignment and queue/composer spacing fixes,
+  the **19 activity/refresh/lifecycle widget tests passed again**. Comment author,
+  body and action labels share a left edge, with 48px minimum button targets;
+  12px separates helper/status text from composer and queue action rows.
+  Expanded filter controls have 16px bottom padding above the divider/status.
+  The six P11 tests passed again after that final filter spacing adjustment.
+  Analysis has no issues. Configured root release build and Wasm dry run passed;
+  the existing unused Cupertino font warning remains.
+- Browser: real captured-mail login, clean callback and explicit Enter confirmation,
+  fictional profile and member/admin teams; keyboard active/comment pagination,
+  search reaching a beyond-first-page entry, no-self-review explanation, saved
+  second-client changes on tab return, retained draft with Updates available,
+  offline feedback/manual recovery, desktop and 390 x 844 light/dark inspection.
+  Network observation showed revision-only unchanged checks and zero requests
+  during the hidden interval. Browser focus emulation was disabled for that check.
+- Measured uncompressed JSON bodies: **14,256 B** per 25-entry page, **8,527-8,528 B**
+  per 25-comment/25-reviewer page, **1 B** for the small fixture revision. COSTS
+  separates measurements from headers/transport and models roughly **813 MB/month**
+  for conservative revision overhead plus 60 changed queue/activity reads per
+  person/day at 20 people; other traffic and maximum text sizes remain additional.
+- Tool/test corrections: changelog Markdown needed curl after MIME rejection;
+  CLI telemetry, Node workers and fixture helpers needed sandbox escalation.
+  Fixed dropdown overflow, exact RPC allowlist, missing fixture reviewer memberships,
+  test semantic-handle cleanup, lifecycle test cursor adapter and timeout-aware
+  polling expectations. A combined build was interrupted and rerun standalone.
+  Browser draft clearing used keyboard input after empty locator fill did not
+  update Flutter's controller. No auth or authorization workaround was introduced.
+- Documentation checks covered 19 Markdown files: balanced fences, valid relative
+  links and no trailing whitespace. Credential-pattern scanning of tracked/new
+  non-ignored text found no matches. JavaScript syntax and `git diff --check` passed.
+  Dependency lockfiles and the license are unchanged.
+- Final configured build and disconnected root release build/Wasm dry runs passed.
+  Browser inspection confirmed the final comment/filter/queue spacing in desktop
+  and narrow light/dark views. Signed out, verified the disconnected artifact has
+  no email field, reset temporary browser emulation, and stopped preview/functions
+  and the local Supabase stack while preserving fictional database records.
+
+Limits: drafts/dialogs defer automatic replacement beyond the normal 60 seconds
+plus request latency. Page revisions conservatively restart after any team change;
+offsets are bounded at 100,000 and deeper scans cost more. This is not a frozen
+multi-request snapshot, cross-page reorder tool or full screen-reader certification.
+Existing onboarding roster/invitation lists retain their 100-row limits. No new
+private persistent cache, Realtime, dependency, service, email or hosted operation.
+P09 no-self-review/plain text/local signals and P10 retained records/no purge hold.
+P05 admission remains revoked. P12 is next only when selected; stop for P11 review.
+
+## P10 implementation and evidence on 2026-09-26 (historical)
 
 - P09 dependency is committed as `5326510`; P10 began with a clean worktree.
   Owner confirmed submitter/team-admin archive/restore, team-admin deleted
@@ -605,8 +678,8 @@ Workspace: C:\Users\pedro\Projects\PR-ReviewQueueApp. Branch: main. P03 is
 committed as c2b44c8 and P04 as 1ff6c13. P04A began from a clean worktree at
 bd8e62c (the hosting-decision documentation commit) and was committed as 99c68f3.
 P05 is committed as 5ad5235 and P06 as 4c96d27. P07 is committed as 9fa4565
-and P08 as 61fe31e. P09 is committed as 5326510. P10 began from a clean worktree
-and remains uncommitted. No fetch, push or app publication was performed during P10.
+and P08 as 61fe31e. P09 is committed as 5326510 and P10 as c5700a4. P11 began from a clean worktree
+and remains uncommitted. No fetch, push or app publication was performed during P11.
 
 Tooling remains Flutter 3.47.4/Dart 3.13.3, Node 26.5.0/npm 11.17.0, Supabase CLI
 2.117.0 and Postgres 17.6.1.167. P04 also exercised local Edge Runtime 1.74.3
@@ -655,6 +728,6 @@ No backend tests were applicable during P02; P03 results are above. No productio
 
 ## Next
 
-Review **P10: archive, restore and data lifecycle**.
-The next item is **P11: usability and efficient refresh**, only when selected. Keep trial admission revoked;
+Review **P11: refresh, filtering, responsive UI and accessibility**.
+The next item is **P12: release checks and subdomain publishing preparation**, only when selected. Keep trial admission revoked;
 carry the documented delivery and production callback checks into P12/P13.

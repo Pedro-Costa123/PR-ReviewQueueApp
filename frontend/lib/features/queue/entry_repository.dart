@@ -51,6 +51,24 @@ String? normalizeEnterpriseLink(String value, List<String> hosts, String kind) {
 }
 
 abstract interface class EntryRepository {
+  Future<int> dataRevision(String teamId);
+  Future<EntryData> page(
+    String teamId, {
+    String view = 'active',
+    String search = '',
+    String? priority,
+    bool? sprint,
+    String? submitter,
+    int offset = 0,
+    int? revision,
+  });
+  Future<EntryData> activityPage(
+    String teamId,
+    String entryId, {
+    int commentsOffset = 0,
+    int reviewsOffset = 0,
+    int? revision,
+  });
   String get userId;
   Future<LinkHosts> hosts(String teamId);
   Future<QueueSnapshot> list(String teamId);
@@ -93,6 +111,53 @@ abstract interface class EntryRepository {
 class SupabaseEntryRepository implements EntryRepository {
   SupabaseEntryRepository(this.client);
   final SupabaseClient client;
+  @override
+  Future<int> dataRevision(String teamId) async =>
+      await client.rpc('team_revision', params: {'p_team_id': teamId}) as int;
+  @override
+  Future<EntryData> page(
+    String teamId, {
+    String view = 'active',
+    String search = '',
+    String? priority,
+    bool? sprint,
+    String? submitter,
+    int offset = 0,
+    int? revision,
+  }) async => EntryData.from(
+    await client.rpc(
+      'queue_page',
+      params: {
+        'p_team_id': teamId,
+        'p_view': view,
+        'p_search': search,
+        'p_priority': priority,
+        'p_sprint': sprint,
+        'p_submitter': submitter,
+        'p_offset': offset,
+        'p_revision': revision,
+      },
+    ),
+  );
+  @override
+  Future<EntryData> activityPage(
+    String teamId,
+    String entryId, {
+    int commentsOffset = 0,
+    int reviewsOffset = 0,
+    int? revision,
+  }) async => EntryData.from(
+    await client.rpc(
+      'activity_page',
+      params: {
+        'p_team_id': teamId,
+        'p_entry_id': entryId,
+        'p_comments_offset': commentsOffset,
+        'p_reviews_offset': reviewsOffset,
+        'p_revision': revision,
+      },
+    ),
+  );
   @override
   Future<EntryData> lifecyclePage(
     String teamId, {

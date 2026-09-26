@@ -246,7 +246,7 @@ void main() {
       repo.offline = true;
       await tap(tester, 'Refresh list');
       expect(find.text('Durable PR'), findsNothing);
-      expect(find.textContaining('Could not load'), findsOneWidget);
+      expect(find.textContaining('Could not refresh'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );

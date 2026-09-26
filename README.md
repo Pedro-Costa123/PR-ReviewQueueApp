@@ -2,9 +2,9 @@
 
 A private team queue that keeps pull requests visible, makes sprint priorities clear, and records review feedback and archived work.
 
-**Current stage: P10 archive and lifecycle complete locally; ready for review.**
+**Current stage: P11 refresh, filters and accessibility implemented locally.**
 P05's controlled hosted trial is complete. Inbox placement remains a release
-follow-up; P11 is next when selected. P06–P10 have not been deployed to the hosted
+follow-up; P12 is next only when selected. P06-P11 have not been deployed to the hosted
 project. The signed-in queue persists entries locally; demo routes remain fictional. No
 production app is published. Work proceeds one backlog item at a time.
 
@@ -25,6 +25,7 @@ production app is published. Work proceeds one backlog item at a time.
 | [Queue entries](docs/QUEUE.md) | P07/P08 entry/ordering contracts, private enterprise hosts and local verification |
 | [Comments and review signals](docs/ACTIVITY.md) | P09 permissions, counts, PR-link resets and verification |
 | [Archive and lifecycle](docs/LIFECYCLE.md) | P10 archive/restore, admin recovery, retention policy and verification |
+| [Refresh and usability](docs/REFRESH.md) | P11 revision checks, filters, pages, error recovery and accessibility |
 | [Handoff](docs/HANDOFF.md) | How to continue the project across planning and implementation tasks |
 
 ## Proposed stack
@@ -56,8 +57,8 @@ LICENSE            Existing MIT license
 ## Start the next step
 
 Read [Status](docs/STATUS.md), then [Next](docs/NEXT.md). Review the completed local
-**P10 archive/lifecycle workflow** using [its runbook](docs/LIFECYCLE.md). P11 is ready
-when selected. The [local authentication runbook](docs/AUTH.md) and
+**P11 refresh/filtering workflow** using [its runbook](docs/REFRESH.md). P12 is next
+only when separately selected. The [local authentication runbook](docs/AUTH.md) and
 [frontend demo commands](frontend/README.md) remain available.
 
 Do not run the entire backlog in one task. Complete the selected item, verify its acceptance criteria, update the docs, and stop at its review boundary.

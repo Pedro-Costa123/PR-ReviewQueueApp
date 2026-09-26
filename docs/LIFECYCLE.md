@@ -62,8 +62,9 @@ matching indexes and a two-field exclusive cursor. A 26th row detects the next
 page; the UI keeps only the current 25 rows, with Previous/Next and explicit
 Refresh returning to page one. Timestamp ties do not skip entries. Concurrent
 lifecycle changes can move rows between views; this is not a frozen multi-request
-snapshot. Refresh restarts browsing. P11 active pagination/background refresh
-remains unimplemented.
+snapshot. Refresh restarts browsing. P11 now uses revision-checked filtered
+25-entry pages for every view and visible-tab refresh; see [REFRESH](REFRESH.md).
+The original lifecycle cursor RPC remains compatible.
 
 Private audit events retain team, actor, action, target, time and minimal metadata
 (version, previous/result state, archive reason), without title, URL or comment
@@ -105,7 +106,7 @@ npm run lint
 node node_modules/supabase/dist/supabase.js db advisors --local --type security --level info --fail-on warn
 ```
 
-Reset destroys only this checkout's local fictional database and applies eight
+Reset destroys only this checkout's local fictional database and applies nine
 migrations without fixtures/hosts. Test runners refuse linked/remote targets.
 Start `npm run functions` separately, then prepare the local provider preview:
 

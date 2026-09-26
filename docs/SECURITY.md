@@ -1,6 +1,6 @@
 # Security design and launch evidence
 
-Last updated: 2026-09-26. P10 adds local lifecycle controls. P09 comments/review signals, P08 ordering, P07 queue mutations and P06 onboarding are verified locally. P03/P04/P04A local controls are verified. P05 controlled
+Last updated: 2026-09-26. P11 adds local bounded read/refresh endpoints. P10 adds local lifecycle controls. P09 comments/review signals, P08 ordering, P07 queue mutations and P06 onboarding are verified locally. P03/P04/P04A local controls are verified. P05 controlled
 hosted login, mail, CAPTCHA replay denial and passive-scanner checks passed.
 [AUTH](AUTH.md) and [HOSTED_AUTH](HOSTED_AUTH.md) distinguish implementation,
 provider configuration and observed behavior. P10 lifecycle is local only; launch controls remain planned.
@@ -11,6 +11,22 @@ a real local Auth client and sessionStorage adapter, with SDK cross-tab synchron
 There is no fake signed-in identity, role switch or company URL. Browser demo
 navigation is not an authorization test. SQL-role/Data API denial tests run against
 local Supabase. The release build remains a local preview, not a production auth path.
+
+## P11 implemented evidence and limits
+
+`team_revision`, `queue_page` and `activity_page` require live membership on every
+request; deleted pages require live admin and deleted activity is denied. Revision
+conflicts are disclosed only after authorization. Filtering and caller-controlled
+UUIDs/offsets grant no authority. Seven integration tests cover anonymous/foreign/
+revoked/forged denials, cross-team parents, pagination ties/bounds, combined filters,
+revision drift, profile/host invalidation and lifecycle isolation. The exact RPC
+allowlist and all 19 authorization tests pass. Private triggers/direct writes stay
+closed. SQL lint passes; advisor: seven intentional info findings, zero warnings/errors.
+
+Refresh keeps no private persistent cache, ignores late results after team changes,
+stops hidden-tab polling and clears queue data on denied/expired reads. Paused
+refresh never changes backend authorization. Auth callbacks, signup, credentials,
+mail controls and hosted admission are unchanged. See [REFRESH](REFRESH.md).
 
 ## P10 implemented evidence and limits
 
