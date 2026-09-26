@@ -49,7 +49,7 @@ screens. Filters have explicit labels, named groups are headings, status/errors
 use live regions, and review signals keep their full text labels. Search submits
 with Enter; dialogs retain Escape/explicit confirmation; focus returns to useful
 page/move controls. Automated semantic/layout checks include 320px and 200% text
-in light/dark themes. Browser checks and practical limits are in [STATUS](STATUS.md).
+in light/dark themes. Browser checks and practical limits are in `STATUS.md` (local operator notes).
 Queue and comment action rows have 12px separation from the text above. Comment
 author, body and action labels align, retaining 48px minimum button targets.
 Expanded filters have 16px bottom padding above the divider/status area.
@@ -125,7 +125,7 @@ archives/deleted history. Neither is imported into the application or migrations
 Check filters, page navigation, draft retention and two-session changes; inspect
 hidden-tab network silence, unchanged revision-only reads, both themes and
 keyboard controls. Sign out, rebuild without environment defines, stop preview/
-functions and `npm run stop`. Payload measurements and estimates are in [COSTS](COSTS.md).
+functions and `npm run stop`. Payload measurements and estimates are in `COSTS.md` (local operator notes).
 
 ## Sources and boundary
 
@@ -137,7 +137,7 @@ and [Supabase pricing](https://supabase.com/pricing). P11 introduces none of the
 extensions/custom operators affected by the recent database notice. Dependencies
 remain pinned; provider, auth, DNS, billing and publication settings are unchanged.
 
-P11 is complete locally. P11A subsequently prepares hosting; see [HOSTING](HOSTING.md).
+P11 is complete locally. P11A subsequently prepares hosting; see `HOSTING.md` (local operator notes).
 P12 subsequently completed local release preparation; see [RELEASE](RELEASE.md).
 Stop for P12 review. Hosted P06–P12,
 real enterprise hosts, reliable Inbox placement, final HTTPS callback and publishing

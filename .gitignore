@@ -13,8 +13,6 @@ Desktop.ini
 .env.*
 !.env.example
 !.env.*.example
-.env.production.example
-.env.production.json.example
 .dev.vars
 .dev.vars.*
 !.dev.vars.example
@@ -63,4 +61,13 @@ tmp/
 test-results/
 playwright-report/
 
-# Track application lockfiles, source, example configs, and project docs.
+# Local operator records (keep on disk, outside future Git snapshots)
+/docs/PILOT.md
+/docs/HOSTED_AUTH.md
+/docs/HOSTING.md
+/docs/COSTS.md
+/docs/STATUS.md
+/docs/DECISIONS.md
+/docs/PUBLICATION_REVIEW.md
+
+# Track application lockfiles, source, sanitized examples, and public guides.

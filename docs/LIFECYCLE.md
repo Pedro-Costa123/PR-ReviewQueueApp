@@ -1,7 +1,7 @@
 # P10 archive, recovery and retention
 
 Updated: 2026-09-26. Local implementation only. No hosted migration or publication.
-P09 is the completed dependency. See [STATUS](STATUS.md) for verification evidence.
+P09 is the completed dependency. See `STATUS.md` (local operator notes) for verification evidence.
 
 ## Confirmed policy
 
@@ -84,7 +84,7 @@ refresh and inspection before a deliberate retry; there is no automatic retry.
 Soft-delete recovery is not backup recovery: it cannot repair database loss or
 operator hard deletion. Restricted backups/exports, Auth/config/secret recovery
 and a tested disaster restore remain P12 before pilot. No exports belong in this
-repository. Monitor storage using existing [COSTS](COSTS.md) thresholds; retention
+repository. Monitor storage using existing `COSTS.md` (local operator notes) thresholds; retention
 does not authorize a paid upgrade. A future purge needs a separately selected
 item, explicit retention/cutoff and recovery policy, audit treatment, restricted
 backup/restore evidence, a reviewable dry run, and explicit destructive approval.

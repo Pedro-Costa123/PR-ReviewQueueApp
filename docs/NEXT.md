@@ -2,13 +2,22 @@
 
 Updated: 2026-09-26. **Execute one selected item, verify it, update the docs, and stop.** Do not turn this file into a single full-app implementation prompt.
 
-The owner selected only P13 after P12 review. The exact
+The owner selected PUB02 publication cleanup after the PUB01 review. Scope:
+restore sanitized production templates, refresh the READMEs, and retain operator
+records only locally. Deployment-specific origin/sender checks and existing Git
+history stay unchanged. PUB02 is complete: 138 publication files, 16 Markdown
+files and all 91 relative links passed source/publication-set checks. All seven
+local records remain on disk and ignored. No application change, push or visibility
+change is included. Next: owner review of publication cleanup; P13's remaining
+human pilot gates are unchanged.
+
+The product backlog remains at P13 after P12 review. The exact
 `https://pr-review-queue.pages.dev/` name is now allocated. P06-P12 migrations and
 reviewed Edge functions and production frontend are deployed; pilot gates remain
-in progress. [PILOT](PILOT.md) distinguishes live checks from pending human feedback.
+in progress. `PILOT.md` (local operator notes) distinguishes live checks from pending human feedback.
 P05 admission is retired and remains revoked. Owner waived off-device backup for
 this disposable pilot and selected fictional enterprise hosts (D37). Finish only
-P13 and stop at its review boundary. See [STATUS](STATUS.md) and [RELEASE](RELEASE.md).
+P13 and stop at its review boundary. See `STATUS.md` (local operator notes) and [RELEASE](RELEASE.md).
 
 `Complete` means the item's actual deliverable exists. `Ready` means the next item can start when requested. Later items remain planned, not authorized as a batch. Smaller UI/product defaults can be settled at the item that needs them.
 
@@ -30,6 +39,8 @@ P13 and stop at its review boundary. See [STATUS](STATUS.md) and [RELEASE](RELEA
 | P11A | Prepare Cloudflare Pages hosting at a free pages.dev address | Complete locally; ready for owner review | P11 |
 | P12 | Release checks and publishing preparation | Complete locally; ready for owner review | P11A |
 | P13 | Deploy the prepared release and run a small pilot | Deployment review checkpoint; pilot started, multi-day feedback and rate-limited delivery pending | P12 |
+| PUB01 | Public-source repository/history audit | Complete; findings ready for owner review | Current P13 checkpoint |
+| PUB02 | Production examples, public READMEs and local-only operator records | Complete; ready for owner review, no visibility change | PUB01 |
 
 ## P02 — Local Flutter app shell
 
@@ -39,7 +50,7 @@ P13 and stop at its review boundary. See [STATUS](STATUS.md) and [RELEASE](RELEA
 
 **Boundary:** No Supabase project, real login, backend schema, provider signup, production deployment, or full feature implementation. Review the shell before P03.
 
-**Completed 2026-09-14:** Web-only shell, read-only fictional Atlas/Orbit queues, sign-in/profile/archive placeholders, hash navigation, dark default and persisted light preference. Nine Flutter tests, analysis, release build, and browser/keyboard checks passed. Details and verified commands are in [STATUS](STATUS.md) and the [frontend README](../frontend/README.md). P03 was subsequently selected by the owner on 2026-09-16.
+**Completed 2026-09-14:** Web-only shell, read-only fictional Atlas/Orbit queues, sign-in/profile/archive placeholders, hash navigation, dark default and persisted light preference. Nine Flutter tests, analysis, release build, and browser/keyboard checks passed. Details and verified commands are in `STATUS.md` (local operator notes) and the [frontend README](../frontend/README.md). P03 was subsequently selected by the owner on 2026-09-16.
 
 ## P03 — Local Supabase schema and team authorization
 
@@ -49,7 +60,7 @@ P13 and stop at its review boundary. See [STATUS](STATUS.md) and [RELEASE](RELEA
 
 **Boundary:** Identity comes from local test fixtures; no real emails. Keep behavioral functions limited to what this authorization foundation needs.
 
-**Completed 2026-09-16:** Pinned local Supabase CLI, Docker startup with binding diagnostics, schema migrations, explicit grants/RLS, guarded existing-member access changes, immutable identities, last-admin serialization, private operational tables, test-only fixtures, and operator bootstrap. Clean local reset, 19 SQL-role/Data API/concurrency tests, and SQL lint passed. Setup and test commands are in the [backend README](../backend/README.md); local network-binding limitations are recorded in [STATUS](STATUS.md). No frontend integration, real email, hosted setup, or queue behavior was added. P04 was subsequently selected on 2026-09-17.
+**Completed 2026-09-16:** Pinned local Supabase CLI, Docker startup with binding diagnostics, schema migrations, explicit grants/RLS, guarded existing-member access changes, immutable identities, last-admin serialization, private operational tables, test-only fixtures, and operator bootstrap. Clean local reset, 19 SQL-role/Data API/concurrency tests, and SQL lint passed. Setup and test commands are in the [backend README](../backend/README.md); local network-binding limitations are recorded in `STATUS.md` (local operator notes). No frontend integration, real email, hosted setup, or queue behavior was added. P04 was subsequently selected on 2026-09-17.
 
 ## P04 — Magic-link flow and guarded email delivery locally
 
@@ -59,7 +70,7 @@ P13 and stop at its review boundary. See [STATUS](STATUS.md) and [RELEASE](RELEA
 
 **Boundary:** No invented auth tokens or test identity in hosted builds. No paid service or production signup/deployment.
 
-**Completed 2026-09-17:** Maintained Flutter client, explicit token-hash confirmation at the entry document, sessionStorage adapter, signed local Edge hook, atomic service-only quotas, duplicate protection, fictional Mailpit delivery, and real Auth endpoint checks. Feasibility corrected first login to confirmation resend while retaining disabled public signup. CAPTCHA integration design requires a fresh challenge for the fallback. SDK cross-tab broadcasts are documented. See [AUTH](AUTH.md) and [STATUS](STATUS.md). No hosted configuration or real mail was added.
+**Completed 2026-09-17:** Maintained Flutter client, explicit token-hash confirmation at the entry document, sessionStorage adapter, signed local Edge hook, atomic service-only quotas, duplicate protection, fictional Mailpit delivery, and real Auth endpoint checks. Feasibility corrected first login to confirmation resend while retaining disabled public signup. CAPTCHA integration design requires a fresh challenge for the fallback. SDK cross-tab broadcasts are documented. See [AUTH](AUTH.md) and `STATUS.md` (local operator notes). No hosted configuration or real mail was added.
 
 ## P04A — Local root-path and callback migration
 
@@ -96,8 +107,8 @@ deliveries, first/confirmed-user login, expiry/replay, reload/sign-out, passive
 scanner rendering, live CAPTCHA reuse rejection and revoked-admission denial.
 Local tests cover broader authorization, signatures, budgets and concurrency.
 The sending trial is closed: zero active admissions/sessions/memberships; no extra
-mail from denial tests. Evidence and limits are in [HOSTED_AUTH](HOSTED_AUTH.md)
-and [STATUS](STATUS.md). All three emails reached Junk despite SPF/DMARC pass;
+mail from denial tests. Evidence and limits are in `HOSTED_AUTH.md` (local operator notes)
+and `STATUS.md` (local operator notes). All three emails reached Junk despite SPF/DMARC pass;
 investigate classification and retest the final HTTPS callback before rollout.
 P06 is ready when selected. No subsequent item is automatically authorized.
 
@@ -116,7 +127,7 @@ disclosure (owner confirmed). Clean reset, 19 authorization tests, 28 auth tests
 14 onboarding tests, 25 Flutter tests, 15 JavaScript tests, analysis, SQL lint,
 security advisor and root release build passed with documented advisory/font
 limitations. Browser/keyboard checks exercised local provider links and the
-connected workflow. See [ONBOARDING](ONBOARDING.md) and [STATUS](STATUS.md).
+connected workflow. See [ONBOARDING](ONBOARDING.md) and `STATUS.md` (local operator notes).
 No hosted deployment or real-company invitations. Stop here; P07 is not executed.
 
 ## P07 — Queue entries and ownership
@@ -133,7 +144,7 @@ links, duplicate protection, optimistic versions, mutation budgets and deletion
 audit metadata. Owner confirmed title/owner-admin edits and later revised
 priorities to **Low, Medium, High, Critical**; Medium replaces Normal, including
 existing-row migration. Fictional hosts locally; real hosts remain private before
-live use. Verification and limitations are in [QUEUE](QUEUE.md) and [STATUS](STATUS.md).
+live use. Verification and limitations are in [QUEUE](QUEUE.md) and `STATUS.md` (local operator notes).
 No P08 reorder controls or subsequent backlog behavior was implemented.
 
 ## P08 — Priority and reordering
@@ -151,7 +162,7 @@ was complete; no material unanswered P08 question. Clean six-migration reset,
 19 authorization tests, 11 entry tests, eight ordering tests, 37 Flutter tests,
 analysis, SQL lint/security advisor and root release build passed. Browser
 checks cover admin/member controls, drag, keyboard, conflict, persistence and
-narrow themes. Details/limitations are in [QUEUE](QUEUE.md) and [STATUS](STATUS.md).
+narrow themes. Details/limitations are in [QUEUE](QUEUE.md) and `STATUS.md` (local operator notes).
 No later backlog behavior or hosted/DNS/Pages operation. Stop at P08 review.
 
 ## P09 — Comments and review signals
@@ -162,7 +173,7 @@ No later backlog behavior or hosted/DNS/Pages operation. Stop at P08 review.
 
 **Completed locally 2026-09-23:** seventh migration, guarded activity snapshot/comment/signal
 RPCs, optimistic comment versions, PR-link signal reset, shared mutation budget
-and connected Flutter panels. See [ACTIVITY](ACTIVITY.md) and [STATUS](STATUS.md)
+and connected Flutter panels. See [ACTIVITY](ACTIVITY.md) and `STATUS.md` (local operator notes)
 for verification and limitations. Clean reset, 47 backend tests across authorization,
 entries, ordering and activity, 44 Flutter tests, SQL lint/security advisor, analysis,
 root release builds and browser/keyboard checks passed with documented limits.
@@ -178,7 +189,7 @@ No P10+ work or hosted/DNS/Pages operation. Stop for P09 review.
 restore, admin-only deleted recovery, 25-row cursor pages, read-only history,
 duplicate/host/version conflicts, shared budgets, minimal retained audit and
 keyboard confirmation/focus. Owner confirmed no expiry or permanent purge.
-See [LIFECYCLE](LIFECYCLE.md) and [STATUS](STATUS.md) for verification and limits.
+See [LIFECYCLE](LIFECYCLE.md) and `STATUS.md` (local operator notes) for verification and limits.
 No P11, hosted migration, real mail, provider change or publication. Stop for review.
 
 ## P11 — Usability and efficient refresh
@@ -190,8 +201,8 @@ No P11, hosted migration, real mail, provider change or publication. Stop for re
 **Completed 2026-09-26:** Revision-only visible checks, server filters, 25-row queue
 and activity pages, draft/focus preservation, bounded retries and responsive,
 labelled controls. User-reported comment alignment and action spacing are fixed.
-Verification and measured costs are recorded in [STATUS](STATUS.md),
-[REFRESH](REFRESH.md) and [COSTS](COSTS.md). P12 was unstarted at the P11 review
+Verification and measured costs are recorded in `STATUS.md` (local operator notes),
+[REFRESH](REFRESH.md) and `COSTS.md` (local operator notes). P12 was unstarted at the P11 review
 boundary; its later completion is recorded below.
 
 ## P11A — Cloudflare Pages hosting preparation
@@ -200,7 +211,7 @@ boundary; its later completion is recorded below.
 configuration for Cloudflare Pages Free at an available `pages.dev` hostname.
 Keep Supabase, magic links, the verified `auth.pedro-costa.dev` sender, Turnstile,
 invitations and mail budgets. Confirm the name, prepare static upload/runbooks,
-and record the precise future provider settings. See [HOSTING](HOSTING.md) for
+and record the precise future provider settings. See `HOSTING.md` (local operator notes) for
 scope, DNS keep/remove guidance and acceptance details.
 
 **Acceptance:** root/hash-route preview, relevant Flutter/callback/hook checks and
@@ -212,7 +223,7 @@ Document upload limits, rollback and the remaining live checks for P13.
 unreserved `pr-review-queue.pages.dev` destination. Added explicit production
 auth configuration, exact callback/origin guards, config examples, dashboard
 Direct Upload preflight and provider/rollback checklist. Verification is in
-[STATUS](STATUS.md); live acceptance remains P13.
+`STATUS.md` (local operator notes); live acceptance remains P13.
 
 **Boundary:** local preparation only: no cloud project
 creation, deployment, hosted settings, real mail, DNS, visibility or paid-service
@@ -231,7 +242,7 @@ without purging evidence; operator trial commands fail closed. Locked clean-buil
 comparison, manifest/asset checks, CSP/no-store/no-worker packaging, restricted
 encrypted restore rehearsal, account/official quota checks and rollout/rollback
 runbook are in [RELEASE](RELEASE.md). Actual verification/corrections/limits are in
-[STATUS](STATUS.md). Keep secrets/private hosts in their existing stores.
+`STATUS.md` (local operator notes). Keep secrets/private hosts in their existing stores.
 Live HTTPS, production widget/config, Inbox placement and hosted backup/activation
 gates remain explicitly in P13. No cloud project, DNS, real mail or publication.
 
@@ -246,7 +257,7 @@ gates remain explicitly in P13. No cloud project, DNS, real mail or publication.
 **2026-09-26 checkpoint:** Exact Pages deployment and reviewed backend rollout
 are live. Initial admin and User1 are active; User2's saved invitation awaits
 retry after Auth's sending window resets. Live checks, server-role denials,
-recovery waiver and cosmetic findings are in [PILOT](PILOT.md). Stop for P13
+recovery waiver and cosmetic findings are in `PILOT.md` (local operator notes). Stop for P13
 review; continue this same item with actual pilot evidence, not a new backlog item.
 
 ## Later ideas (unordered; not part of this implementation)

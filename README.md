@@ -1,77 +1,96 @@
 # PR Review Queue
 
-A private team queue that keeps pull requests visible, makes sprint priorities clear, and records review feedback and archived work.
+A team review queue built with Flutter Web. Keep pull requests visible, prioritize
+sprint work, and record review feedback without connecting to GitHub or Jira APIs.
 
-**Current stage: P12 release preparation complete locally.**
-P05's controlled hosted trial is complete. Inbox placement remains a release
-follow-up; stop for P12 review. P13 is next only when explicitly selected.
-P06-P11 have not been deployed to the hosted
-project. The signed-in queue persists entries locally; demo routes remain fictional. No
-production app is published. Work proceeds one backlog item at a time.
+**Status: deployed pilot; evaluation is still in progress.**
+The [live app](https://pr-review-queue.pages.dev/) offers fictional demo queues.
+The signed-in workspace is invitation-only; viewing or cloning this repository
+does not grant access to its team data. This is an experimental project, not a
+production-readiness guarantee.
 
-## Project documentation
+## Features
 
-| Document | Purpose |
+- Separate team workspaces, member profiles, admin invitations and role controls.
+- Entries with a title, PR/Jira links, sprint-goal flag and Low/Medium/High/Critical priority.
+- Sprint-first ordering and admin drag or keyboard reordering within priority groups.
+- Plain-text comments and per-user review signals; submitters cannot review their own entries.
+- Owner/admin editing, archive and restore; admin-only recovery of deleted entries.
+- Search, filters, paginated lists and visible-tab refresh.
+- Responsive Flutter UI, dark default and a saved light-mode preference.
+
+PR status is maintained manually. Review signals do not post to external services
+or replace approvals on the PR. Archives and deleted records are retained; there
+is no automatic purge.
+
+## Stack
+
+| Layer | Implementation |
 | --- | --- |
-| [Product](docs/PRODUCT.md) | Users, requirements, proposed behavior, and unanswered questions |
-| [Architecture](docs/ARCHITECTURE.md) | Proposed system, data model, and technical boundaries |
-| [Decisions](docs/DECISIONS.md) | Accepted constraints and proposed decisions with reasons |
-| [Status](docs/STATUS.md) | What actually exists and what has been verified |
-| [Next](docs/NEXT.md) | Ordered, individually reviewable implementation steps |
-| [Costs](docs/COSTS.md) | Hosting/authentication comparison, quotas, estimates, and sources |
-| [Hosting plan](docs/HOSTING.md) | Cloudflare Pages preparation before P12 and Namecheap records to retain |
-| [Release and recovery](docs/RELEASE.md) | Reproducible artifacts, security checks, restricted backups and P13 rollout/rollback gates |
-| [Security](docs/SECURITY.md) | Access rules, abuse controls, and launch checks |
-| [Local authentication](docs/AUTH.md) | P04 runbook, provider corrections, sessions, email guards and CAPTCHA design |
-| [Hosted authentication trial](docs/HOSTED_AUTH.md) | P05 configuration, provider state, evidence and limitations |
-| [Onboarding](docs/ONBOARDING.md) | P06 invitation/profile workflow, local verification and recovery |
-| [Queue entries](docs/QUEUE.md) | P07/P08 entry/ordering contracts, private enterprise hosts and local verification |
-| [Comments and review signals](docs/ACTIVITY.md) | P09 permissions, counts, PR-link resets and verification |
-| [Archive and lifecycle](docs/LIFECYCLE.md) | P10 archive/restore, admin recovery, retention policy and verification |
-| [Refresh and usability](docs/REFRESH.md) | P11 revision checks, filters, pages, error recovery and accessibility |
-| [Handoff](docs/HANDOFF.md) | How to continue the project across planning and implementation tasks |
+| Frontend | Flutter Web / Dart |
+| Database and authorization | Supabase Postgres, row-level security and guarded SQL functions |
+| Authentication | Invited-email magic links and Cloudflare Turnstile |
+| Email | Resend through a signed hook with server-enforced sending budgets |
+| Hosting | Static Cloudflare Pages deployment via manual Direct Upload |
 
-## Proposed stack
+## Run the fictional demo locally
 
-- Frontend: Flutter Web, with dark mode as the default and an optional light theme.
-- Backend: Supabase Postgres, row-level security, transactional database functions, and small TypeScript Edge Functions.
-- Authentication: Supabase magic links, restricted to exact work email invitations.
-- Email: Resend Free, with server-enforced sending budgets.
-- Hosting: Cloudflare Pages Free; P11A/P12 preparation is local, pending review before P13.
-- Future production address: `https://pr-review-queue.pages.dev/`; availability checked, unreserved and not deployed.
+The release tooling pins Flutter **3.47.4**, Dart **3.13.3** and Node.js **26.5.0**.
+Install those tools on your PATH. From the repository root:
 
-Flutter Web, magic links, Cloudflare Pages, manual updates, sprint-first ordering and multiple team membership are confirmed. The owner selected a free provider web address while retaining the verified `auth.pedro-costa.dev` email sender and its Namecheap DNS. Supabase + Resend remains the backend recommendation. Estimated additional service cost is **€0/month within free-plan limits**; existing sender-domain renewal remains separate. Read [Hosting](docs/HOSTING.md), [Costs](docs/COSTS.md) and [Security](docs/SECURITY.md). P11A changes local configuration/code and runbooks only.
-
-P04A verified local root callbacks. P05 adds a separately gated hosted trial at
-the same loopback root; the owner verified the dedicated email-sending domain at
-Namecheap. Pages, the production app hostname and repository visibility remain unchanged.
-
-## Repository layout
-
-```text
-frontend/          Flutter Web shell, fictional fixtures, tests, local preview
-backend/           Local Supabase schema, authorization tests, operator bootstrap
-docs/              Persistent product and implementation context
-AGENTS.md          Instructions for agents working in this repository
-.gitignore         Generated files and local secrets
-LICENSE            Existing MIT license
+```powershell
+cd frontend
+flutter pub get --enforce-lockfile
+flutter build web --release --base-href / --no-web-resources-cdn --no-pub
+node tool/prepare-release.cjs disconnected
+node tool/serve.cjs
 ```
 
-## Start the next step
+Open http://127.0.0.1:4173/ and stop the preview with Ctrl+C. This disconnected
+demo needs no provider account, backend, email or credentials. It contains only
+fictional data and cannot sign in.
 
-Read [Status](docs/STATUS.md), then [Next](docs/NEXT.md). Review the completed local
-**P12 release preparation** using [its runbook](docs/RELEASE.md).
-P13 deployment/pilot is next only when separately selected.
-The [local authentication runbook](docs/AUTH.md) and
-[frontend demo commands](frontend/README.md) remain available.
+For local authentication and persisted team data, use the
+[backend setup](backend/README.md) and [local authentication guide](docs/AUTH.md).
+They use Docker-backed Supabase and captured local mail. Database reset commands
+erase the local database; use them only for disposable development data.
 
-Do not run the entire backlog in one task. Complete the selected item, verify its acceptance criteria, update the docs, and stop at its review boundary.
+## Configuration and deployment
 
-## Local tools
+The [frontend production template](frontend/.env.production.json.example) contains
+placeholders for public browser configuration. Copy it to the ignored
+`frontend/.env.production.json` and supply your selected project's public values.
+The [backend production checklist](backend/.env.production.example) documents
+server settings; provider keys and signing secrets belong in secret stores.
+Never place service-role or email-provider secrets in frontend configuration.
 
-On the initial machine, Flutter is at `C:\Users\pedro\flutter` and is on PowerShell's PATH. Git, Node.js, npm, and Docker are available. Exact observed versions are in [Status](docs/STATUS.md).
+Production origin and sender-domain checks are intentionally fixed to this
+deployment. This repository is a showcase, not a configurable self-hosting
+template: another deployment needs coordinated source/configuration changes and
+validation. Keep exact-origin checks, CAPTCHA and server permissions intact.
+See [release tooling](docs/RELEASE.md) for builds, integrity checks and recovery.
 
-The proposed stack needs no Java server or Docker container in production. P03 uses Docker for local Supabase development with CLI 2.117.0 pinned under `backend/`. Setup, tests, and the observed Windows port-binding limitation are in [backend/README.md](backend/README.md). Verified local app build/preview commands are in [frontend/README.md](frontend/README.md).
+## Checks and documentation
+
+- [Frontend](frontend/README.md): preview, analysis and tests.
+- [Backend](backend/README.md): local database setup and authorization tests.
+- [Product](docs/PRODUCT.md) and [architecture](docs/ARCHITECTURE.md): behavior and design.
+- [Security](docs/SECURITY.md): access controls, abuse limits and known boundaries.
+- [Onboarding](docs/ONBOARDING.md), [queue](docs/QUEUE.md), [activity](docs/ACTIVITY.md),
+  [lifecycle](docs/LIFECYCLE.md) and [refresh](docs/REFRESH.md): feature contracts.
+- [Backlog](docs/NEXT.md): implementation checkpoints and remaining pilot work.
+
+Deployment receipts, provider/account observations and the publication review are
+local operator records excluded from future Git snapshots. Public guides remain
+in `docs/`; historical checkpoints describe the evidence collected at that time.
+
+## Known limitations
+
+The multi-day pilot is incomplete. Email delivery can reach Junk or hit provider
+rate limits. The current pilot uses fictional enterprise hosts and disposable
+data; hosted disaster recovery and real enterprise navigation are not established.
+The live UI still has a local-preview label and some fallback-font issues.
+Free-tier service limits may affect availability.
 
 ## License
 

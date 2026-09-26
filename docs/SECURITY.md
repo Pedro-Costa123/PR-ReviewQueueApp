@@ -1,10 +1,10 @@
 # Security design and launch evidence
 
 Last updated: 2026-09-26. P13 is deployed with the reviewed P03-P12 controls.
-[PILOT](PILOT.md) distinguishes observed live gates from remaining pilot work.
+`PILOT.md` (local operator notes) distinguishes observed live gates from remaining pilot work.
 P05 controlled hosted login, mail, CAPTCHA replay denial and passive-scanner
 checks below are historical evidence.
-[AUTH](AUTH.md) and [HOSTED_AUTH](HOSTED_AUTH.md) distinguish implementation,
+[AUTH](AUTH.md) and `HOSTED_AUTH.md` (local operator notes) distinguish implementation,
 provider configuration and observed behavior. No multi-day pilot is claimed.
 
 The signed-in workspace now reads/writes team entries through guarded P07 RPCs;
@@ -70,7 +70,7 @@ Invitation CORS uses the same exact callback origin; it never replaces bearer
 verification/live admin checks. No SQL/grants or hosted settings changed. The
 revoked P05 admission stays revoked; removal of the temporary database branch
 was implemented locally in P12 and must be applied before P13 activation. Tests/evidence are
-in [STATUS](STATUS.md); provider checklist and limits are in [HOSTING](HOSTING.md).
+in `STATUS.md` (local operator notes); provider checklist and limits are in `HOSTING.md` (local operator notes).
 
 ## P11 implemented evidence and limits
 
@@ -165,7 +165,7 @@ cap successful writes, not read traffic or all failed request attempts.
 - SQL-role and real Data API tests use fictional fixtures and short-lived synthetic JWTs signed with the local development key. The runner refuses linked projects, remote Docker targets, other checkouts' containers, and non-loopback API addresses. Fixtures are outside migrations and configured seeds; no fake login is shipped in Flutter.
 - Startup requests loopback binding using a dedicated Docker network, but this Windows Docker Desktop still reports all-interface publishes. The wrapper reports that concrete limitation; use a trusted development network/host firewall and stop the stack after use. Signup is disabled and mail remains local capture only. P04 now validates local Auth login and email budgets. Invitation claiming, live CAPTCHA enforcement, enterprise URL validation, mutation rate limits and hosted configuration remain later items. P03 grants no usable queue mutation path and makes no production-security claim.
 
-Commands and scope are in the [backend README](../backend/README.md); actual results are in [STATUS](STATUS.md).
+Commands and scope are in the [backend README](../backend/README.md); actual results are in `STATUS.md` (local operator notes).
 
 ## Boundaries
 
@@ -215,7 +215,7 @@ Supabase supports magic links and PKCE and provides CAPTCHA and rate controls. T
 
 ## Browser and link safety
 
-The owner selected a dedicated **Cloudflare Pages `pages.dev` origin** on 2026-09-26. P13 allocated and deployed exactly `pr-review-queue.pages.dev`. It replaces the personal-domain web target and remains separate from the portfolio/PassGen origin. Live portfolio-origin attempts to read app DOM/storage raise `SecurityError`; the app has no service-worker controller or registrations. Keep the hostname dedicated to this app. See [PILOT](PILOT.md), [HOSTING](HOSTING.md) and the [browser same-origin policy](https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Same-origin_policy).
+The owner selected a dedicated **Cloudflare Pages `pages.dev` origin** on 2026-09-26. P13 allocated and deployed exactly `pr-review-queue.pages.dev`. It replaces the personal-domain web target and remains separate from the portfolio/PassGen origin. Live portfolio-origin attempts to read app DOM/storage raise `SecurityError`; the app has no service-worker controller or registrations. Keep the hostname dedicated to this app. See `PILOT.md` (local operator notes), `HOSTING.md` (local operator notes) and the [browser same-origin policy](https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Same-origin_policy).
 
 Separate origins under the same parent domain are not separate sites for every browser rule. Do not use `document.domain`, parent-domain auth cookies, broad credential sharing, or permissive message handlers to reconnect them. RLS, token verification and any future CSRF protection remain necessary. Review third-party scripts loaded by the app itself; code included in the app runs with its privileges.
 
@@ -239,7 +239,7 @@ purge approval. Email-control records/budgets remain unchanged.
 
 Create restricted backups/export instructions, retention, and a restore test before the pilot. Database restore is not necessarily full Supabase Auth/config/secret recovery; document those separately. Store no exports in the public repository. Select an available EU database region by default; do not equate this with a guarantee that all auth/email/log processing stays in the EU.
 
-For an incident: revoke affected memberships/invites and sessions, disable mail sending if abused, rotate exposed provider keys, preserve minimal useful logs, and restore from a verified backup if needed. Prefer a temporary outage to disabling authorization. Free-plan limits and remaining availability risks are in [Costs](COSTS.md).
+For an incident: revoke affected memberships/invites and sessions, disable mail sending if abused, rotate exposed provider keys, preserve minimal useful logs, and restore from a verified backup if needed. Prefer a temporary outage to disabling authorization. Free-plan limits and remaining availability risks are in `COSTS.md` (local operator notes).
 
 ## Required evidence before pilot
 

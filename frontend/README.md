@@ -1,70 +1,32 @@
 # Frontend
 
-P12 publishing preparation uses [RELEASE](../docs/RELEASE.md): pinned two-clean-build
-comparisons, manifest verification, exact-API CSP/no-store headers and no service
-worker. `build-release.ps1` produces ignored local review packages; it never uploads.
-After an ordinary build, run `node tool/prepare-release.cjs disconnected` (or
-`local` for `.env.local.json`) before serving. Use a real narrow browser viewport:
-the application now refuses framing. Stop for P12 review; P13 is not authorized.
+Flutter Web provides fictional public demo queues and an invitation-only connected
+workspace. The current deployment is a pilot; see the [project README](../README.md)
+for its status and limitations. Only the web platform is scaffolded.
 
-The Flutter Web shell has read-only fictional queues and optional local Supabase
-authentication. P05 adds an explicitly configured hosted trial with a lazy themed
-Turnstile dialog. P07 connects queue writes in the signed-in workspace. Use [AUTH](../docs/AUTH.md) for
-local login or [HOSTED_AUTH](../docs/HOSTED_AUTH.md) for the controlled trial.
+Features include team switching, profiles and invitations, queue editing and
+ordering, comments/review signals, archive/recovery, filters and paginated refresh.
+Dark mode is the default; the theme preference is saved locally.
 
-P06 adds the connected signed-in root workspace: real team selector, profile
-completion/edit/view, admin invitations and member controls. Use the
-[onboarding runbook](../docs/ONBOARDING.md) for its two-team local preview.
-The separate demo queue routes remain fictional. P07 adds real selected-team
-entries, validated manual links, Low/Medium/High/Critical priorities, guarded
-editing/deletion and retained drafts on conflicts. See [QUEUE](../docs/QUEUE.md)
-for its preview and checks. Email is visible only to self/shared active teammates
-through the server. P08 adds sprint/priority group headings, admin drag handles
-and keyboard move controls with revision conflict recovery. The server orders
-before paging; P11 replaces the original 100-entry display limit. No P06-P11 hosted
-deployment has been performed. See QUEUE for ordering checks and preview fixtures.
+## Run a disconnected release preview
 
-P09 adds expandable comments/review panels: plain text, author edits/deletion,
-admin removal, check/X/clear, complete counts and reviewer/time display. Self-review
-is prohibited; comments stay allowed. Run `flutter test test/activity_test.dart`;
-see [ACTIVITY](../docs/ACTIVITY.md) for the server contract and local QA.
-
-P10 adds Active queue / Archive / admin-only Deleted entries views, explicit
-lifecycle confirmation, manual reason/actor/time, read-only retained activity,
-25-entry cursor pages and restore/recovery conflict handling. Run
-`flutter test test/lifecycle_test.dart`; see [LIFECYCLE](../docs/LIFECYCLE.md).
-
-P11 adds literal title/link search, sprint/priority/submitter filters, 25-entry and
-activity pages, last-updated/checked status and a 60-second visible-tab scheduler.
-Unchanged revisions avoid full downloads; drafts defer replacement; access/session/
-quota failures pause refresh and network errors back off. Narrow layouts and
-keyboard/semantic checks use both themes. Run `flutter test test/refresh_test.dart`;
-see [REFRESH](../docs/REFRESH.md). P12 adds local release preparation; publication
-remains a separate P13 item.
-
-Verified SDK: **Flutter 3.47.4 stable / Dart 3.13.3** on Windows. Only the web platform is scaffolded. Application dependencies and the lockfile are pinned; no global backend tooling is required.
-
-## Run the verified release preview
-
-The future production target is an available Cloudflare Pages `pages.dev`
-hostname `pr-review-queue.pages.dev` (availability checked, unreserved), with
-base href `/`. P11A prepares separate production mode and a read-only
-`node tool/check-pages.cjs` dashboard upload preflight; see [HOSTING](../docs/HOSTING.md). P04A tested the local preview and
-callback flow together. These commands build the disconnected local demo;
-HOSTED_AUTH records the completed P05 trial and its separate configuration.
-
-From `frontend/` in PowerShell:
+Use Flutter 3.47.4 / Dart 3.13.3 and Node.js 26.5.0. From `frontend/`:
 
 ```powershell
-flutter pub get
-flutter build web --release --base-href / --no-web-resources-cdn
+flutter pub get --enforce-lockfile
+flutter build web --release --base-href / --no-web-resources-cdn --no-pub
 node tool/prepare-release.cjs disconnected
 node tool/serve.cjs
 ```
 
-Open `http://127.0.0.1:4173/`. Stop the server with Ctrl+C. Node uses only built-in modules. It binds to loopback and serves only `build/web` at `/`, plus a local QA frame at `http://127.0.0.1:4173/__preview/narrow` (390 × 844). The old prefix returns 404 without forwarding tokens. It is not a production server. The final app will publish independently from this repository, without a combined portfolio artifact.
+Open http://127.0.0.1:4173/; stop with Ctrl+C. The preview binds to loopback and
+serves only `build/web`. Hash routes such as `/#/teams/atlas` support direct entry
+and reload. Rendering resources are bundled locally. Use the browser's responsive
+viewport for narrow layouts: the app's security headers deliberately reject framing.
 
-The build flag bundles Flutter rendering resources locally. Hash URLs such as `/#/teams/atlas` require no server route rewrites. Both direct entry and refresh work. The real hosted authentication callback and Pages integration remain later work.
+This demo has no fake signed-in identity or backend access. For local Supabase
+login and persisted data, follow [AUTH](../docs/AUTH.md) and the
+[backend guide](../backend/README.md). Local mail is captured rather than sent.
 
 ## Checks
 
@@ -72,30 +34,34 @@ The build flag bundles Flutter rendering resources locally. Hash URLs such as `/
 dart format --output=none --set-exit-if-changed lib test
 flutter analyze
 flutter test
-node --check tool/serve.cjs
-node --test test/auth_callback.test.cjs test/turnstile.test.cjs
+node --test test/auth_callback.test.cjs test/turnstile.test.cjs test/release-policy.test.cjs
 ```
 
-Thirty-two Flutter tests and twelve JavaScript callback/widget tests cover entries, auth,
-configuration, cancellation and the existing shell. With the release preview
-running, `node --test test/preview.test.cjs` adds three HTTP checks. For isolated
-widget QA run `node tool/turnstile-preview.cjs` and open port 4175 (`/narrow` for
-a 390 by 844 frame). Public dummy widgets never reach Auth or the release artifact.
-See [Status](../docs/STATUS.md) for dated browser/keyboard evidence and limitations.
+With the preview running, `node --test test/preview.test.cjs` checks HTTP behavior.
+For isolated widget QA, `node tool/turnstile-preview.cjs` serves port 4175; its
+dummy widgets never enable application authentication.
+
+## Production builds
+
+The [public configuration template](.env.production.json.example) contains only
+placeholders; its populated counterpart remains ignored. Production accepts only
+the fixed app origin and requires real public Supabase/Turnstile configuration.
+Preview aliases and loopback cannot initialize production authentication.
+
+[RELEASE](../docs/RELEASE.md) describes pinned two-clean-build comparisons, manifests,
+exact-API CSP, no-store headers and a bootstrap without a service worker.
+`tool/build-release.ps1` creates local review packages, never an upload.
+The configured origin and sender remain deployment-specific.
 
 ## Structure and boundaries
 
-- `lib/app.dart`: Material themes and `go_router` hash routes.
-- `lib/features/`: auth, teams, queue, archive, and profiles.
-- `lib/features/queue/queue_repository.dart`: widget-independent presentation models and a read-only demo repository.
-- `lib/shared/`: reusable UI and theme persistence using `SharedPreferencesAsync`.
-- `test/`: shell behavior and layout tests; no real identities or mail.
+- `lib/app.dart`: Material themes and hash routing.
+- `lib/features/`: auth, teams, queue, archive and profiles.
+- `lib/features/queue/queue_repository.dart`: fictional presentation data.
+- `lib/shared/`: shared UI and theme persistence.
+- `test/`: behavior and layout checks with fictional identities/data.
 
-The default demo stores only `pr_review_queue.theme`. The configured P04 preview also persists auth in sessionStorage with memory fallback; SDK cross-tab behavior is documented in AUTH. Theme-storage failures show a warning; unavailable auth storage falls back to memory. There is no fake login, role switch, or backend authorization bypass in any build; demo profiles are public fictional display data. The final P12 artifact is the disconnected fallback; actual production configuration and publishing require P13.
-
-The generated Flutter favicon/app icons remain temporary. The SDK emits a missing Cupertino font-family warning during icon tree shaking; this shell uses Material icons, which render correctly in the inspected browser. No native-platform tooling is needed.
-
-Product behavior is in [Product](../docs/PRODUCT.md) and architecture in
-[Architecture](../docs/ARCHITECTURE.md). P05 is complete for the controlled trial;
-the demo queue remains fictional. P06-P12 are complete locally; review P12 before
-selecting P13. No deployment is authorized.
+The demo stores its theme preference. Authenticated builds use sessionStorage
+with memory fallback; the SDK can synchronize open same-origin tabs. See
+[AUTH](../docs/AUTH.md) for those limits. Backend authorization remains mandatory.
+Generic Flutter icons and the known pilot label/font issues remain unchanged.

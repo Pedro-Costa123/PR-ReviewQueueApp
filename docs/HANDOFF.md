@@ -1,6 +1,11 @@
 # Planning and implementation handoff
 
-The repository documents are the shared source of context. A planning conversation handles requirements/research/design; an implementation task inspects the code, makes the selected changes, and verifies them. Both update these files.
+The public guides and any available local operator records provide project context.
+A planning conversation handles requirements/research/design; an implementation
+task inspects the code, makes selected changes and verifies them. Deployment,
+account and publication-review records are intentionally ignored and absent from
+fresh clones. Preserve them locally when present; use the public README, backlog,
+product, architecture and security guides when they are unavailable.
 
 ## Which file owns which information?
 
@@ -8,14 +13,14 @@ The repository documents are the shared source of context. A planning conversati
 | --- | --- |
 | What users need and how the product behaves | PRODUCT.md |
 | Technical structure and security boundaries | ARCHITECTURE.md, SECURITY.md |
-| Important choices and reasons | DECISIONS.md |
-| Price facts, estimates, and budget assumptions | COSTS.md |
-| What actually exists and what has passed | STATUS.md |
+| Operator choices and reasons | DECISIONS.md (local-only) |
+| Provider observations and cost research | COSTS.md (local-only) |
+| Detailed verification receipts | STATUS.md (local-only) |
 | Work order, acceptance criteria, and where to stop | NEXT.md |
 
 `AGENTS.md` instructs Codex to read this context and work incrementally. It does not synchronize repositories. Other checkouts need the corresponding files/commit/branch, and any conversation without repository access must be given the relevant document contents. [Official AGENTS.md guidance](https://learn.chatgpt.com/docs/agent-configuration/agents-md)
 
-## Prompt for continuing the selected P13
+## Operator prompt for continuing P13 (requires local records)
 
 ```text
 Work in the existing PR-ReviewQueueApp repository. Read AGENTS.md and the
@@ -62,7 +67,7 @@ The final reply should name the completed item, give the useful result/link, sum
 P00-P04A are complete locally; P05 is complete for the controlled hosted trial.
 P11 is implemented locally with automated and browser checks; see STATUS for evidence.
 P11A/P12 were reviewed and P13 is selected. The exact `pr-review-queue.pages.dev`
-host is live. [PILOT](PILOT.md) records deployment/artifact, current provider state,
+host is live. `PILOT.md` (local operator notes) records deployment/artifact, current provider state,
 observed gates, quota-blocked delivery and remaining real-use feedback. Stop at
 P13 review; do not mark the multi-day pilot complete from deployment checks.
 See [REFRESH](REFRESH.md) for polling, filters, pages, accessibility and limitations.
@@ -70,7 +75,7 @@ See [QUEUE](QUEUE.md) for entry/ordering contracts, private hosts, preview and l
 See [ACTIVITY](ACTIVITY.md) for comments/reviews, contracts and review boundary.
 See [LIFECYCLE](LIFECYCLE.md) for archive, admin recovery and confirmed no-purge retention.
 See [ONBOARDING](ONBOARDING.md) for implementation, local evidence and limits, and
-[HOSTED_AUTH](HOSTED_AUTH.md) for provider state, acceptance evidence and limits.
+`HOSTED_AUTH.md` (local operator notes) for provider state, acceptance evidence and limits.
 Historically, three P05 messages arrived in Junk; recipient SPF/DMARC passed on the third.
 First and confirmed-user login, reload/sign-out, link expiry/replay, CAPTCHA reuse
 denial, passive scanner rendering and failure recovery passed in P05. That trial

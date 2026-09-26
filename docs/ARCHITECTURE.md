@@ -2,7 +2,7 @@
 
 Updated: 2026-09-26. P13 deploys the reviewed frontend, ten migrations and both
 Edge functions to the existing Free services. Live evidence and remaining pilot
-gates are in [PILOT](PILOT.md). The feature checkpoints below describe their
+gates are in `PILOT.md` (local operator notes). The feature checkpoints below describe their
 original local verification. P11 adds local revision checks, filters and bounded pages;
 see [REFRESH](REFRESH.md). P10 adds local archive/restore/admin recovery; see [LIFECYCLE](LIFECYCLE.md).
 P09 adds local comments/review signals; see [ACTIVITY](ACTIVITY.md).
@@ -12,7 +12,7 @@ P04/P04A local authentication and root callbacks are verified.
 P05 adds the Resend adapter, Turnstile bridge and strict loopback hosted-trial
 configuration. The controlled hosted trial passed; the temporary admission is
 revoked. Inbox placement and app publication remain release work. [AUTH](AUTH.md) covers local development;
-[HOSTED_AUTH](HOSTED_AUTH.md) records trial configuration and live evidence.
+`HOSTED_AUTH.md` (local operator notes) records trial configuration and live evidence.
 
 ## Design
 
@@ -35,11 +35,15 @@ flowchart TD
 
 The browser never receives database admin credentials or Resend credentials. No backend request goes to GitHub Enterprise or Jira. The public HTML/Flutter bundle is not confidential; team data requires authorization.
 
-## Hosting on Cloudflare Pages (prepared locally 2026-09-26; not deployed)
+## Hosting on Cloudflare Pages
 
-Use an available **`https://pr-review-queue.pages.dev/`** with base href `/`. Keep hash routes, such as `/#/teams/<id>`, and the root entry document as the magic-link callback, retaining fragment cleanup and explicit confirmation. Cloudflare validated this exact name as available in P11A; it remains unreserved. [Flutter URL configuration](https://docs.flutter.dev/ui/navigation/url-strategies)
+The pilot is deployed at **`https://pr-review-queue.pages.dev/`** with base href `/`. Keep hash routes, such as `/#/teams/<id>`, and the root entry document as the magic-link callback, retaining fragment cleanup and explicit confirmation. P13 allocated this exact hostname. [Flutter URL configuration](https://docs.flutter.dev/ui/navigation/url-strategies)
 
-Prepare this app's `frontend/build/web` artifact independently, using a prebuilt upload workflow. No combined portfolio artifact, personal-domain CNAME, new organization or repository visibility change is needed for Direct Upload. See [HOSTING](HOSTING.md) for P11A scope and [COSTS](COSTS.md) for current limits.
+The preparation stages and feature checkpoints below record historical work.
+Their references to pending P13 activation describe those earlier checkpoints;
+the current deployment status is in the [project README](../README.md).
+
+Prepare this app's `frontend/build/web` artifact independently, using a prebuilt upload workflow. No combined portfolio artifact, personal-domain CNAME, new organization or repository visibility change is needed for Direct Upload. See `HOSTING.md` (local operator notes) for P11A scope and `COSTS.md` (local operator notes) for current limits.
 
 Hosting stages:
 
@@ -234,4 +238,4 @@ Use Docker-backed local Supabase and a local email inbox/stub initially. Never s
 
 Use one hosted Free project for the developer trial/pilot if eligible; local development avoids an extra hosted staging bill. Choose an available EU region as the default, without claiming that every vendor's logs/auth/email remain in the EU. Avoid a paid Supabase custom domain: the required frontend address does not require one.
 
-Build verification can later run in GitHub Actions with the account's available allowance. Production deployment starts manually, from a known revision, with rollback instructions. Version schema and config; keep secrets in vendor/CI secret stores. Free Supabase has no included automatic backups, so design a restricted export and restore procedure before pilot. See [Costs](COSTS.md) and [Next](NEXT.md).
+Build verification can later run in GitHub Actions with the account's available allowance. Production deployment starts manually, from a known revision, with rollback instructions. Version schema and config; keep secrets in vendor/CI secret stores. Free Supabase has no included automatic backups, so design a restricted export and restore procedure before pilot. See `COSTS.md` (local operator notes) and [Next](NEXT.md).

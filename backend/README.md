@@ -1,58 +1,20 @@
 # Backend
 
-P03 implements the **local database and authorization foundation**. P04 adds local
-magic-link authentication, a signed Edge hook, guarded quotas and Mailpit delivery.
-The Flutter sign-in screen and signed-in queue can connect locally.
-P05 adds a gated Resend sender, bounded operator trial admissions and mock sender
-tests and a CLI-backed operator provisioning helper. The existing Free hosted
-project has the three migrations and the signed hook deployed/enabled. Controlled
-delivery/login and live denial checks passed; the trial admission is now revoked.
-Inbox placement remains a release follow-up. P11A adds locally tested production
-configuration for the exact `https://pr-review-queue.pages.dev/` callback; no
-hosted activation. See [HOSTING](../docs/HOSTING.md) for the settings checklist.
-P12 adds the tenth local migration, removing trial-mail eligibility and retaining
-revoked evidence. Historical trial operator scripts now fail closed. Apply the
-retirement before P13 activation; the hosted project is unchanged. Reproducibility,
-restricted encrypted restore checks and rollout gates are in [RELEASE](../docs/RELEASE.md).
+Supabase Postgres/Auth, guarded SQL functions and two TypeScript Edge Functions
+provide the connected workspace. Ten versioned migrations cover authorization,
+onboarding, entries, ordering, comments/reviews, lifecycle and paginated refresh.
+The trial mail-admission route is retired and its operator scripts fail closed.
 
-P06 adds a fourth **local** migration, `invite-member`, guarded invitation
-claiming and profile RPCs, and the budgeted membership wrapper. Its 14 dedicated
-tests run with `npm run test:onboarding` while `npm run functions` is serving.
-See [ONBOARDING](../docs/ONBOARDING.md) for setup, recovery, grants and evidence.
-The hosted project still has three migrations; no P06 deployment was performed.
+The existing deployment is in pilot evaluation; see the [project README](../README.md).
+This guide describes local development, not authorization to modify hosted data.
+Cloudflare Pages serves the frontend; Supabase enforces team membership and ownership.
 
-P07 adds the fifth local migration, guarded create/edit/delete functions,
-private exact enterprise host configuration and queue mutation limits. Priorities
-are Low/Medium/High/Critical. `npm run test:queue` runs its direct API, denial and
-concurrency checks. See [QUEUE](../docs/QUEUE.md) for the local preview, operator
-host configuration, URL grammar and verification. No P07 hosted deployment.
-
-P08 adds the sixth local migration: ordered `queue_snapshot` with its matching
-revision and admin-only `move_entry`, sharing P07's budget/team serialization.
-Run `npm run test:ordering` for ordering, denial and concurrent-mutation coverage.
-The QUEUE runbook includes mixed-group browser fixtures. No hosted migration.
-
-P09 adds the seventh local migration: plain-text comments with author versions,
-author/admin deletion and per-user check/X/clear signals with no self-review.
-Run `npm run test:activity` for direct API denials, concurrency and count/reset
-checks. See [ACTIVITY](../docs/ACTIVITY.md). No hosted migration or external posting.
-
-P10 adds the eighth local migration: submitter/admin archive/restore, admin-only
-deleted recovery, cursor pages, retained audit/history and no permanent purge.
-Run `npm run test:lifecycle`; [LIFECYCLE](../docs/LIFECYCLE.md) covers the confirmed
-policy, API, browser fixtures, verification and review boundary. No hosted change.
-
-P11 adds the ninth local migration: `team_revision`, `queue_page`, `activity_page`,
-profile/host revision triggers and activity page indexes. Reads check live access;
-nonfirst pages require a matching revision. Run `npm run test:refresh` for denial,
-filter, pagination, invalidation and payload checks; see [REFRESH](../docs/REFRESH.md).
-The hosted project remains untouched with its three migrations and revoked trial.
-
-Follow [AUTH](../docs/AUTH.md) for the complete P04 setup/test/preview sequence.
-Use [HOSTED_AUTH](../docs/HOSTED_AUTH.md) for P05; never run local fixtures/tests
-against the hosted project or link this local test checkout to it.
-
-The researched proposal is Supabase Postgres/Auth with row-level security, SQL functions, and TypeScript Edge Functions. Resend delivers magic links through a guarded Send Email Hook. GitHub Pages serves the public frontend; it does not replace database authorization.
+Use [AUTH](../docs/AUTH.md) for local login and captured mail,
+[ONBOARDING](../docs/ONBOARDING.md) for invitations/profiles, and
+[QUEUE](../docs/QUEUE.md), [ACTIVITY](../docs/ACTIVITY.md),
+[LIFECYCLE](../docs/LIFECYCLE.md) and [REFRESH](../docs/REFRESH.md) for feature contracts.
+The [production checklist](.env.production.example) contains no credentials;
+[RELEASE](../docs/RELEASE.md) describes release/recovery tooling.
 
 ## Local setup and checks
 
@@ -84,12 +46,12 @@ provider is configured. This config is for local development, not deployment.
 2.117.0 reported all-interface published ports despite Supabase's documented
 loopback network option. The wrapper reports this instead of claiming isolation.
 Use the stack only on a trusted development machine/network with appropriate
-host firewall restrictions; never expose it publicly. It is stopped at handoff.
+host firewall restrictions; never expose it publicly. Stop it with `npm run stop` when finished.
 Tests connect only to loopback and use fictional data. See the
 [official local network guidance](https://supabase.com/docs/guides/local-development).
 
 `npm run reset` **recreates only this project's local database**, applying the
-migration to an empty schema. It intentionally loads no identities or seed data.
+migrations to an empty schema. It intentionally loads no identities or seed data.
 Do not use it to preserve local work. `npm test` requires that empty database and
 loads fictional fixtures; run reset before each full test run. Tests leave those
 fixtures behind for local inspection. `npm run lint` checks both application
@@ -112,7 +74,7 @@ includes local development keys; do not paste it into committed logs or document
   profiles are readable; no email lives in profiles. Membership rows reveal only
   accessible teams; inactive rows and invitation emails are visible only to that
   team's admins.
-- `private`: audit and future email-budget/idempotency storage, with no client
+- `private`: audit and email-budget/idempotency storage, with no client
   table grants or Data API exposure. Only membership/profile predicate helpers
   are executable by authenticated users; they always derive identity from JWT.
 - `set_member_access(p_team_id, p_user_id, p_role, p_active)`: P03's membership
@@ -121,21 +83,18 @@ includes local development keys; do not paste it into committed logs or document
   and revokes matching pending invitations when removing access. It cannot
   create a membership. The last active admin cannot be removed or demoted.
 - Direct table writes are denied even to team admins and submitters. Immutable
-  keys and composite foreign keys add protection beneath future guarded writes.
-  Read policies hide soft-deleted entries and their children. P07 adds guarded
-  owner/admin soft deletion; restoration, reorder and purge remain unimplemented.
+  keys and composite foreign keys add protection beneath guarded writes.
+  Read policies hide soft-deleted entries and their children. Guarded RPCs implement
+  owner/admin deletion, archive/restore and admin-only recovery/reorder. There is no purge.
 
 The `private` schema is not exposed by PostgREST. All elevated functions have a
 fixed empty search path. Explicit grants and global/schema default revocations
 prevent newly added functions inheriting PUBLIC execution. Future migrations
 must continue to declare permissions explicitly and extend the denial tests.
 
-P07 confirms title/entry permissions and Low/Medium/High/Critical priorities,
-implements enterprise URL validation and the queue mutation budget. Self-review
-behavior remains P09, and retention/purging P10. P04 adds service-role-only reserve_auth_email/finish_auth_email functions and
-atomic budgets; clients still cannot access operational tables. P06 adds admin
-UI/provisioning, profile/claim RPCs and onboarding mutation limits. This remains a
-locally verified implementation, not a release.
+Entry permissions, review identity, ordering and lifecycle rules are enforced in
+SQL functions. Service-role-only mail RPCs reserve atomic budgets and record
+idempotent outcomes; clients cannot access operational tables.
 
 ## Explicit operator bootstrap
 
@@ -152,10 +111,9 @@ Get-Content -Raw operator/bootstrap.sql | docker exec -i supabase_db_pr-review-q
 
 The command deliberately creates a new team each time; record its returned ID.
 The first-admin constraint is deferred until commit, so a team cannot be left
-without an admin. An Auth identity must be verified through the future supported
+without an admin. An Auth identity must be verified through the supported
 onboarding flow before bootstrapping real use. Never manually mark a real email
-verified just to satisfy this check. There is no production bootstrap to run in
-P03. Missing/unverified identities and API attempts are covered by tests.
+verified just to satisfy this check. Do not run the fictional demonstration against a hosted database. Missing/unverified identities and API attempts are covered by tests.
 
 ## Verification coverage and next step
 
@@ -166,19 +124,11 @@ invariants, duplicate records, operator bootstrap, and concurrent admin changes.
 Those P03 tests do not claim real Auth login or delivery. P04's separate test:auth
 suite checks actual local Auth and captured delivery; neither suite claims deployed security.
 
-P04A is complete locally: Auth Site URL and the sender's exact callback use
-`http://127.0.0.1:4173/`. The later frontend hosting choice is Cloudflare Pages
-at an available pages.dev hostname, retaining the existing email sender;
-P11A preparation is local only, including exact production callback settings.
-See [HOSTING](../docs/HOSTING.md); activation remains P13 after P12 review.
-`npm start` migrates the known old `.env` callback without rotating the secret;
-stop an already-running stack first and restart the function terminal afterward.
-The full replacement sequence and browser checks are in AUTH/STATUS.
-P05 is closed with revoked admission; review completed local P11A before
-selecting P12. HOSTED_AUTH retains the trial evidence and remaining live checks.
-The frontend subdomain does not require a paid Supabase custom domain.
-See [NEXT](../docs/NEXT.md), [STATUS](../docs/STATUS.md),
-[ARCHITECTURE](../docs/ARCHITECTURE.md), and [SECURITY](../docs/SECURITY.md).
+The local callback is `http://127.0.0.1:4173/`. Production remains fixed to the
+selected Pages origin and sender domain. Historical trial provisioning is retired.
+Do not link this test checkout to a hosted project or copy fixtures into production.
+See [NEXT](../docs/NEXT.md), [ARCHITECTURE](../docs/ARCHITECTURE.md) and
+[SECURITY](../docs/SECURITY.md).
 
 Tooling/security references checked 2026-09-16: [Supabase CLI setup](https://supabase.com/docs/guides/local-development/cli/getting-started),
 [RLS](https://supabase.com/docs/guides/database/postgres/row-level-security),

@@ -2,7 +2,7 @@
 
 Implemented in P04 and migrated/tested at `/` on 2026-09-18. This is a local feasibility implementation,
 not a hosted authentication deployment. P05's implemented trial code and provider
-setup are documented separately in [HOSTED_AUTH](HOSTED_AUTH.md). This runbook
+setup are documented separately in `HOSTED_AUTH.md` (local operator notes). This runbook
 continues to use fictional recipients and local Mailpit only.
 
 ## Hosting decision update (2026-09-26)
@@ -10,7 +10,7 @@ continues to use fictional recipients and local Mailpit only.
 The future frontend will use **Cloudflare Pages Free at an available pages.dev
 address**, replacing the personal-domain website plan. Magic links and the
 verified Resend sender stay. P11A prepares explicit production configuration for
-`https://pr-review-queue.pages.dev/`; no hosted setting changed. See [HOSTING](HOSTING.md). This document's commands use
+`https://pr-review-queue.pages.dev/`; no hosted setting changed. See `HOSTING.md` (local operator notes). This document's commands use
 the verified P04A local equivalent,
 **`http://127.0.0.1:4173/`**. The callback scrubber, Dart local gate, preview/frame,
 Supabase Site URL, sender guard, startup helper and tests use the root together.

@@ -87,7 +87,7 @@ and atomic shared quotas. No real email or enterprise host is involved.
 From `frontend/` run analysis, the Flutter tests and the configured root release
 build as in QUEUE. Browser QA uses real captured provider login, then comments,
 check/X/clear, keyboard interaction, reload and light/dark narrow layouts.
-Actual outcomes and tool limitations are recorded in [STATUS](STATUS.md).
+Actual outcomes and tool limitations are recorded in `STATUS.md` (local operator notes).
 
 After the preview identity signs in and claims its teams, run this additional
 fictional-data helper from `backend/`, then refresh the Atlas queue:
@@ -108,7 +108,7 @@ Hosted P06–P09 rollout, real enterprise hosts, Inbox placement and final HTTPS
 callback remain release work. No provider, authentication, dependency, hosting,
 billing, Namecheap DNS or GitHub Pages assumption changed. Confirmed destination:
 `https://reviews.pedro-costa.dev/` at the time of P09. The later D35 hosting
-decision supersedes that web destination; see [HOSTING](HOSTING.md).
+decision supersedes that web destination; see `HOSTING.md` (local operator notes).
 
 Official references checked 2026-09-23:
 [database functions](https://supabase.com/docs/guides/database/functions),

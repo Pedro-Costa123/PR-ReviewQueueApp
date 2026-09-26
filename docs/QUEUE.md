@@ -1,7 +1,7 @@
 # P07/P08 queue entries and ordering
 
 Updated: 2026-09-26. Local implementation only; no hosted migration or publication.
-P08 builds on completed local P07. See [STATUS](STATUS.md) for final evidence.
+P08 builds on completed local P07. See `STATUS.md` (local operator notes) for final evidence.
 P09 adds [comments and review signals](ACTIVITY.md) to the connected entries.
 P10 adds [archive, restore and admin recovery](LIFECYCLE.md), including the
 confirmed retained-data/no-purge policy and separate paginated lifecycle views.

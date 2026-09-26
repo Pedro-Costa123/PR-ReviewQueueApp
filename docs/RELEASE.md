@@ -1,8 +1,8 @@
-# P12 release preparation and recovery
+# Release preparation and recovery
 
 Updated: 2026-09-26. P13 is selected and in progress; actual evidence is in STATUS. Follow
-[HOSTING](HOSTING.md) for exact destination/provider settings and
-[STATUS](STATUS.md) and [PILOT](PILOT.md) for actual results. Source remains private.
+`HOSTING.md` (local operator notes) for exact destination/provider settings and
+`STATUS.md` (local operator notes) and `PILOT.md` (local operator notes) for actual results. Source remains private.
 
 ## Release inputs and reproducibility
 
@@ -201,7 +201,7 @@ verify those separately. Keep sign-in unavailable until this is resolved.
    P13 has now applied the seven missing migrations (see HOSTED_AUTH mapping).
    Verify the mail function no longer references admissions and all historical
    admission rows remain revoked.
-4. Deploy the reviewed Edge functions; apply the exact [HOSTING](HOSTING.md)
+4. Deploy the reviewed Edge functions; apply the exact `HOSTING.md` (local operator notes)
    checklist privately. Remove `TRIAL_RECIPIENTS` from production configuration;
    preserve keys/sender, disabled signup, hook verification, CAPTCHA and budgets.
    Bootstrap only an explicitly chosen existing verified identity/team using the
