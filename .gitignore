@@ -57,6 +57,7 @@ yarn-error.log*
 *.sqlite3
 *.sqlite3-*
 backups/
+releases/
 exports/
 tmp/
 test-results/

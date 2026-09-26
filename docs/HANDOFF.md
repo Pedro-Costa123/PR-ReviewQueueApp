@@ -19,24 +19,22 @@ The repository documents are the shared source of context. A planning conversati
 
 ```text
 Work in the existing PR-ReviewQueueApp repository. Read AGENTS.md and the
-project docs, especially STATUS.md, NEXT.md, HOSTING.md, COSTS.md and SECURITY.md.
-Implement only P12: release checks and publishing preparation, following HOSTING.md.
-P11A prepared https://pr-review-queue.pages.dev/ and manual dashboard Direct Upload.
-Cloudflare validated the name as available; it is unreserved and must be rechecked
-before P13 allocation. Keep magic links and the verified auth.pedro-costa.dev sender.
-P06-P11 are verified locally, not deployed. Preserve revoked P05 trial admission,
-provider/secret storage, exact callbacks, explicit confirmation, disabled signup,
-server membership and email budgets. Preserve private enterprise hosts,
-Low/Medium/High/Critical priorities, no self-review, plain-text local comments and
-signals, owner/admin archive/restore, admin-only deleted recovery, and retained
-records/audit without purge. Finish P12 security/reproducibility, restricted
-backup/restore rehearsal, quota and release/rollback checks; remove the temporary
-database trial-admission route before production activation. Keep secrets private.
-Complete the local release preparation and checks,
-update docs and stop for review. Do not deploy, make the repository public,
-change DNS or hosted settings, create a cloud project, send real mail, or start
-P13 as incidental preparation.
-
+project docs, especially STATUS.md, NEXT.md, RELEASE.md, HOSTING.md, COSTS.md
+and SECURITY.md. After reviewing P12, implement only P13: deployment and the
+small pilot, following the release gates. Recheck the unreserved
+pr-review-queue.pages.dev name; stop if allocation differs. Keep manual dashboard
+Direct Upload, magic links and the verified auth.pedro-costa.dev sender.
+Complete the private backup/config recovery checkpoint before real-data admission.
+Apply only reviewed missing migrations including P12 trial-route retirement.
+Keep P05 admission revoked, provider secrets private, exact callbacks, explicit
+confirmation, disabled signup, server membership and email budgets.
+Preserve private enterprise hosts, Low/Medium/High/Critical priorities, no
+self-review, plain-text local comments/signals, owner/admin archive/restore,
+admin-only deleted recovery, and retained records/audit without purge.
+Do not make the repository public, change DNS, add paid services or integrations.
+Obtain the private enterprise-host and operator/team inputs when needed.
+Verify live HTTPS, origin isolation, CAPTCHA/login, quotas and delivery; do not
+claim a multi-day pilot in one run. Update docs and stop at P13 review.
 ```
 
 ## Prompt for any later item
@@ -62,7 +60,7 @@ The final reply should name the completed item, give the useful result/link, sum
 
 P00-P04A are complete locally; P05 is complete for the controlled hosted trial.
 P11 is implemented locally with automated and browser checks; see STATUS for evidence.
-P11A is prepared locally; stop for its review. P12 is next only when selected.
+P11A/P12 are prepared locally; stop for P12 review. P13 is next only when explicitly selected.
 Exact planned host: `pr-review-queue.pages.dev`, available at the dashboard check,
 unreserved. Local exact-origin production guards/config examples and dashboard
 upload preflight are in place; no project, upload or hosted setting changed.
@@ -88,7 +86,7 @@ and orders entries locally, with comments/reviews and archive/recovery; demo rou
 The owner confirmed no self-review, email visibility to active
 teammates, title/owner-admin entry edits and Low/Medium/High/Critical priorities.
 
-P11A began with a clean worktree at `34d8cc0`. P11A changes are uncommitted.
-No commit, push or app publication was performed during P11A.
+P12 began with a clean worktree at `e2e3761`. P12 changes are uncommitted.
+No commit, push or app publication was performed during P12.
 Inspect Git for earlier history rather than assuming another
 checkout or conversation has synchronized it.

@@ -1,11 +1,11 @@
 {
-    "name": "PR Review Queue · Demo",
+    "name": "PR Review Queue",
     "short_name": "PR Queue",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#111718",
     "theme_color": "#111718",
-    "description": "A fictional local preview of the PR Review Queue.",
+    "description": "A private, invitation-only team pull request queue.",
     "prefer_related_applications": false,
     "icons": [
         {

@@ -2,7 +2,102 @@
 
 Updated: 2026-09-26.
 
-## P11A local hosting preparation (2026-09-26)
+## P12 local release preparation (2026-09-26)
+
+**P12 is complete locally, ready for owner review.** Started from a clean
+worktree at `e2e3761`. P13 remains unstarted. The planned
+`https://pr-review-queue.pages.dev/` name remains unreserved; no cloud project,
+upload, hosted setting, DNS, visibility, billing, push or real mail changed.
+P06-P12 remain undeployed. [RELEASE](RELEASE.md) is the versioned handoff.
+
+- Tenth migration removes the P05 branch from `reserve_auth_email`, preserves
+  revoked admission evidence and requires non-null revocation. Historical
+  provisioning/admission scripts fail closed. Mail budgets/idempotency, exact
+  callback, provider/secret storage, verified sender, explicit confirmation,
+  disabled signup and all server membership/ownership rules remain intact.
+- Release tooling pins Flutter 3.47.4/revision 9584c6713b, Dart 3.13.3 and Node
+  26.5.0; lockfiles retain Supabase CLI 2.117.0 and application dependencies.
+  Two clean builds compare source/config/lockfile/migration/asset hashes and
+  retain ignored review packages. No deployment/CI dependency added.
+- Generated Pages headers enforce exact backend CSP, no-referrer, no-store,
+  nosniff, anti-framing and restricted permissions. CanvasKit stays bundled,
+  Turnstile is the only allowed external script, and the custom bootstrap never
+  registers a worker. Preflight rejects worker/private/debug assets and scans
+  credential patterns. Explicit 404 avoids implicit SPA fallback. Metadata now
+  says PR Review Queue; existing clearly fictional demos remain public static data.
+- Clean local reset applied all **ten migrations** without fixtures. Final
+  `npm test`: **19 passed**. Sequential combined auth/hook/environment/invitation/
+  onboarding/queue/ordering/activity/lifecycle/refresh suite: **89 passed**.
+  These include real local Auth/Mailpit, retired admission, disabled signup,
+  anonymous/foreign/revoked/forged denials, quotas, idempotency and concurrency.
+  No real mail was sent. `npm run lint`: no schema errors; local security advisor:
+  **seven informational** private RLS/no-policy findings, **zero warnings/errors**.
+- `flutter analyze`: no issues. Full Flutter suite: **59 passed**. Callback,
+  Turnstile, new release-policy and HTTP checks: **18 passed**. Locked
+  `npm ci --offline` passed in an isolated folder and in backend after stopping
+  the CLI; npm audit reported **zero known vulnerabilities**. No blanket security
+  guarantee or cross-platform hermetic build claim is made.
+  Final metadata follow-up: analysis passed again, **nine shell tests passed**,
+  and `dart format --output=none --set-exit-if-changed lib test` checked **40 files,
+  zero changes**. `git diff --check` passed.
+- Restricted restore rehearsal passed for **38 tables / 1,100 rows**. DPAPI
+  encrypted archive: **310,646 bytes**, operator/SYSTEM-only ACL, no plaintext
+  dump file. A fresh isolated local database restored all table counts/content
+  hashes, effective RLS/policies/function grants/search paths, retired admission
+  and anonymous/foreign/revoked/forged ownership denials. Scratch DB removed;
+  source and ignored encrypted evidence retained. Not a hosted/fresh-machine
+  restore: original local roles/extensions are available and DPAPI is user/machine
+  bound. RELEASE separates hosted Auth/config/secret recovery and off-device custody.
+- Two clean **production-check** builds with fixed fictional public config match
+  byte-for-byte: **43 files / 42,411,839 bytes**. Two finalized clean **local**
+  builds also match: **43 files / 42,411,880 bytes**. Largest asset in both is
+  `canvaskit/canvaskit.wasm`, **7,284,602 bytes**, below dashboard 25 MiB;
+  file count is below 1,000. Check/local modes are rejected by upload verification.
+  Two clean **disconnected** builds match: **43 files / 42,411,660 bytes**, with
+  the same largest asset. Final integrity verification passed against retained
+  package and current inputs. The real production widget/config is not created.
+- Browser: production-check stays disconnected on loopback; local captured-mail
+  request, new-document callback clean to `/`, explicit Enter confirmation,
+  authenticated reload and Enter sign-out all passed under CSP with no CSP error.
+  Inspected 390 x 844 dark/light layout, keyboard theme/demo navigation and hash
+  reload. Viewport override reset. Preview worker check: **zero registrations,
+  no controller, no Cache Storage entries**. Final disconnected preview has no
+  email form and disabled sign-in; the narrow QA iframe was visibly denied.
+  Live Turnstile/Pages headers remain P13.
+- Final source/document/history audit: **141 files, 21 Markdown files, 198
+  relative links, 371 history blobs**, with one private local secret compared
+  against built bytes without disclosure. No findings; LICENSE hash unchanged.
+  Final JavaScript syntax checks passed; both lockfiles remain unchanged.
+  Preview/function servers and local Supabase were stopped with data retained;
+  ignored release packages and restricted encrypted rehearsal evidence remain.
+- Read-only accounts: Cloudflare **Free**, no projects and zero displayed compute
+  usage; Supabase **Free**, **25.96 MB database**, **2 MAU**, **4 Edge calls**, rounded
+  **0.00 GB egress**. Resend **0/100 daily, 3/3,000 monthly**, sender verified,
+  tracking off. Hosted aggregate SQL: **3 migrations, 3 reservations, 0 active
+  admissions, 0 sessions, 0 memberships**. Dated terms/limits/log-meter changes
+  are in COSTS. Dashboard metrics can lag; no exact-zero traffic claim.
+- Corrections during verification: a startup socket closed in the first
+  authorization run; clean reset/rerun passed all 19. Sandboxed Node/Docker/Git
+  helpers and SDK/CLI/cache access needed escalation. In-place npm reinstall
+  initially hit the serving CLI's Windows lock; stopping it resolved the lock.
+  The first release checker mistook a dormant Flutter loader definition for
+  actual worker registration; it now validates the final bootstrap call.
+  An early build comparison rejected concurrent unrelated source edits; final
+  input hashing explicitly scopes release inputs and finalized pairs passed.
+  Restore preparation fixed the fixture table name, empty public schema and
+  managed Auth owner/default-ACL handling; comparisons normalize equivalent
+  implicit owner grants. No authorization workaround or widened hosted grant.
+
+Remaining P13 gates: name allocation recheck; private production public config/
+widget and enterprise hosts; restricted off-device backup/recovery custody and
+hosted checkpoint; reviewed migration/function rollout; actual HTTPS/CSP/origin
+isolation/CAPTCHA/login, Inbox placement and small-pilot feedback. All three P05
+deliveries reached Junk, unresolved. Existing unused Cupertino-font warning and
+generic Flutter icons remain cosmetic; the deprecated PWA flag is redundant with
+the explicit worker-free bootstrap/removal check. Preserve retained records/audit
+without purge. No product-rule changes. Stop for P12 review.
+
+## P11A local hosting preparation (2026-09-26; historical)
 
 **P11A is implemented locally, ready for owner review.** Started with a clean
 worktree at `34d8cc0`, after local P11. P12/P13 remain unstarted.
@@ -97,7 +192,7 @@ choose/check the exact pages.dev name then.
 ## Current implementation
 
 P00-P04A are complete locally. P05 is complete for the controlled hosted trial.
-**P11A hosting preparation is complete locally, ready for owner review.** P11 remains
+**P12 release preparation is complete locally, ready for owner review.** P11 remains
 complete locally. The signed-in
 Flutter queue now includes visible-tab refresh, filtering and bounded pages,
 alongside manual archive/restore and admin-only deleted recovery,
@@ -824,8 +919,8 @@ No backend tests were applicable during P02; P03 results are above. No productio
 
 ## Next
 
-Review **P11A: Cloudflare Pages hosting preparation**.
-The next item is **P12: release checks and publishing preparation**, only when
-selected. Keep trial admission revoked; carry the documented removal of its
-temporary database route, delivery and live callback checks into P12/P13.
-See [HOSTING](HOSTING.md).
+Review **P12: release checks and publishing preparation** using [RELEASE](RELEASE.md).
+The next ready item is **P13: deployment and small pilot**, only when explicitly
+selected after review. Apply the local trial-route retirement before activation;
+keep hosted P05 admission revoked. Recheck the unreserved hostname, private
+backup/config/enterprise-host inputs and live gates in [HOSTING](HOSTING.md).

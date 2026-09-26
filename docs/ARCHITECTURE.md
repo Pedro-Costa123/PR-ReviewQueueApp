@@ -41,7 +41,7 @@ Prepare this app's `frontend/build/web` artifact independently, using a prebuilt
 Hosting stages:
 
 1. P11A prepared exact production/local/trial configuration, root callback guards, dashboard Direct Upload preflight and provider checklist locally.
-2. Finish release, restore and rollout checks in P12. Keep Namecheap sender/portfolio records; the old app-specific `reviews` CNAME is unnecessary if it was added.
+2. Review completed local release/restore checks in P12 and its future rollout gates. Keep Namecheap sender/portfolio records; the old app-specific `reviews` CNAME is unnecessary if it was added.
 3. In separately selected P13, create/publish the Cloudflare Pages project, apply reviewed provider settings and verify live HTTPS, login and origin separation.
 
 Source: [Cloudflare Pages Direct Upload](https://developers.cloudflare.com/pages/get-started/direct-upload/). D35 supersedes D27's custom-domain publishing plan; the local root implementation remains useful.
@@ -59,6 +59,14 @@ Cloudflare Pages serves the static frontend; Supabase runs backend code. No Page
 The dedicated pages.dev hostname creates a distinct browser origin from the portfolio and PassGen. Its app storage and service workers are origin-scoped. Keep this hostname dedicated to the PR app and retain backend authorization. See [Security](SECURITY.md).
 
 ## Frontend
+
+P12 release tooling is in [RELEASE](RELEASE.md): two clean locked builds,
+source/config/asset hashes, static headers with exact backend CSP, bundled
+renderers and a bootstrap without service workers. Packages stay ignored/local;
+the manual Pages upload is P13. Its tenth migration removes the temporary trial
+mail branch while retaining revoked evidence. Restricted encrypted local backups
+include application, private/Auth data and migration history; hosted Auth/config/
+secret recovery is separately documented and is not proved by the local rehearsal.
 
 P02 implementation: feature folders under `frontend/lib/`, a small read-only `QueueRepository` with fictional display models, Material themes, `go_router` 18.0.1 using its default hash strategy, and `shared_preferences` 2.5.5 through `SharedPreferencesAsync`. The lockfile is pinned. Theme preference is loaded before first rendering, defaults to dark independently of OS theme, and reports unavailable storage without blocking the app. P04 adds pinned supabase_flutter 2.17.2 behind a small repository/controller; no extra state-management package.
 

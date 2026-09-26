@@ -162,7 +162,7 @@ class _ReviewQueueAppState extends State<ReviewQueueApp> {
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: widget.theme,
     builder: (context, child) => MaterialApp.router(
-      title: 'PR Review Queue · Demo',
+      title: 'PR Review Queue',
       debugShowCheckedModeBanner: false,
       theme: _theme(Brightness.light),
       darkTheme: _theme(Brightness.dark),

@@ -1,10 +1,10 @@
 # Product
 
 Last updated: 2026-09-26. Owner: Pedro Costa. Stage: P11 refresh/filtering/usability
-implemented locally; verification evidence is in STATUS. P12 remains unstarted. P05 controlled
+implemented locally; verification evidence is in STATUS. P12 release preparation is local; P13 is unstarted. P05 controlled
 hosted authentication is complete; Inbox placement remains a release follow-up. The
 signed-in queue now persists data locally; demo routes remain fictional.
-P11A prepares the future Cloudflare Pages frontend locally; stop for review.
+P11A/P12 prepare the future Cloudflare Pages frontend locally; stop for P12 review.
 Demo content and preparatory schema fields remain proposals.
 
 ## Problem and outcome

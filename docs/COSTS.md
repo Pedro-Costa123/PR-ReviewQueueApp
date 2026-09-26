@@ -4,6 +4,49 @@ Checked: **2026-09-14** using official provider documentation. Prices below are 
 
 ## Cloudflare Pages hosting recheck (2026-09-26)
 
+### P12 read-only account and quota evidence
+
+On 2026-09-26, Cloudflare's account UI shows **Free / Current plan**, no Workers
+or Pages projects, zero requests/CPU/build minutes/observability events. Its
+100,000 daily request counter is a Workers counter, not a static Pages asset cap.
+P11A's Direct Upload/name eligibility evidence remains limited to its check;
+the name is unreserved and P13 rechecks allocation.
+
+Supabase organization API and usage dashboard both report Free, no exceeded
+quota and no billed overages. Displayed usage: **25.96 MB** database (summary
+0.027/0.5 GB), **2/50,000 MAU**, **4/500,000 Edge invocations**, **0.00/5 GB egress**,
+zero cached egress/Storage/Realtime. These are rounded, delayed metrics, not
+exactly zero transferred bytes. Read-only hosted SQL still reports three
+migrations, three mail reservations and zero active trial admissions, sessions
+or memberships. No P06-P12 hosted migration was applied.
+
+Resend usage API: **0/100 daily**, **3/3,000 monthly** messages, **1/3 domains**.
+The existing sender remains verified, sending enabled/receiving disabled, with
+open/click tracking false. No message was sent. Turnstile's production widget is
+not yet created; the separate loopback widget is retained.
+
+Official [Pages limits](https://developers.cloudflare.com/pages/platform/limits/),
+[Direct Upload](https://developers.cloudflare.com/pages/get-started/direct-upload/),
+[static pricing](https://developers.cloudflare.com/pages/functions/pricing/),
+[Supabase pricing](https://supabase.com/pricing), [Resend pricing](https://resend.com/pricing)
+and [Turnstile plans](https://developers.cloudflare.com/turnstile/plans/) were
+rechecked for P12 on 2026-09-26. Previous free limits below still apply. Final
+artifact measurements are in STATUS; preflight enforces dashboard 1,000 files
+and 25 MiB per file. No CI, paid feature or automatic upgrade added.
+
+Supabase's new log meters show **0.001/1 GB ingestion** and **1.991/100 GB query
+scanning**, marked Upcoming. Its September 25 announcement gives a grace period
+into early 2027. Recheck enforcement before a later release; no paid logs or
+monitoring added. [Logs announcement](https://supabase.com/changelog/logs-usage-based-pricing).
+
+Reviewed [Cloudflare self-serve terms](https://www.cloudflare.com/terms/): respect
+quotas/acceptable use and content rights; Free service can be withdrawn. No
+agreement was accepted. This is an operational review, not a guarantee of future
+eligibility/availability. Free Supabase still lacks automatic backups; use the
+restricted [release/recovery plan](RELEASE.md). Keep 60% review/80% action
+thresholds, 60-mail/day review and atomic 80/day, 2,500/31-day application budgets.
+Retained records consume space indefinitely; no purge or paid fallback added.
+
 **Selected by the owner:** Cloudflare Pages Free at an available `pages.dev`
 address for the frontend, retaining Supabase Free and existing Resend magic-link
 email. P11A validated `pr-review-queue.pages.dev` as available in the authenticated

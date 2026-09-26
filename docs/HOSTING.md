@@ -1,6 +1,11 @@
 # Cloudflare Pages hosting plan
 
-Updated: 2026-09-26. P11A local preparation; no project or deployment created.
+Updated: 2026-09-26. P12 local release preparation; no project or deployment created.
+
+P12's build, security, restricted backup/restore and activation/rollback runbook
+is [RELEASE](RELEASE.md). Use its two-clean-build commands and final integrity
+verification for publishing preparation. Local results are in STATUS. P13 is
+unstarted; the hostname remains unreserved.
 
 ## Confirmed direction
 
@@ -42,7 +47,8 @@ free limits and the distinction between website and sender are in
 ## P11A — Prepare the Cloudflare Pages hosting change
 
 **Depends on:** completed local P11. **State:** implemented locally; see
-[STATUS](STATUS.md) for checks and review boundary. P12/P13 remain unstarted.
+[STATUS](STATUS.md) for checks and review boundary. P12 subsequently completed
+local release preparation; P13 remains unstarted.
 
 **Scope:** prepare the local app/configuration and runbooks for a stable production
 `pages.dev` origin while retaining base href `/`, hash routes and the existing
@@ -89,7 +95,7 @@ remain local. No production public-key file or production widget was created.
 | Additional redirect allowlist | Empty; Site URL supplies the exact default. Never add `*.pages.dev`, branch/hash preview aliases, loopback, old personal domain or portfolio paths to production |
 | Auth protections | Keep signup/anonymous/manual linking disabled, email confirmation enabled, 900-second token validity, existing rate limits and refresh replay protection |
 | Send Email Hook | Existing signed hook, `AUTH_EMAIL_MODE=production`, `APP_CALLBACK_URL=https://pr-review-queue.pages.dev/`; exact `redirect_to` equality before reservation; preserve hook secret, Resend key and existing mailbox at `auth.pedro-costa.dev` in provider storage |
-| Trial configuration | Keep admissions revoked. P12 must remove the temporary database admission branch before production; P13 removes `TRIAL_RECIPIENTS` from production environment. Never re-admit the old trial identity as a hosting convenience |
+| Trial configuration | Keep admissions revoked. P12 supplies the retirement migration; P13 must apply it and remove `TRIAL_RECIPIENTS` from production environment. Never re-admit the old trial identity as a hosting convenience |
 | `invite-member` | Same email configuration supplies exact CORS origin `https://pr-review-queue.pages.dev`; bearer identity and guarded admin/invitation RPCs remain authoritative, including requests with no Origin |
 | Turnstile | Separate managed production widget with hostname `pr-review-queue.pages.dev`, no pre-clearance; public site key in frontend, secret entered directly in Supabase Auth; retain the separate loopback trial widget |
 | Sender/DNS | Existing verified sender and Namecheap records below unchanged; tracking stays off; no website DNS record required |
@@ -118,12 +124,15 @@ From `frontend/`, disconnected root preview:
 
 ```powershell
 flutter build web --release --base-href / --no-web-resources-cdn
+node tool/prepare-release.cjs disconnected
 node tool/check-pages.cjs
 node tool/serve.cjs
 ```
 
 For local real-provider/captured-mail verification, use the existing
-[AUTH](AUTH.md) setup and add `--dart-define-from-file=.env.local.json` to the build.
+[AUTH](AUTH.md) setup, add `--dart-define-from-file=.env.local.json` to the build,
+and use `node tool/prepare-release.cjs local` in place of `disconnected` so the
+CSP allows the exact local API.
 Open `http://127.0.0.1:4173/`; hash-route reload stays at the root. Only local
 Mailpit receives fictional `@example.test` mail. The production mode deliberately
 does not connect on loopback; do not weaken its gate for a local browser test.
@@ -132,6 +141,7 @@ Future release build, **after P12 review and production public config preparatio
 
 ```powershell
 flutter build web --release --base-href / --no-web-resources-cdn --dart-define-from-file=.env.production.json
+node tool/prepare-release.cjs production
 node tool/check-pages.cjs
 ```
 
@@ -139,9 +149,10 @@ The read-only checker counts actual files and largest bytes, enforces dashboard
 limits (1,000 files, 25 MiB per file), checks root/early-script ordering and stale
 callback assets, and rejects symlinks, env files, CNAME, Functions and `_worker.js`.
 It performs no network call/upload and is not a secret audit or release approval.
-P12 still owns reproducibility, full asset/security/header/service-worker review,
-restricted backup/restore rehearsal and release packaging. Current generated
-icons and demo metadata remain release polish; nothing is upload-approved yet.
+P12 adds the strict checks and reproducible packaging in RELEASE; the commands
+above are a single-build preview only. Publish only after its two-pass comparison
+and final verifier. Metadata is prepared; generic icons remain cosmetic.
+No artifact is upload-authorized by P12.
 
 In explicitly selected P13, use **Workers & Pages > Create application > Continue
 to Pages > Drag and drop** (not the Worker static-upload flow). Recheck the name,
@@ -165,8 +176,8 @@ Do not redirect tokens to the old domain or turn signup on to recover access.
 
 Static rollback does not roll back Supabase migrations, Auth settings, secrets or
 Turnstile. Keep revoked admission and authorization intact; restore only reviewed
-compatible settings, otherwise leave sign-in unavailable. P12 must finish the
-restricted database/Auth/config restore plan before any rollout.
+compatible settings, otherwise leave sign-in unavailable. P12's restricted
+database/Auth/config restore plan is in RELEASE; satisfy its hosted gates before rollout.
 
 P13 must verify actual assigned hostname/HTTPS, exact redirects and preview-host
 denials, CAPTCHA/fresh tokens, first and returning-user links with explicit

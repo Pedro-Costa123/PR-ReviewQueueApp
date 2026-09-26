@@ -2,11 +2,11 @@
 
 Updated: 2026-09-26. **Execute one selected item, verify it, update the docs, and stop.** Do not turn this file into a single full-app implementation prompt.
 
-The owner selected only P11A after completed local P11. Cloudflare Pages hosting
-preparation is implemented locally for `https://pr-review-queue.pages.dev/`,
-validated as available but not reserved. Stop at P11A review. Hosted P06-P11
-rollout is unperformed; P05 admission remains revoked. P12 is next only when
-selected. No deployment or hosted settings changed. See [HOSTING](HOSTING.md).
+The owner selected only P12 after completed local P11A. Release preparation is
+complete locally for `https://pr-review-queue.pages.dev/`, whose name is still
+unreserved. Stop at P12 review. Hosted P06-P12 rollout is unperformed; P05 admission
+remains revoked. P13 is next only when explicitly selected. No deployment or hosted
+settings changed. See [HOSTING](HOSTING.md) and [RELEASE](RELEASE.md).
 
 `Complete` means the item's actual deliverable exists. `Ready` means the next item can start when requested. Later items remain planned, not authorized as a batch. Smaller UI/product defaults can be settled at the item that needs them.
 
@@ -26,8 +26,8 @@ selected. No deployment or hosted settings changed. See [HOSTING](HOSTING.md).
 | P10 | Archive, restore, and data lifecycle | Complete locally; ready for owner review | P09 |
 | P11 | Refresh, filtering, responsive UI, and accessibility | Complete locally; ready for owner review | P10 |
 | P11A | Prepare Cloudflare Pages hosting at a free pages.dev address | Complete locally; ready for owner review | P11 |
-| P12 | Release checks and publishing preparation | Ready when selected; not started | P11A |
-| P13 | Deploy the prepared release and run a small pilot | Planned | P12 |
+| P12 | Release checks and publishing preparation | Complete locally; ready for owner review | P11A |
+| P13 | Deploy the prepared release and run a small pilot | Ready only when explicitly selected after P12 review | P12 |
 
 ## P02 — Local Flutter app shell
 
@@ -189,7 +189,8 @@ No P11, hosted migration, real mail, provider change or publication. Stop for re
 and activity pages, draft/focus preservation, bounded retries and responsive,
 labelled controls. User-reported comment alignment and action spacing are fixed.
 Verification and measured costs are recorded in [STATUS](STATUS.md),
-[REFRESH](REFRESH.md) and [COSTS](COSTS.md). P12 remains unstarted; stop for review.
+[REFRESH](REFRESH.md) and [COSTS](COSTS.md). P12 was unstarted at the P11 review
+boundary; its later completion is recorded below.
 
 ## P11A — Cloudflare Pages hosting preparation
 
@@ -222,6 +223,15 @@ change. Stop for review before P12.
 **Acceptance:** Preview of the standalone app artifact serves `/` and hash routes; callback URLs match the planned pages.dev hostname. Relevant security matrix checks pass; release assets contain no secrets/private fixtures; restore is tested; provider configuration/usage is documented. The release uses this app's artifact independently of the portfolio. No Namecheap website record is required; retain the existing email records. Document how P13 will verify origin separation and preserve the existing sites. Resolve concrete release blockers before launch.
 
 **Boundary:** Prepare a reviewable release and publishing diff; P13 owns applying it. No DNS-provider change, automatic billing upgrade, repository rename or public-source change. No combined portfolio build.
+
+**Completed locally 2026-09-26:** tenth migration retires trial-mail eligibility
+without purging evidence; operator trial commands fail closed. Locked clean-build
+comparison, manifest/asset checks, CSP/no-store/no-worker packaging, restricted
+encrypted restore rehearsal, account/official quota checks and rollout/rollback
+runbook are in [RELEASE](RELEASE.md). Actual verification/corrections/limits are in
+[STATUS](STATUS.md). Keep secrets/private hosts in their existing stores.
+Live HTTPS, production widget/config, Inbox placement and hosted backup/activation
+gates remain explicitly in P13. No cloud project, DNS, real mail or publication.
 
 ## P13 — Deploy and pilot
 

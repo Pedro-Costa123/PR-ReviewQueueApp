@@ -14,6 +14,21 @@ local Supabase. P11A prepares exact production-mode guards locally; no productio
 
 ## P11A local hosting boundary
 
+P12 adds retirement migration `20260926174044_retire_trial_admission`: mail
+eligibility no longer reads the trial table, all evidence stays revoked, and
+`revoked_at` cannot be null. Historical operator entry points fail closed. This
+is applied locally only; P13 must apply it before activation. Mail budgets,
+idempotency, signatures, provider secrets and hosted revocation are unchanged.
+
+P12 adds CSP/exact API connections, anti-framing/no-referrer/no-store headers,
+worker-free bootstrap, credential-pattern checks, locked clean-build comparisons
+and encrypted restricted local restore verification. See [RELEASE](RELEASE.md)
+for scope, backup custody, managed Auth limits, rollback and live gates. Scans are
+heuristic, not proof of arbitrary-secret absence. Lazy Turnstile is the only remote
+script; CanvasKit stays bundled. Actual Pages headers, live CAPTCHA, HTTPS, Inbox
+placement and portfolio-origin tests remain P13. Older P05 evidence below is
+historical; admission is no longer an available local release route.
+
 Explicit production mode accepts only `https://pr-review-queue.pages.dev/`,
 public hosted project credentials and a non-dummy Turnstile site key. Local and
 trial modes remain loopback-only. The early script scrubs callback material
@@ -27,7 +42,7 @@ invitation eligibility, atomic budgets and Resend idempotency are unchanged.
 Invitation CORS uses the same exact callback origin; it never replaces bearer
 verification/live admin checks. No SQL/grants or hosted settings changed. The
 revoked P05 admission stays revoked; removal of the temporary database branch
-remains a required P12 release change before P13 activation. Tests/evidence are
+was implemented locally in P12 and must be applied before P13 activation. Tests/evidence are
 in [STATUS](STATUS.md); provider checklist and limits are in [HOSTING](HOSTING.md).
 
 ## P11 implemented evidence and limits

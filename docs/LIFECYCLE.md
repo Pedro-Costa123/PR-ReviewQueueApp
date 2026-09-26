@@ -121,6 +121,7 @@ Build/serve from `frontend/`:
 flutter analyze
 flutter test
 flutter build web --release --base-href / --no-web-resources-cdn --dart-define-from-file=.env.local.json
+node tool/prepare-release.cjs local
 node tool/serve.cjs
 ```
 

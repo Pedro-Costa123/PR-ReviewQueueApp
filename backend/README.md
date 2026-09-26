@@ -10,7 +10,10 @@ delivery/login and live denial checks passed; the trial admission is now revoked
 Inbox placement remains a release follow-up. P11A adds locally tested production
 configuration for the exact `https://pr-review-queue.pages.dev/` callback; no
 hosted activation. See [HOSTING](../docs/HOSTING.md) for the settings checklist.
-Keep trial admission revoked; P12 must remove its database route before P13.
+P12 adds the tenth local migration, removing trial-mail eligibility and retaining
+revoked evidence. Historical trial operator scripts now fail closed. Apply the
+retirement before P13 activation; the hosted project is unchanged. Reproducibility,
+restricted encrypted restore checks and rollout gates are in [RELEASE](../docs/RELEASE.md).
 
 P06 adds a fourth **local** migration, `invite-member`, guarded invitation
 claiming and profile RPCs, and the budgeted membership wrapper. Its 14 dedicated

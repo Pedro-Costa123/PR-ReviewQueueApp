@@ -220,7 +220,27 @@ CAPTCHA, explicit confirmation and server controls. The existing revoked trial
 admission is unchanged; P12 must remove its temporary database route before P13.
 P11A checks are local evidence only. P12/P13 remain unstarted.
 
-## Alternatives evaluated
+## D36 - P12 release and restricted recovery (2026-09-26)
+
+The owner selected P12 only: local checks/preparation, no cloud allocation,
+deployment, DNS/hosted settings, real mail, public-source change or P13 work.
+Retire the P05 mail-admission branch in a new migration and keep its revoked
+records. Preserve all budgets, ownership/membership and retained-data rules.
+
+Implementation uses pinned local two-clean-build comparisons and per-file SHA-256
+manifests, manual Direct Upload, exact-API CSP/no-store headers and no registered
+service worker. A disconnected fallback and fictional production-mode check are
+separate packages; only actual production/disconnected modes pass upload integrity
+verification. This check is not authorization to upload.
+
+Rehearse encrypted backup/restoration of fictional data to an isolated database
+inside the existing local cluster, preserving owners and effective permissions.
+DPAPI plus operator/SYSTEM ACLs protects local evidence; it is not portable
+off-device disaster recovery. Record private backup/key custody and verify hosted
+managed Auth/config recovery before real-data admission in P13. No purge or paid
+backup service is added. See [RELEASE](RELEASE.md).
+
+## Alternatives evaluated (historical)
 
 Current hosting/authentication direction is D35 above. Older alternatives here
 record earlier decisions, not authorization to use the personal domain again.

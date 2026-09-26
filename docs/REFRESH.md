@@ -108,6 +108,7 @@ fixtures using the commands in [QUEUE](QUEUE.md), and build/serve from `frontend
 flutter analyze
 flutter test
 flutter build web --release --base-href / --no-web-resources-cdn --dart-define-from-file=.env.local.json
+node tool/prepare-release.cjs local
 node tool/serve.cjs
 ```
 
@@ -137,6 +138,7 @@ extensions/custom operators affected by the recent database notice. Dependencies
 remain pinned; provider, auth, DNS, billing and publication settings are unchanged.
 
 P11 is complete locally. P11A subsequently prepares hosting; see [HOSTING](HOSTING.md).
-Stop for P11A review; P12 release preparation remains unstarted. Hosted P06–P11,
+P12 subsequently completed local release preparation; see [RELEASE](RELEASE.md).
+Stop for P12 review. Hosted P06–P12,
 real enterprise hosts, reliable Inbox placement, final HTTPS callback and publishing
 remain outstanding. Credentials stay in provider/secret storage.

@@ -1,5 +1,12 @@
 # Frontend
 
+P12 publishing preparation uses [RELEASE](../docs/RELEASE.md): pinned two-clean-build
+comparisons, manifest verification, exact-API CSP/no-store headers and no service
+worker. `build-release.ps1` produces ignored local review packages; it never uploads.
+After an ordinary build, run `node tool/prepare-release.cjs disconnected` (or
+`local` for `.env.local.json`) before serving. Use a real narrow browser viewport:
+the application now refuses framing. Stop for P12 review; P13 is not authorized.
+
 The Flutter Web shell has read-only fictional queues and optional local Supabase
 authentication. P05 adds an explicitly configured hosted trial with a lazy themed
 Turnstile dialog. P07 connects queue writes in the signed-in workspace. Use [AUTH](../docs/AUTH.md) for
@@ -32,7 +39,8 @@ activity pages, last-updated/checked status and a 60-second visible-tab schedule
 Unchanged revisions avoid full downloads; drafts defer replacement; access/session/
 quota failures pause refresh and network errors back off. Narrow layouts and
 keyboard/semantic checks use both themes. Run `flutter test test/refresh_test.dart`;
-see [REFRESH](../docs/REFRESH.md). No P12 or publication work is included.
+see [REFRESH](../docs/REFRESH.md). P12 adds local release preparation; publication
+remains a separate P13 item.
 
 Verified SDK: **Flutter 3.47.4 stable / Dart 3.13.3** on Windows. Only the web platform is scaffolded. Application dependencies and the lockfile are pinned; no global backend tooling is required.
 
@@ -50,6 +58,7 @@ From `frontend/` in PowerShell:
 ```powershell
 flutter pub get
 flutter build web --release --base-href / --no-web-resources-cdn
+node tool/prepare-release.cjs disconnected
 node tool/serve.cjs
 ```
 
@@ -82,11 +91,11 @@ See [Status](../docs/STATUS.md) for dated browser/keyboard evidence and limitati
 - `lib/shared/`: reusable UI and theme persistence using `SharedPreferencesAsync`.
 - `test/`: shell behavior and layout tests; no real identities or mail.
 
-The default demo stores only `pr_review_queue.theme`. The configured P04 preview also persists auth in sessionStorage with memory fallback; SDK cross-tab behavior is documented in AUTH. Theme-storage failures show a warning; unavailable auth storage falls back to memory. There is no fake login, role switch, or backend authorization bypass in any build; demo profiles are public fictional display data. The release artifact is still a demo and is not authorized for publishing.
+The default demo stores only `pr_review_queue.theme`. The configured P04 preview also persists auth in sessionStorage with memory fallback; SDK cross-tab behavior is documented in AUTH. Theme-storage failures show a warning; unavailable auth storage falls back to memory. There is no fake login, role switch, or backend authorization bypass in any build; demo profiles are public fictional display data. The final P12 artifact is the disconnected fallback; actual production configuration and publishing require P13.
 
 The generated Flutter favicon/app icons remain temporary. The SDK emits a missing Cupertino font-family warning during icon tree shaking; this shell uses Material icons, which render correctly in the inspected browser. No native-platform tooling is needed.
 
 Product behavior is in [Product](../docs/PRODUCT.md) and architecture in
 [Architecture](../docs/ARCHITECTURE.md). P05 is complete for the controlled trial;
-the demo queue remains fictional. P06-P11 and P11A are complete locally; review
-P11A before selecting P12. No deployment is authorized.
+the demo queue remains fictional. P06-P12 are complete locally; review P12 before
+selecting P13. No deployment is authorized.
