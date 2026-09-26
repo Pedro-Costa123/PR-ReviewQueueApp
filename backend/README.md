@@ -115,6 +115,16 @@ without an admin. An Auth identity must be verified through the supported
 onboarding flow before bootstrapping real use. Never manually mark a real email
 verified just to satisfy this check. Do not run the fictional demonstration against a hosted database. Missing/unverified identities and API attempts are covered by tests.
 
+## Production workspace reset
+
+`operator/reset-project.sql` starts over with one existing verified admin and a
+new team. The operator instructions are kept locally in `docs/RESET.md`.
+It previews by default. Explicit apply deletes all old workspace data and all
+other Auth accounts in one transaction while preserving email sending controls
+and the deployed schema/configuration. This is separate from the local
+`npm run reset` development command. Rehearse with `npm run test:reset`; no production
+reset is performed by that test.
+
 ## Verification coverage and next step
 
 SQL-role and HTTP tests cover positive reads, anonymous/outsider/cross-team

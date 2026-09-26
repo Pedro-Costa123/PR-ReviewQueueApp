@@ -2,7 +2,14 @@
 
 Updated: 2026-09-26. **Execute one selected item, verify it, update the docs, and stop.** Do not turn this file into a single full-app implementation prompt.
 
-The owner selected PUB02 publication cleanup after the PUB01 review. Scope:
+The owner selected **OPS01**: an operator script to reset production workspace
+data, keep one specified verified admin and create a named team. The owner
+confirmed that all other login accounts should also be deleted. This authorizes
+implementation and local verification, not execution against production.
+Instructions remain in `RESET.md` (local operator notes, per owner preference).
+P13 human pilot gates remain unchanged.
+
+The preceding PUB02 publication cleanup followed the PUB01 review. Scope:
 restore sanitized production templates, refresh the READMEs, and retain operator
 records only locally. Deployment-specific origin/sender checks and existing Git
 history stay unchanged. PUB02 is complete: 138 publication files, 16 Markdown
@@ -41,6 +48,29 @@ P13 and stop at its review boundary. See `STATUS.md` (local operator notes) and 
 | P13 | Deploy the prepared release and run a small pilot | Deployment review checkpoint; pilot started, multi-day feedback and rate-limited delivery pending | P12 |
 | PUB01 | Public-source repository/history audit | Complete; findings ready for owner review | Current P13 checkpoint |
 | PUB02 | Production examples, public READMEs and local-only operator records | Complete; ready for owner review, no visibility change | PUB01 |
+| OPS01 | Explicit workspace/Auth reset and new team/admin bootstrap | Complete locally; ready for review, no production execution | P03-P12 schema and current P13 checkpoint |
+
+## OPS01 - Operator workspace reset
+
+**Selected 2026-09-26:** create a script to start over with one admin and a new
+team name; owner explicitly confirmed deleting every other login account.
+Dependencies: existing P03-P12 migrations, operator bootstrap and current Auth
+schema. Acceptance: preview by default, verified admin validation, explicit
+connection confirmation, atomic deletion/bootstrap, preserved mail controls,
+rollback and authorization denial checks. Instructions stay local at the owner's
+request; the script and fictional regression test are source files.
+
+**Completed locally:** `backend/operator/reset-project.sql`, the isolated
+`npm run test:reset` rehearsal and updated behavioral/security documentation.
+All nine test-runner checks passed, covering preview, input/role rejection,
+schema/host/Storage guards, forced rollback, lock timeout, Auth cleanup and
+post-reset access. Schema, grants, RLS and mail controls survive. Production
+execution and hosted compatibility are not claimed. See `STATUS.md` and
+`RESET.md` (local operator notes) for evidence and usage.
+
+**Boundary/next:** review OPS01; execute a production reset only if separately
+requested. P13's remaining human pilot gates are the next existing product work;
+this task does not advance or complete them.
 
 ## P02 — Local Flutter app shell
 

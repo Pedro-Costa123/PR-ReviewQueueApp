@@ -75,6 +75,12 @@ Confirmed rules above take precedence. Additional details below are proposed def
 
 ### Archive, deletion, and PR closure
 
+**OPS01 exception (owner requested 2026-09-26):** a deployment operator may
+explicitly reset the entire workspace and delete all other login accounts,
+retaining one verified admin and creating a new team. This separate
+[reset script](../backend/operator/reset-project.sql) does not add a user-facing purge action or automatic
+expiry. Email sending controls remain retained.
+
 - **Confirmed in P10:** an active submitter or team admin can archive and restore an entry. Archiving records who did it, when, and a reason: merged, closed, no longer needed, or other.
 - Archived entries keep comments and signals and become read-only until restored. Archive is not deletion.
 - **Confirmed in P10:** retain archives, deleted records and minimal audit metadata without expiry or permanent purge. Only active team admins list/recover deleted entries. Recovery returns to the previous active/archive state; separately deleted comments stay deleted. P10 also allows owner/admin soft deletion from the archive. See [LIFECYCLE](LIFECYCLE.md).

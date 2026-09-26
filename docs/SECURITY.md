@@ -241,6 +241,19 @@ Create restricted backups/export instructions, retention, and a restore test bef
 
 For an incident: revoke affected memberships/invites and sessions, disable mail sending if abused, rotate exposed provider keys, preserve minimal useful logs, and restore from a verified backup if needed. Prefer a temporary outage to disabling authorization. Free-plan limits and remaining availability risks are in `COSTS.md` (local operator notes).
 
+## OPS01 explicit operator reset
+
+The owner requested a [whole-workspace reset](../backend/operator/reset-project.sql), including deletion of
+other Auth accounts. It requires a direct privileged postgres operator session,
+an existing verified/non-banned admin, the reviewed schema inventory and explicit
+target confirmation. It creates no callable API function or new grant. Transactional
+TRUNCATE with an explicit RESTRICT list avoids disabling the last-admin triggers;
+bootstrap and Auth deletion roll back together on failure. Email budget/idempotency
+records remain to prevent quota resets and webhook replays. Other users lose live
+membership even while their old access JWTs have not expired; the selected admin's
+Auth identity/sessions survive. The local `RESET.md` runbook covers retained logs and maintenance
+limits. No production reset is included in implementation verification.
+
 ## Required evidence before pilot
 
 ### P05 trial controls and hosted advisor review

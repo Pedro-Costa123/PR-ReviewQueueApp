@@ -32,6 +32,11 @@ P09's no-self-review and PR-link reset rules remain unchanged.
 
 ## Database contract
 
+OPS01 adds an explicitly invoked [operator workspace reset](../backend/operator/reset-project.sql) as an
+exception to retained application data: it removes all teams/history and other
+Auth accounts, then creates one team/admin. Ordinary lifecycle RPCs and retention
+remain unchanged; there is no client purge or scheduled cleanup.
+
 The eighth migration exposes four new authenticated RPCs and extends the existing
 `delete_entry` wrapper to archived entries. No direct table write grants change.
 

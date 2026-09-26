@@ -16,6 +16,7 @@
     "test:auth": "node --test --test-concurrency=1 tests/local-callback.test.cjs tests/email-hook.test.ts tests/hosted-email.test.ts tests/auth.test.cjs",
     "test:onboarding": "node --test --test-concurrency=1 tests/invite-handler.test.ts tests/onboarding.test.cjs",
     "test:queue": "node --test --test-concurrency=1 tests/queue.test.cjs",
+    "test:reset": "node --test tests/reset-project.test.cjs",
     "test:ordering": "node --test --test-concurrency=1 tests/ordering.test.cjs",
     "test:activity": "node --test --test-concurrency=1 tests/activity.test.cjs",
     "test:refresh": "node --test --test-concurrency=1 tests/refresh.test.cjs",

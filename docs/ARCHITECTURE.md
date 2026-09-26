@@ -234,6 +234,13 @@ private browser cache, provider change or deployment is introduced.
 
 ## Environments and operations
 
+OPS01 provides an operator-only [workspace reset](../backend/operator/reset-project.sql) through psql, outside
+migrations and API functions. It validates the selected verified Auth identity,
+previews affected counts, and requires connection-bound confirmation to apply.
+Explicit table truncation, other-user deletion and existing bootstrap execute
+atomically with bounded locks. Uniform enterprise hosts and mail budget/idempotency
+records survive; ordinary grants, functions and RLS are unchanged.
+
 Use Docker-backed local Supabase and a local email inbox/stub initially. Never send real mail in automated tests. P03 verified CLI 2.117.0 with Node 26.5.0/npm 11.17.0 and Docker's Linux engine; the CLI requires Node 20+. P04 exercised the local Edge Runtime and Mailpit capture. Default local reset applies schema only; fixtures are explicit test-runner input.
 
 Use one hosted Free project for the developer trial/pilot if eligible; local development avoids an extra hosted staging bill. Choose an available EU region as the default, without claiming that every vendor's logs/auth/email remain in the EU. Avoid a paid Supabase custom domain: the required frontend address does not require one.

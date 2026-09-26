@@ -69,6 +69,9 @@ deployment. This repository is a showcase, not a configurable self-hosting
 template: another deployment needs coordinated source/configuration changes and
 validation. Keep exact-origin checks, CAPTCHA and server permissions intact.
 See [release tooling](docs/RELEASE.md) for builds, integrity checks and recovery.
+For an intentional fresh start with one admin and team, see the
+[operator reset script](backend/operator/reset-project.sql). It previews first and requires an
+explicit destructive apply; ordinary app deletion remains recoverable.
 
 ## Checks and documentation
 
