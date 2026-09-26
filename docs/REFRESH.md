@@ -136,6 +136,7 @@ and [Supabase pricing](https://supabase.com/pricing). P11 introduces none of the
 extensions/custom operators affected by the recent database notice. Dependencies
 remain pinned; provider, auth, DNS, billing and publication settings are unchanged.
 
-Stop for P11 review. P12 release preparation remains unstarted. Hosted P06–P11,
+P11 is complete locally. P11A subsequently prepares hosting; see [HOSTING](HOSTING.md).
+Stop for P11A review; P12 release preparation remains unstarted. Hosted P06–P11,
 real enterprise hosts, reliable Inbox placement, final HTTPS callback and publishing
 remain outstanding. Credentials stay in provider/secret storage.

@@ -2,7 +2,74 @@
 
 Updated: 2026-09-26.
 
-## Hosting planning update (2026-09-26)
+## P11A local hosting preparation (2026-09-26)
+
+**P11A is implemented locally, ready for owner review.** Started with a clean
+worktree at `34d8cc0`, after local P11. P12/P13 remain unstarted.
+
+- Cloudflare's authenticated Direct Upload form validated `pr-review-queue` and
+  displayed the exact destination **`pr-review-queue.pages.dev`**. No project
+  existed in the account list. No Create project, upload or Deploy action was
+  taken. The name was available at the check; it is **unreserved**, so P13 must
+  recheck allocation and stop if the assigned name differs.
+- Added distinct production config in Flutter and the email hook, exact HTTPS
+  root callback and invitation origin, production CAPTCHA wiring and invited-email
+  copy. Early cleanup retains one-time explicit confirmation. Old personal-domain,
+  unexpected, branch/hash preview and local/production mode mixing are denied.
+- Added public-config/checklist examples and dependency-free read-only dashboard
+  Direct Upload preflight. HOSTING records exact future settings, manual upload,
+  rollback and retained Namecheap records. Local/trial env files, hosted settings,
+  provider secrets, sender and revoked P05 admission are preserved.
+- `npm start`, clean `npm run reset`: all nine existing migrations applied.
+  `npm test`: **19 passed**. `npm run test:auth`: **30 passed**.
+  `npm run test:onboarding`: **15 passed**. These exercise anonymous/foreign/
+  revoked/forged denials, disabled signup, exact invitations, real local Auth,
+  signed hooks, concurrent budgets and idempotency. No real mail was sent.
+  Separate hook/config/invitation/environment unit run: **20 passed**.
+  `npm run lint`: no schema errors. No migrations, SQL grants or product policies
+  changed; P07-P11 backend suites were not rerun for this hosting-only change.
+- Full Flutter suite: **57 passed**; after adding two production-specific SDK/UI
+  cases, the **13 relevant auth tests passed**. Analysis: no issues. JavaScript
+  callback/Turnstile checks: **13 passed**; root preview HTTP checks: **3 passed**.
+  SDK tests keep `create_user=false`, exact root redirects and fresh CAPTCHA for
+  confirmation fallback. Production UI still waits for explicit confirmation.
+- Local configured root release build and Wasm dry run passed. Preflight measured
+  **42 files / 42,411,949 bytes**, largest `canvaskit/canvaskit.wasm` at
+  **7,284,602 bytes**, within dashboard 1,000-file/25-MiB-per-file limits.
+  The existing unused Cupertino font warning remains.
+- A separate production-mode release/Wasm dry run with fictional public test
+  values passed; browser inspection on loopback showed no email form. Its
+  preflight also passed (42 files / 42,411,884 bytes, same largest asset). This
+  proves build/origin gating locally, not hosted keys, CAPTCHA or delivery.
+- Browser: fictional Mailpit request submitted with Tab/Enter, new-document
+  callback cleaned to `/` before confirmation, explicit Enter sign-in, successful
+  session reload and Enter sign-out clearing private workspace. Root hash-route
+  navigation/reload and narrow 390 x 844 sign-in controls inspected in both themes.
+- Tool corrections: Supabase changelog fetch and Node worker/fixture helper checks
+  required sandbox escalation. First authorization run hit one closed HTTP socket
+  during local function-runtime startup; clean reset/rerun passed all 19 tests.
+  Corrected two Dart interpolation lints before the passing analysis.
+- Documentation checks passed for **20 Markdown files / 179 relative links**,
+  balanced fences, whitespace and callback/backlog consistency. A tracked/new
+  non-ignored text scan checked **119 files** for credential patterns, with no
+  matches. `git diff --check` passed. Lockfiles, license, migrations and local
+  Supabase configuration are unchanged.
+- Stopped local function serving and `npm run stop` preserved the fictional
+  database. No hosted process/configuration was touched.
+- Final disconnected root build/Wasm dry run passed; browser confirmed no email
+  form. Final preflight: **42 files / 42,411,753 bytes**, same largest asset.
+  Format check: **40 files unchanged**. Stopped the preview and closed QA tabs.
+  A concurrent formatter stalled and was interrupted; its standalone check passed.
+
+Release limits: no live HTTPS, production CAPTCHA/login, origin-isolation or Inbox
+delivery claim. P06-P11 remain undeployed. P12 must remove the temporary database
+trial-admission route before P13 activation, finish asset/header/service-worker
+review and restricted backup/restore/reproducible-release checks. Name availability
+is not reservation. No project creation, DNS/hosted/provider/visibility/billing
+change, real mail, push or deployment. Stop for P11A review; P12 is next only when
+separately selected. See [HOSTING](HOSTING.md).
+
+## Hosting planning update (2026-09-26; historical, before P11A)
 
 The owner selected **Cloudflare Pages Free at a pages.dev address**, keeping
 emailed magic links and the verified `auth.pedro-costa.dev` sender. The former
@@ -30,7 +97,8 @@ choose/check the exact pages.dev name then.
 ## Current implementation
 
 P00-P04A are complete locally. P05 is complete for the controlled hosted trial.
-**P11 is complete locally, ready for owner review.** The signed-in
+**P11A hosting preparation is complete locally, ready for owner review.** P11 remains
+complete locally. The signed-in
 Flutter queue now includes visible-tab refresh, filtering and bounded pages,
 alongside manual archive/restore and admin-only deleted recovery,
 alongside plain-text comments and per-user review signals,
@@ -137,8 +205,8 @@ multi-request snapshot, cross-page reorder tool or full screen-reader certificat
 Existing onboarding roster/invitation lists retain their 100-row limits. No new
 private persistent cache, Realtime, dependency, service, email or hosted operation.
 P09 no-self-review/plain text/local signals and P10 retained records/no purge hold.
-P05 admission remains revoked. The later planning update inserts P11A before P12;
-both remain unstarted. Stop for P11 review.
+P05 admission remains revoked. P11A was subsequently selected and prepared locally;
+its evidence is above. P12 remains unstarted. This section records the P11 boundary.
 
 ## P10 implementation and evidence on 2026-09-26 (historical)
 
@@ -704,8 +772,10 @@ Workspace: C:\Users\pedro\Projects\PR-ReviewQueueApp. Branch: main. P03 is
 committed as c2b44c8 and P04 as 1ff6c13. P04A began from a clean worktree at
 bd8e62c (the hosting-decision documentation commit) and was committed as 99c68f3.
 P05 is committed as 5ad5235 and P06 as 4c96d27. P07 is committed as 9fa4565
-and P08 as 61fe31e. P09 is committed as 5326510 and P10 as c5700a4. P11 began from a clean worktree
-and remains uncommitted. No fetch, push or app publication was performed during P11.
+and P08 as 61fe31e. P09 is committed as 5326510 and P10 as c5700a4. P11 was
+subsequently committed as dadd029; the hosting plan is 34d8cc0. P11A began from
+that clean worktree and remains uncommitted. No fetch, push or app publication
+was performed during P11A.
 
 Tooling remains Flutter 3.47.4/Dart 3.13.3, Node 26.5.0/npm 11.17.0, Supabase CLI
 2.117.0 and Postgres 17.6.1.167. P04 also exercised local Edge Runtime 1.74.3
@@ -754,7 +824,8 @@ No backend tests were applicable during P02; P03 results are above. No productio
 
 ## Next
 
-Review **P11: refresh, filtering, responsive UI and accessibility**.
-The next item is **P11A: Cloudflare Pages hosting preparation**, only when selected.
-P12 follows P11A. Keep trial admission revoked; carry the documented delivery and
-production callback checks into P11A/P12/P13. See [HOSTING](HOSTING.md).
+Review **P11A: Cloudflare Pages hosting preparation**.
+The next item is **P12: release checks and publishing preparation**, only when
+selected. Keep trial admission revoked; carry the documented removal of its
+temporary database route, delivery and live callback checks into P12/P13.
+See [HOSTING](HOSTING.md).

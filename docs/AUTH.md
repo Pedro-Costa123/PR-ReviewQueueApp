@@ -9,8 +9,8 @@ continues to use fictional recipients and local Mailpit only.
 
 The future frontend will use **Cloudflare Pages Free at an available pages.dev
 address**, replacing the personal-domain website plan. Magic links and the
-verified Resend sender stay. P11A preparation is planned before P12; no code or
-hosted setting changed. See [HOSTING](HOSTING.md). This document's commands use
+verified Resend sender stay. P11A prepares explicit production configuration for
+`https://pr-review-queue.pages.dev/`; no hosted setting changed. See [HOSTING](HOSTING.md). This document's commands use
 the verified P04A local equivalent,
 **`http://127.0.0.1:4173/`**. The callback scrubber, Dart local gate, preview/frame,
 Supabase Site URL, sender guard, startup helper and tests use the root together.
@@ -77,8 +77,9 @@ Open `http://127.0.0.1:4173/`, request a link for the preview
 address, and open its message at `http://127.0.0.1:54324/`. Open the email link in
 a new tab/document. Choose **Continue
 sign-in** on the app. The queue remains public fictional presentation data.
-Without the define file, the app remains the disconnected demo. The frontend
-enables authentication only for the exact local API and loopback preview origin.
+Without the define file, the app remains the disconnected demo. This local configuration enables authentication only for the exact local API
+and loopback preview origin. P11A production mode separately requires the exact
+Pages root, public hosted project key and production Turnstile site key.
 
 With the preview server running, run `node --test test/preview.test.cjs` in
 another frontend terminal. This checks the root base, bundled resources, narrow

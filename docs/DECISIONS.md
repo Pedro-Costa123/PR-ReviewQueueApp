@@ -197,16 +197,28 @@ P12 stays unstarted until separately selected; P05 admission remains revoked.
 
 **Confirmed:** the owner selected Cloudflare Pages Free and a provider-supplied
 `pages.dev` address for this experiment, replacing D27's personal-domain website
-and GitHub Pages deployment. Exact project name/address is pending availability.
+and GitHub Pages deployment. P11A subsequently validated the exact name below.
 The owner then clarified that emailed magic links and the existing sender should
 remain; only the web host changes. D04/D28's authentication and sender roles remain.
 Read-only Resend inspection reconfirmed `auth.pedro-costa.dev` is verified.
 
-**Planning only:** add P11A before P12. No implementation, provider/DNS setting,
-repository visibility, deployment, email or billing change. Keep the portfolio,
+**Original planning boundary:** add P11A before P12 without implementation.
+The owner subsequently selected P11A for local preparation only. No provider/DNS
+setting, repository visibility, deployment, real email or billing change. Keep the portfolio,
 PassGen, Supabase backend, server permissions, Resend budgets and revoked trial
 admission. No OAuth migration, new domain purchase or Cloudflare backend service.
 See [HOSTING](HOSTING.md) for scope/acceptance and [COSTS](COSTS.md) for dated sources.
+
+**P11A implementation decision (2026-09-26):** use
+`https://pr-review-queue.pages.dev/` and manual dashboard Direct Upload of
+`frontend/build/web`. The authenticated form validated this exact available name;
+no Create project/Deploy action was taken, so it remains unreserved. Stop and
+revise the exact settings/tests if allocation differs at P13. The measured
+artifact fits dashboard limits; no Wrangler, CI, Functions or visibility change.
+Production/local/trial modes have separate origin gates. Keep the verified sender,
+CAPTCHA, explicit confirmation and server controls. The existing revoked trial
+admission is unchanged; P12 must remove its temporary database route before P13.
+P11A checks are local evidence only. P12/P13 remain unstarted.
 
 ## Alternatives evaluated
 

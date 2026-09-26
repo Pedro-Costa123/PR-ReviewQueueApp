@@ -6,8 +6,10 @@ Checked: **2026-09-14** using official provider documentation. Prices below are 
 
 **Selected by the owner:** Cloudflare Pages Free at an available `pages.dev`
 address for the frontend, retaining Supabase Free and existing Resend magic-link
-email. Exact hostname and account capacity remain to be verified. P11A is planning
-only and precedes P12; no new project, paid feature, subscription or deployment.
+email. P11A validated `pr-review-queue.pages.dev` as available in the authenticated
+Direct Upload form; it is unreserved. The account project list was empty. Account
+eligibility/remaining quotas must still be rechecked at release. No new project,
+paid feature, subscription or deployment.
 The personal website-domain requirement is superseded; sender DNS and its existing
 domain renewal remain. This does not eliminate all personal-domain use.
 
@@ -15,11 +17,20 @@ Cloudflare lists static asset requests as free and unlimited when they do not
 invoke Functions. Free Pages lists 500 builds/month, one concurrent build,
 20,000 files and a 25 MiB per-file maximum. Direct Upload accepts prebuilt assets
 at `<project>.pages.dev`; dashboard upload has a 1,000-file limit, while Wrangler
-supports 20,000. Direct Upload cannot switch to Git integration in place. Verify
-the release artifact and choose the upload method in P11A; no Functions are needed.
+supports 20,000. Direct Upload cannot switch to Git integration in place. P11A
+selected manual dashboard upload; no Functions or Wrangler dependency is needed.
 [Static pricing](https://developers.cloudflare.com/pages/functions/pricing/),
 [Pages limits](https://developers.cloudflare.com/pages/platform/limits/),
 [Direct Upload](https://developers.cloudflare.com/pages/get-started/direct-upload/).
+
+Rechecked those official hosting sources for P11A on **2026-09-26**. The local
+configured JavaScript release contains **42 files**, **42,411,949 bytes** total;
+largest is `canvaskit/canvaskit.wasm`, **7,284,602 bytes**, below 25 MiB
+(26,214,400 bytes). `node tool/check-pages.cjs` measures the current artifact and
+enforces the 1,000-file dashboard limit. Rebuilds change totals; rerun before any
+upload. These are disk bytes, not billed transfer, deployed size or account quota.
+No CI, subscription, automatic overage or paid service was added. Static rollback
+and exact settings are in [HOSTING](HOSTING.md); backend/email budgets are unchanged.
 
 GitHub Free Pages requires public publishing repositories and project sites
 inherit the account site's custom domain when configured. An independent

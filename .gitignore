@@ -13,6 +13,8 @@ Desktop.ini
 .env.*
 !.env.example
 !.env.*.example
+.env.production.example
+.env.production.json.example
 .dev.vars
 .dev.vars.*
 !.dev.vars.example

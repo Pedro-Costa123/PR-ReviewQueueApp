@@ -10,7 +10,25 @@ public demo routes still contain only fictional presentation fixtures. P04 adds
 a real local Auth client and sessionStorage adapter, with SDK cross-tab synchronization.
 There is no fake signed-in identity, role switch or company URL. Browser demo
 navigation is not an authorization test. SQL-role/Data API denial tests run against
-local Supabase. The release build remains a local preview, not a production auth path.
+local Supabase. P11A prepares exact production-mode guards locally; no production auth path is deployed.
+
+## P11A local hosting boundary
+
+Explicit production mode accepts only `https://pr-review-queue.pages.dev/`,
+public hosted project credentials and a non-dummy Turnstile site key. Local and
+trial modes remain loopback-only. The early script scrubs callback material
+before Flutter; only an allowed root can hand off once, and Dart checks the build
+mode independently. Old personal-domain, other Pages and branch/hash preview
+origins are rejected. Confirmation, cancellation and sessionStorage are unchanged.
+
+The mail configuration validates the exact callback and existing sender domain;
+production rejects leftover trial recipients. Hook signatures, server identity/
+invitation eligibility, atomic budgets and Resend idempotency are unchanged.
+Invitation CORS uses the same exact callback origin; it never replaces bearer
+verification/live admin checks. No SQL/grants or hosted settings changed. The
+revoked P05 admission stays revoked; removal of the temporary database branch
+remains a required P12 release change before P13 activation. Tests/evidence are
+in [STATUS](STATUS.md); provider checklist and limits are in [HOSTING](HOSTING.md).
 
 ## P11 implemented evidence and limits
 
@@ -155,7 +173,7 @@ Supabase supports magic links and PKCE and provides CAPTCHA and rate controls. T
 
 ## Browser and link safety
 
-The owner selected a dedicated **Cloudflare Pages `pages.dev` origin** on 2026-09-26; the exact hostname is pending. It replaces the personal-domain web target and remains separate from the portfolio/PassGen origin. The latter's scripts cannot directly read app-origin storage or DOM, and its service workers cannot control the app origin. Keep the hostname dedicated to this app. This is a planned boundary, not a deployed/tested configuration. P11A is preparation only; see [HOSTING](HOSTING.md). [Browser same-origin policy](https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Same-origin_policy)
+The owner selected a dedicated **Cloudflare Pages `pages.dev` origin** on 2026-09-26; the exact `pr-review-queue.pages.dev` name was validated as available, but remains unreserved. It replaces the personal-domain web target and remains separate from the portfolio/PassGen origin. The latter's scripts cannot directly read app-origin storage or DOM, and its service workers cannot control the app origin. Keep the hostname dedicated to this app. This is a planned boundary, not a deployed/tested configuration. P11A is preparation only; see [HOSTING](HOSTING.md). [Browser same-origin policy](https://developer.mozilla.org/en-US/docs/Web/Security/Defenses/Same-origin_policy)
 
 Separate origins under the same parent domain are not separate sites for every browser rule. Do not use `document.domain`, parent-domain auth cookies, broad credential sharing, or permissive message handlers to reconnect them. RLS, token verification and any future CSRF protection remain necessary. Review third-party scripts loaded by the app itself; code included in the app runs with its privileges.
 

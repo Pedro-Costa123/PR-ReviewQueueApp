@@ -39,6 +39,51 @@ class FakeAuth implements AuthRepository {
 }
 
 void main() {
+  testWidgets(
+    'production copy describes invited email and still waits for confirmation',
+    (tester) async {
+      final repository = FakeAuth();
+      final controller = AuthController(repository, production: true);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SingleChildScrollView(child: SignInPage(auth: controller)),
+          ),
+        ),
+      );
+      expect(
+        find.textContaining('Use your invited work email'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('Local mail only'), findsNothing);
+      expect(repository.requests, 0);
+      await tester.pumpWidget(const SizedBox());
+      controller.dispose();
+      final pending = AuthController(
+        repository,
+        production: true,
+        callback: 'provider-token',
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SingleChildScrollView(child: SignInPage(auth: pending)),
+          ),
+        ),
+      );
+      expect(find.text('Continue sign-in'), findsOneWidget);
+      expect(repository.confirmations, 0);
+      await tester.tap(find.text('Continue sign-in'));
+      await tester.pumpAndSettle();
+      expect(repository.confirmations, 1);
+      await tester.tap(find.text('Sign out'));
+      await tester.pumpAndSettle();
+      expect(repository.email, isNull);
+      await tester.pumpWidget(const SizedBox());
+      pending.dispose();
+      await repository.events.close();
+    },
+  );
   test(
     'verification failure has a recoverable message and allows another request',
     () async {

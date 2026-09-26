@@ -2,14 +2,11 @@
 
 Updated: 2026-09-26. **Execute one selected item, verify it, update the docs, and stop.** Do not turn this file into a single full-app implementation prompt.
 
-The owner selected only P11 after completed local P10. P11 refresh, filtering,
-pagination and accessibility are complete locally with automated and browser
-verification. Hosted P06-P11 rollout is unperformed. Stop at P11 review; do not execute
-P12 or publish automatically. P05 hosted admission remains revoked.
-
-**Planning update 2026-09-26:** the owner selected Cloudflare Pages Free for the
-future website, keeping existing magic-link email. Added **P11A before P12**;
-implementation is not authorized by this planning request. See [HOSTING](HOSTING.md).
+The owner selected only P11A after completed local P11. Cloudflare Pages hosting
+preparation is implemented locally for `https://pr-review-queue.pages.dev/`,
+validated as available but not reserved. Stop at P11A review. Hosted P06-P11
+rollout is unperformed; P05 admission remains revoked. P12 is next only when
+selected. No deployment or hosted settings changed. See [HOSTING](HOSTING.md).
 
 `Complete` means the item's actual deliverable exists. `Ready` means the next item can start when requested. Later items remain planned, not authorized as a batch. Smaller UI/product defaults can be settled at the item that needs them.
 
@@ -28,8 +25,8 @@ implementation is not authorized by this planning request. See [HOSTING](HOSTING
 | P09 | Comments and per-user review signals | Complete locally; ready for owner review | P08 |
 | P10 | Archive, restore, and data lifecycle | Complete locally; ready for owner review | P09 |
 | P11 | Refresh, filtering, responsive UI, and accessibility | Complete locally; ready for owner review | P10 |
-| P11A | Prepare Cloudflare Pages hosting at a free pages.dev address | Ready when selected; not started | P11 |
-| P12 | Release checks and publishing preparation | Planned; follows P11A | P11A |
+| P11A | Prepare Cloudflare Pages hosting at a free pages.dev address | Complete locally; ready for owner review | P11 |
+| P12 | Release checks and publishing preparation | Ready when selected; not started | P11A |
 | P13 | Deploy the prepared release and run a small pilot | Planned | P12 |
 
 ## P02 — Local Flutter app shell
@@ -208,8 +205,13 @@ browser/keyboard login checks pass. Reject obsolete personal-domain, unexpected
 and preview-host callbacks. Existing team/invitation/mail protections remain.
 Document upload limits, rollback and the remaining live checks for P13.
 
-**Boundary:** implementation has not started.
-When separately selected, this item is local preparation only: no cloud project
+**Completed locally 2026-09-26:** Cloudflare name validation confirmed the exact
+unreserved `pr-review-queue.pages.dev` destination. Added explicit production
+auth configuration, exact callback/origin guards, config examples, dashboard
+Direct Upload preflight and provider/rollback checklist. Verification is in
+[STATUS](STATUS.md); live acceptance remains P13.
+
+**Boundary:** local preparation only: no cloud project
 creation, deployment, hosted settings, real mail, DNS, visibility or paid-service
 change. Stop for review before P12.
 

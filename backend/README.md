@@ -7,7 +7,10 @@ P05 adds a gated Resend sender, bounded operator trial admissions and mock sende
 tests and a CLI-backed operator provisioning helper. The existing Free hosted
 project has the three migrations and the signed hook deployed/enabled. Controlled
 delivery/login and live denial checks passed; the trial admission is now revoked.
-Inbox placement remains a release follow-up.
+Inbox placement remains a release follow-up. P11A adds locally tested production
+configuration for the exact `https://pr-review-queue.pages.dev/` callback; no
+hosted activation. See [HOSTING](../docs/HOSTING.md) for the settings checklist.
+Keep trial admission revoked; P12 must remove its database route before P13.
 
 P06 adds a fourth **local** migration, `invite-member`, guarded invitation
 claiming and profile RPCs, and the budgeted membership wrapper. Its 14 dedicated
@@ -163,12 +166,13 @@ suite checks actual local Auth and captured delivery; neither suite claims deplo
 P04A is complete locally: Auth Site URL and the sender's exact callback use
 `http://127.0.0.1:4173/`. The later frontend hosting choice is Cloudflare Pages
 at an available pages.dev hostname, retaining the existing email sender;
-P11A preparation is planned, not implemented. See [HOSTING](../docs/HOSTING.md).
+P11A preparation is local only, including exact production callback settings.
+See [HOSTING](../docs/HOSTING.md); activation remains P13 after P12 review.
 `npm start` migrates the known old `.env` callback without rotating the secret;
 stop an already-running stack first and restart the function terminal afterward.
 The full replacement sequence and browser checks are in AUTH/STATUS.
-Continue **P05** hosted authentication/cost validation from HOSTED_AUTH;
-provider setup and controlled live acceptance remain the current boundary.
+P05 is closed with revoked admission; review completed local P11A before
+selecting P12. HOSTED_AUTH retains the trial evidence and remaining live checks.
 The frontend subdomain does not require a paid Supabase custom domain.
 See [NEXT](../docs/NEXT.md), [STATUS](../docs/STATUS.md),
 [ARCHITECTURE](../docs/ARCHITECTURE.md), and [SECURITY](../docs/SECURITY.md).

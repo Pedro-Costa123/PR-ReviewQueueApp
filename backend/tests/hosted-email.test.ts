@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { emailConfig } from '../supabase/functions/send-auth-email/config.ts';
+import { emailConfig, productionCallback } from '../supabase/functions/send-auth-email/config.ts';
 import { resendSender, localSender } from '../supabase/functions/send-auth-email/senders.ts';
 
 const hosted = { AUTH_EMAIL_MODE: 'hosted-trial', SUPABASE_URL: `https://${'a'.repeat(20)}.supabase.co`,
@@ -8,6 +8,28 @@ const hosted = { AUTH_EMAIL_MODE: 'hosted-trial', SUPABASE_URL: `https://${'a'.r
   SEND_EMAIL_HOOK_SECRET: 'test-secret', DENO_DEPLOYMENT_ID: 'test-deployment',
   TRIAL_RECIPIENTS: 'developer@example.com', AUTH_EMAIL_FROM: 'signin@auth.example.com', RESEND_API_KEY: 're_test' };
 const config = (values: Record<string, string | undefined>) => emailConfig(name => values[name]);
+
+test('production keeps exact Pages callback and existing sender, rejects trial and local config', () => {
+  const production = { ...hosted, AUTH_EMAIL_MODE: 'production',
+    APP_CALLBACK_URL: productionCallback, AUTH_EMAIL_FROM: 'signin@auth.pedro-costa.dev',
+    TRIAL_RECIPIENTS: undefined };
+  assert.equal(config(production).mode, 'production');
+  assert.equal(config(production).callback, productionCallback);
+  for (const change of [
+    { APP_CALLBACK_URL: hosted.APP_CALLBACK_URL },
+    { APP_CALLBACK_URL: 'https://reviews.pedro-costa.dev/' },
+    { APP_CALLBACK_URL: 'https://preview.pr-review-queue.pages.dev/' },
+    { APP_CALLBACK_URL: 'https://other.pages.dev/' },
+    { APP_CALLBACK_URL: `${productionCallback}?next=/` },
+    { APP_CALLBACK_URL: `${productionCallback}index.html` },
+    { APP_CALLBACK_URL: 'https://pr-review-queue.pages.dev' },
+    { AUTH_EMAIL_MODE: 'hosted-trial' }, { AUTH_EMAIL_MODE: 'local' },
+    { TRIAL_RECIPIENTS: hosted.TRIAL_RECIPIENTS }, { DENO_DEPLOYMENT_ID: undefined },
+    { AUTH_EMAIL_FROM: 'signin@auth.example.com' },
+    { AUTH_EMAIL_FROM: 'injected\r\nBCC:other@auth.pedro-costa.dev' },
+    { RESEND_API_KEY: '' }, { SUPABASE_URL: 'http://kong:8000' },
+  ]) assert.throws(() => config({ ...production, ...change }));
+});
 test('hosted mode requires exact project, callback, deployed runtime and a bounded explicit recipient list', () => {
   assert.equal(config(hosted).mode, 'hosted-trial');
   for (const change of [

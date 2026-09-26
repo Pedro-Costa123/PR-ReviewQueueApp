@@ -19,19 +19,23 @@ The repository documents are the shared source of context. A planning conversati
 
 ```text
 Work in the existing PR-ReviewQueueApp repository. Read AGENTS.md and the
-project docs, especially STATUS.md, NEXT.md, REFRESH.md, COSTS.md and SECURITY.md.
-Implement only P11A: Cloudflare Pages hosting preparation, following HOSTING.md.
-The owner selected a free pages.dev frontend while keeping magic links and the
-verified auth.pedro-costa.dev sender. Confirm the exact available hostname.
+project docs, especially STATUS.md, NEXT.md, HOSTING.md, COSTS.md and SECURITY.md.
+Implement only P12: release checks and publishing preparation, following HOSTING.md.
+P11A prepared https://pr-review-queue.pages.dev/ and manual dashboard Direct Upload.
+Cloudflare validated the name as available; it is unreserved and must be rechecked
+before P13 allocation. Keep magic links and the verified auth.pedro-costa.dev sender.
 P06-P11 are verified locally, not deployed. Preserve revoked P05 trial admission,
 provider/secret storage, exact callbacks, explicit confirmation, disabled signup,
 server membership and email budgets. Preserve private enterprise hosts,
 Low/Medium/High/Critical priorities, no self-review, plain-text local comments and
 signals, owner/admin archive/restore, admin-only deleted recovery, and retained
-records/audit without purge. Complete the local hosting preparation and checks,
+records/audit without purge. Finish P12 security/reproducibility, restricted
+backup/restore rehearsal, quota and release/rollback checks; remove the temporary
+database trial-admission route before production activation. Keep secrets private.
+Complete the local release preparation and checks,
 update docs and stop for review. Do not deploy, make the repository public,
 change DNS or hosted settings, create a cloud project, send real mail, or start
-P12/P13 as incidental preparation.
+P13 as incidental preparation.
 
 ```
 
@@ -58,8 +62,10 @@ The final reply should name the completed item, give the useful result/link, sum
 
 P00-P04A are complete locally; P05 is complete for the controlled hosted trial.
 P11 is implemented locally with automated and browser checks; see STATUS for evidence.
-Stop at P11 review. The later hosting request was planning only: P11A is now next
-when selected, before P12. No hosting implementation or live settings changed.
+P11A is prepared locally; stop for its review. P12 is next only when selected.
+Exact planned host: `pr-review-queue.pages.dev`, available at the dashboard check,
+unreserved. Local exact-origin production guards/config examples and dashboard
+upload preflight are in place; no project, upload or hosted setting changed.
 See [REFRESH](REFRESH.md) for polling, filters, pages, accessibility and limitations.
 See [QUEUE](QUEUE.md) for entry/ordering contracts, private hosts, preview and limitations.
 See [ACTIVITY](ACTIVITY.md) for comments/reviews, contracts and review boundary.
@@ -75,13 +81,14 @@ placement or assume the admission is still active. The final artifact is the
 disconnected demo; rebuild explicit trial configuration only when needed.
 
 [AUTH](AUTH.md) retains the local runbook. Hosted/local builds share the exact
-loopback root but use distinct explicit modes. A pages.dev production hostname
-will be prepared in P11A and released through P12/P13. The signed-in queue now persists
+loopback root but use distinct explicit modes. The prepared production mode uses
+only the exact Pages root; activation remains P13 after P12 checks and removal of
+the temporary database trial route. The signed-in queue now persists
 and orders entries locally, with comments/reviews and archive/recovery; demo routes remain fictional.
 The owner confirmed no self-review, email visibility to active
 teammates, title/owner-admin entry edits and Low/Medium/High/Critical priorities.
 
-P10 is committed as `c5700a4`; P11 began from a clean worktree. P11 changes are
-uncommitted. No commit, push or app publication was performed during P11.
+P11A began with a clean worktree at `34d8cc0`. P11A changes are uncommitted.
+No commit, push or app publication was performed during P11A.
 Inspect Git for earlier history rather than assuming another
 checkout or conversation has synchronized it.

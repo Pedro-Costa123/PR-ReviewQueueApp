@@ -1,9 +1,31 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { inviteHandler } from '../supabase/functions/invite-member/handler.ts';
+import { productionCallback } from '../supabase/functions/send-auth-email/config.ts';
 
 const team = '20000000-0000-4000-8000-000000000001';
 const email = 'invited@example.test';
+
+test('Pages invitation origin is exact and never replaces verified identity or server authority', async () => {
+  let calls = 0;
+  const origin = new URL(productionCallback).origin;
+  const handler = inviteHandler({ api: 'http://test.invalid', anonKey: 'public', serviceKey: 'private', origin,
+    fetcher: async () => { calls++; return new Response('', { status: 401 }); } });
+  for (const other of ['http://127.0.0.1:4173', 'https://reviews.pedro-costa.dev',
+    'https://preview.pr-review-queue.pages.dev', 'https://abcdef12.pr-review-queue.pages.dev',
+    'https://other.pages.dev', 'null']) {
+    assert.equal((await handler(new Request('http://test.invalid', {
+      method: 'OPTIONS', headers: { origin: other } }))).status, 403);
+  }
+  assert.equal(calls, 0);
+  const allowed = await handler(new Request('http://test.invalid', { method: 'OPTIONS', headers: { origin } }));
+  assert.equal(allowed.status, 204);
+  assert.equal(allowed.headers.get('access-control-allow-origin'), origin);
+  assert.equal((await handler(new Request('http://test.invalid', { method: 'POST', headers: { origin } }))).status, 401);
+  assert.equal((await handler(new Request('http://test.invalid', { method: 'POST',
+    headers: { origin, authorization: 'Bearer forged' } }))).status, 401);
+  assert.equal(calls, 1);
+});
 function harness(mode = 'normal') {
   const calls: string[] = []; let created = false;
   const handler = inviteHandler({ api: 'http://test.invalid', anonKey: 'public', serviceKey: 'private', origin: 'http://127.0.0.1:4173',

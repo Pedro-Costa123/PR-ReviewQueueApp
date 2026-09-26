@@ -58,7 +58,9 @@ class _SignInPageState extends State<SignInPage> {
             ),
           ] else ...[
             Text(
-              auth.hostedTrial
+              auth.production
+                  ? 'Use your invited work email. Complete verification when prompted to request your sign-in link.'
+                  : auth.hostedTrial
                   ? 'Developer sign-in trial. Use an invited trial email. Complete verification when prompted to request your link.'
                   : 'Local authentication preview. Use a provisioned @example.test address; links appear in the local inbox.',
             ),
@@ -147,6 +149,8 @@ class _SignInPageState extends State<SignInPage> {
           Text(
             widget.auth == null
                 ? 'Fictional people and entries. No account or authentication session is created.'
+                : widget.auth!.production
+                ? 'Sign in to open your teams and profile.'
                 : widget.auth!.hostedTrial
                 ? 'Controlled developer trial. Sign in to open your teams and profile.'
                 : 'Local mail only. Sign in to open your teams and profile.',

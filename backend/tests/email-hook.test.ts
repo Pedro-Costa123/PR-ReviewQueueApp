@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createHmac, randomBytes } from 'node:crypto';
 import { createHandler } from '../supabase/functions/send-auth-email/handler.ts';
+import { productionCallback } from '../supabase/functions/send-auth-email/config.ts';
 
 const secret = randomBytes(32).toString('base64');
 const callback = 'http://127.0.0.1:4173/';
@@ -12,6 +13,31 @@ function request(body = JSON.stringify(payload), time = Math.floor(Date.now() / 
     headers: { 'webhook-id': 'test-event', 'webhook-timestamp': String(time),
       'webhook-signature': signature ?? `v1,${createHmac('sha256', Buffer.from(secret, 'base64')).update(`test-event.${time}.${body}`).digest('base64')}` } });
 }
+
+test('Pages callbacks still require signature and eligibility before budgeted single delivery', async () => {
+  const calls: string[] = [];
+  let eligible = false;
+  const handler = createHandler({ secret, callback: productionCallback,
+    rpc: async name => { calls.push(name); if (!eligible) throw new Error('denied'); return { state: 'new' }; },
+    send: async mail => { calls.push('send'); assert.equal(mail.link,
+      `${productionCallback}#token_hash=${payload.email_data.token_hash}&type=email`); },
+  });
+  for (const redirect_to of [callback, 'https://reviews.pedro-costa.dev/',
+    'https://preview.pr-review-queue.pages.dev/', 'https://abcdef12.pr-review-queue.pages.dev/',
+    'https://other.pages.dev/', `${productionCallback}?next=/`, `${productionCallback}index.html`]) {
+    assert.equal((await handler(request(JSON.stringify({ ...payload,
+      email_data: { ...payload.email_data, redirect_to } })))).status, 400);
+  }
+  assert.deepEqual(calls, []);
+  const body = JSON.stringify({ ...payload, email_data: { ...payload.email_data, redirect_to: productionCallback } });
+  assert.equal((await handler(request(body, undefined, 'v1,bad'))).status, 401);
+  assert.deepEqual(calls, []);
+  assert.equal((await handler(request(body))).status, 403);
+  assert.deepEqual(calls, ['reserve_auth_email']);
+  calls.length = 0; eligible = true;
+  assert.equal((await handler(request(body))).status, 200);
+  assert.deepEqual(calls, ['reserve_auth_email', 'send', 'finish_auth_email']);
+});
 test('signed raw payload accepted; link contains only provider token in a fragment', async () => {
   const calls: string[] = [];
   const handler = createHandler({ secret, callback,

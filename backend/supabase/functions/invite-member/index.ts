@@ -1,7 +1,7 @@
 import { inviteHandler } from './handler.ts';
 import { emailConfig } from '../send-auth-email/config.ts';
 
-// Reuse the existing fail-closed local/trial boundary. Production is still P12/13.
+// Same exact callback configuration as the mail hook; activation is P13.
 const config = emailConfig(name => Deno.env.get(name));
 const anonKey = Deno.env.get('SUPABASE_ANON_KEY');
 if (!anonKey) throw new Error('Public API key required');

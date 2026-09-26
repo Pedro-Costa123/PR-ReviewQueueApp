@@ -316,13 +316,16 @@ command above only for a deliberately reopened trial; the old admission is revok
 ## Production handoff (P12/P13)
 
 The owner selected Cloudflare Pages Free on 2026-09-26, retaining magic links and
-the verified `auth.pedro-costa.dev` sender. P11A, before P12, will prepare the exact
-available pages.dev Site URL/callback and specific Turnstile hostname. See
+the verified `auth.pedro-costa.dev` sender. P11A prepared local production guards
+for `https://pr-review-queue.pages.dev/`, whose name passed the dashboard availability
+check but remains unreserved. See
 [HOSTING](HOSTING.md) for scope and the Namecheap records to retain. Remove trial
-admissions and loopback/obsolete redirects for production. Current code accepts
-only local and hosted-trial modes; production gates need implementation/tests.
+admissions and loopback/obsolete redirects for production. Local production gates
+now require exact Pages callbacks and hosted public credentials; they have not
+been activated in any provider. The database trial-admission route must still be
+removed in P12 before P13 activation; keep current admission revoked.
 Do not deploy the current trial as the final app. Publication and live-hostname
-verification remain P13; no hosted settings changed in the planning update.
+verification remain P13; no hosted settings changed in P11A.
 
 ## Sources checked 2026-09-18
 

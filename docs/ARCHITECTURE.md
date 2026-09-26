@@ -32,15 +32,15 @@ flowchart TD
 
 The browser never receives database admin credentials or Resend credentials. No backend request goes to GitHub Enterprise or Jira. The public HTML/Flutter bundle is not confidential; team data requires authorization.
 
-## Hosting on Cloudflare Pages (selected 2026-09-26; not implemented)
+## Hosting on Cloudflare Pages (prepared locally 2026-09-26; not deployed)
 
-Use an available **`https://<project>.pages.dev/`** with base href `/`. Keep hash routes, such as `/#/teams/<id>`, and the root entry document as the magic-link callback, retaining fragment cleanup and explicit confirmation. The exact project name is pending. [Flutter URL configuration](https://docs.flutter.dev/ui/navigation/url-strategies)
+Use an available **`https://pr-review-queue.pages.dev/`** with base href `/`. Keep hash routes, such as `/#/teams/<id>`, and the root entry document as the magic-link callback, retaining fragment cleanup and explicit confirmation. Cloudflare validated this exact name as available in P11A; it remains unreserved. [Flutter URL configuration](https://docs.flutter.dev/ui/navigation/url-strategies)
 
 Prepare this app's `frontend/build/web` artifact independently, using a prebuilt upload workflow. No combined portfolio artifact, personal-domain CNAME, new organization or repository visibility change is needed for Direct Upload. See [HOSTING](HOSTING.md) for P11A scope and [COSTS](COSTS.md) for current limits.
 
-Planned P11A/P12/P13 work, not performed by this documentation update:
+Hosting stages:
 
-1. Confirm an available project name and prepare root build/upload configuration and exact callback/origin guards locally in P11A.
+1. P11A prepared exact production/local/trial configuration, root callback guards, dashboard Direct Upload preflight and provider checklist locally.
 2. Finish release, restore and rollout checks in P12. Keep Namecheap sender/portfolio records; the old app-specific `reviews` CNAME is unnecessary if it was added.
 3. In separately selected P13, create/publish the Cloudflare Pages project, apply reviewed provider settings and verify live HTTPS, login and origin separation.
 
@@ -50,8 +50,8 @@ P04A now uses `http://127.0.0.1:4173/` consistently for the build/preview, early
 
 P05 uses only `http://127.0.0.1:4173/` and a separate managed Turnstile widget for
 `127.0.0.1`. The selected pages.dev production Site URL/callback and its separate
-widget need preparation in P11A and live activation/verification in P13.
-Current production mode fails closed. Do not
+widget have a P11A settings checklist and need live activation/verification in P13.
+P11A production mode requires the exact Pages root and public hosted keys; hosted activation remains P13. Do not
 accept wildcard/portfolio redirects or forward login fragments between origins.
 
 Cloudflare Pages serves the static frontend; Supabase runs backend code. No Pages Functions, Workers backend or paid service is proposed. Recheck actual account limits and the release artifact before publication.

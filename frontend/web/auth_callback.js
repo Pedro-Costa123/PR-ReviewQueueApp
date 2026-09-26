@@ -2,13 +2,15 @@
 // router state. GET/prefetch alone does not redeem a link.
 (() => {
   let pending = null;
+  // Handoff only; Dart independently checks the build's mode and exact origin.
+  const origins = ['http://127.0.0.1:4173', 'https://pr-review-queue.pages.dev'];
   const keys = ['token_hash', 'type', 'access_token', 'refresh_token', 'code', 'error', 'error_description', 'error_code'];
   function scrub(allowHandoff, href = location.href) {
     const url = new URL(href);
     const fragment = new URLSearchParams(url.hash.slice(1));
     if (!keys.some(key => fragment.has(key) || url.searchParams.has(key))) return false;
     const hash = fragment.get('token_hash');
-    if (allowHandoff && url.origin === 'http://127.0.0.1:4173' && !url.username && !url.password
+    if (allowHandoff && origins.includes(url.origin) && !url.username && !url.password
         && url.pathname === '/' && fragment.get('type') === 'email'
         && [...fragment.keys()].length === 2
         && /^[a-zA-Z0-9_-]{32,256}$/.test(hash ?? '') && !url.search) {

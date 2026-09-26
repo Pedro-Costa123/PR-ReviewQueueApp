@@ -4,7 +4,7 @@ Last updated: 2026-09-26. Owner: Pedro Costa. Stage: P11 refresh/filtering/usabi
 implemented locally; verification evidence is in STATUS. P12 remains unstarted. P05 controlled
 hosted authentication is complete; Inbox placement remains a release follow-up. The
 signed-in queue now persists data locally; demo routes remain fictional.
-Cloudflare Pages is selected for the future frontend; P11A preparation is unstarted.
+P11A prepares the future Cloudflare Pages frontend locally; stop for review.
 Demo content and preparatory schema fields remain proposals.
 
 ## Problem and outcome
@@ -32,8 +32,8 @@ Build a small private web app for approximately 5-20 users, organized by team. I
 The owner additionally confirmed:
 
 - Work email invitations with **magic links**, retaining the existing verified sending domain.
-- **Revised 2026-09-26:** aim for **€0/month** and host the frontend on **Cloudflare Pages Free**, at an available `<project>.pages.dev` address. The exact name is pending. This replaces the planned personal-domain website, not the email sender.
-- Preserve the portfolio, PassGen and existing Namecheap email DNS. Add P11A before P12 to prepare the hosting change; this request is planning only. See [HOSTING](HOSTING.md).
+- **Revised 2026-09-26:** aim for **€0/month** and host the frontend on **Cloudflare Pages Free**, at an available `<project>.pages.dev` address. The planned `pr-review-queue.pages.dev` name passed the P11A availability check but is unreserved. This replaces the planned personal-domain website, not the email sender.
+- Preserve the portfolio, PassGen and existing Namecheap email DNS. P11A prepares the hosting change locally before P12; no publication is authorized. See [HOSTING](HOSTING.md).
 - PRs are on GitHub Enterprise and tasks on Jira Enterprise. The app must not fetch their contents or status; users update entries and archive them manually.
 - Sprint-goal entries first, then priority; admins reorder within those groups. Multiple teams per user are allowed.
 - External hosting of the specified company data is allowed. P10 confirms retention without purge below; special regional requirements remain unspecified.
@@ -114,7 +114,7 @@ Native mobile/desktop apps, payments, attachments/avatar uploads, Teams messages
 | --- | --- | --- |
 | Q01 answered | PR/task source and synchronization? | GitHub Enterprise and Jira Enterprise; links only, entirely manual updates. Exact allowed hostnames are needed before live use, not for the fictional prototype. |
 | Q02 answered, reaffirmed 2026-09-26 | Invitation identity and sign-in? | Exact work email + magic link; keep the existing verified sender. No OAuth change. |
-| Q03 revised 2026-09-26 | Budget and hosting address? | Aim for €0; Cloudflare Pages Free at an available pages.dev hostname. Exact name pending; personal-domain website plan superseded. |
+| Q03 revised 2026-09-26 | Budget and hosting address? | Aim for €0; Cloudflare Pages Free at an available pages.dev hostname. Use `pr-review-queue.pages.dev`, availability checked but unreserved; personal-domain website plan superseded. |
 | Q04 answered | Ordering and teams? | Sprint first, then priority, admin reorder within groups; multiple teams allowed. |
 | Q05 answered | External hosting permission? | Owner says allowed. P10 confirms retention without purge; select an available EU region unless a different requirement emerges. |
 | Q06 | Who creates teams and appoints initial admins? | Deployment operator bootstraps them. Team admins manage their own members. |

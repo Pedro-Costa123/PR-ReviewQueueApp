@@ -10,6 +10,7 @@ class AuthController extends ChangeNotifier {
     this.repository, {
     String? callback,
     this.hostedTrial = false,
+    this.production = false,
     this.cancelChallenge,
   }) : _pending = callback {
     _subscription = repository.changes.listen(
@@ -26,6 +27,7 @@ class AuthController extends ChangeNotifier {
   }
   final AuthRepository repository;
   final bool hostedTrial;
+  final bool production;
   final void Function()? cancelChallenge;
   late final StreamSubscription<void> _subscription;
   String? _pending;

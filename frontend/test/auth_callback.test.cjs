@@ -31,11 +31,29 @@ test('callback is removed immediately and read once without redeeming', () => {
   assert.equal(page.take(), token);
   assert.equal(page.take(), null);
 });
+
+test('production root cleans before one-time confirmation handoff and preserves hash routes', () => {
+  const base = 'https://pr-review-queue.pages.dev/';
+  const token = 'b'.repeat(64);
+  const page = visit(`#token_hash=${token}&type=email`, base);
+  assert.equal(page.cleaned, '/');
+  assert.equal(page.take(), token);
+  assert.equal(page.take(), null);
+  assert.equal(visit('#/teams/atlas', base).cleaned, null);
+  assert.equal(visit(`?token_hash=${token}&type=email`, base).take(), 'invalid');
+  assert.equal(visit(`#token_hash=${token}&type=email&type=email`, base).take(), 'invalid');
+  assert.deepEqual(page.navigate(`#token_hash=${token}&type=email`), [true, true]);
+  assert.equal(page.take(), 'invalid');
+});
 test('obsolete paths and unexpected origins are scrubbed without accepting or forwarding tokens', () => {
   for (const base of ['http://127.0.0.1:4173/PR-Review-App-Queue/',
     'http://127.0.0.1:4173/index.html', 'http://127.0.0.1:4173/auth/callback',
     'http://localhost:4173/', 'http://127.0.0.1:4174/', 'https://127.0.0.1:4173/',
     'https://reviews.pedro-costa.dev/', 'https://other.example.test/',
+    'https://preview.pr-review-queue.pages.dev/', 'https://abcdef12.pr-review-queue.pages.dev/',
+    'https://other.pages.dev/', 'https://pr-review-queue.pages.dev.evil.test/',
+    'http://pr-review-queue.pages.dev/', 'https://pr-review-queue.pages.dev:8443/',
+    'https://pr-review-queue.pages.dev/index.html', 'https://user@pr-review-queue.pages.dev/',
     'http://user@127.0.0.1:4173/']) {
     const page = visit(`#token_hash=${'a'.repeat(64)}&type=email`, base);
     assert.equal(page.cleaned, '/'); // Same-origin cleanup, never a token redirect.

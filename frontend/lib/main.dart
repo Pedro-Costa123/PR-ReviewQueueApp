@@ -46,7 +46,7 @@ Future<void> main() async {
     final repository = SupabaseAuthRepository(
       Supabase.instance.client,
       config.callback,
-      requestChallenge: config.hostedTrial
+      requestChallenge: config.requiresChallenge
           ? () => requestChallenge(config.siteKey!, theme.mode.name)
           : null,
     );
@@ -54,7 +54,8 @@ Future<void> main() async {
       repository,
       callback: pending,
       hostedTrial: config.hostedTrial,
-      cancelChallenge: config.hostedTrial
+      production: config.production,
+      cancelChallenge: config.requiresChallenge
           ? () {
               repository.cancelRequest();
               cancelChallenge();

@@ -39,8 +39,9 @@ Verified SDK: **Flutter 3.47.4 stable / Dart 3.13.3** on Windows. Only the web p
 ## Run the verified release preview
 
 The future production target is an available Cloudflare Pages `pages.dev`
-hostname (selected 2026-09-26), with base href `/`. P11A preparation is planned,
-not implemented; see [HOSTING](../docs/HOSTING.md). P04A tested the local preview and
+hostname `pr-review-queue.pages.dev` (availability checked, unreserved), with
+base href `/`. P11A prepares separate production mode and a read-only
+`node tool/check-pages.cjs` dashboard upload preflight; see [HOSTING](../docs/HOSTING.md). P04A tested the local preview and
 callback flow together. These commands build the disconnected local demo;
 HOSTED_AUTH records the completed P05 trial and its separate configuration.
 
@@ -87,5 +88,5 @@ The generated Flutter favicon/app icons remain temporary. The SDK emits a missin
 
 Product behavior is in [Product](../docs/PRODUCT.md) and architecture in
 [Architecture](../docs/ARCHITECTURE.md). P05 is complete for the controlled trial;
-the demo queue remains fictional. P08 ordering is complete locally; P09 is next
-when selected after review.
+the demo queue remains fictional. P06-P11 and P11A are complete locally; review
+P11A before selecting P12. No deployment is authorized.

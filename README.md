@@ -2,9 +2,9 @@
 
 A private team queue that keeps pull requests visible, makes sprint priorities clear, and records review feedback and archived work.
 
-**Current stage: P11 refresh, filters and accessibility implemented locally.**
+**Current stage: P11A Cloudflare Pages hosting preparation complete locally.**
 P05's controlled hosted trial is complete. Inbox placement remains a release
-follow-up; P11A hosting preparation is next only when selected, then P12.
+follow-up; stop for P11A review. P12 is next only when selected.
 P06-P11 have not been deployed to the hosted
 project. The signed-in queue persists entries locally; demo routes remain fictional. No
 production app is published. Work proceeds one backlog item at a time.
@@ -36,10 +36,10 @@ production app is published. Work proceeds one backlog item at a time.
 - Backend: Supabase Postgres, row-level security, transactional database functions, and small TypeScript Edge Functions.
 - Authentication: Supabase magic links, restricted to exact work email invitations.
 - Email: Resend Free, with server-enforced sending budgets.
-- Hosting: Cloudflare Pages Free, selected 2026-09-26; preparation is planned as P11A before P12.
-- Future production address: an available `<project>.pages.dev` hostname; exact name pending, not deployed.
+- Hosting: Cloudflare Pages Free, selected 2026-09-26; P11A preparation is local, pending review before P12.
+- Future production address: `https://pr-review-queue.pages.dev/`; availability checked, unreserved and not deployed.
 
-Flutter Web, magic links, Cloudflare Pages, manual updates, sprint-first ordering and multiple team membership are confirmed. The owner selected a free provider web address while retaining the verified `auth.pedro-costa.dev` email sender and its Namecheap DNS. Supabase + Resend remains the backend recommendation. Estimated additional service cost is **€0/month within free-plan limits**; existing sender-domain renewal remains separate. Read [Hosting](docs/HOSTING.md), [Costs](docs/COSTS.md) and [Security](docs/SECURITY.md). This update is planning only.
+Flutter Web, magic links, Cloudflare Pages, manual updates, sprint-first ordering and multiple team membership are confirmed. The owner selected a free provider web address while retaining the verified `auth.pedro-costa.dev` email sender and its Namecheap DNS. Supabase + Resend remains the backend recommendation. Estimated additional service cost is **€0/month within free-plan limits**; existing sender-domain renewal remains separate. Read [Hosting](docs/HOSTING.md), [Costs](docs/COSTS.md) and [Security](docs/SECURITY.md). P11A changes local configuration/code and runbooks only.
 
 P04A verified local root callbacks. P05 adds a separately gated hosted trial at
 the same loopback root; the owner verified the dedicated email-sending domain at
@@ -59,8 +59,8 @@ LICENSE            Existing MIT license
 ## Start the next step
 
 Read [Status](docs/STATUS.md), then [Next](docs/NEXT.md). Review the completed local
-**P11 refresh/filtering workflow** using [its runbook](docs/REFRESH.md). P11A hosting
-preparation is next only when separately selected; P12 follows it.
+**P11A hosting preparation** using [its runbook](docs/HOSTING.md).
+P12 release preparation is next only when separately selected.
 The [local authentication runbook](docs/AUTH.md) and
 [frontend demo commands](frontend/README.md) remain available.
 

@@ -7,6 +7,7 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:pr_review_queue/features/auth/auth_repository.dart';
 import 'package:pr_review_queue/features/auth/challenge.dart';
+import 'package:pr_review_queue/features/auth/auth_config.dart';
 
 void main() {
   test(
@@ -79,60 +80,61 @@ void main() {
       await client.dispose();
     },
   );
-  test(
-    'unconfirmed fallback uses maintained SDK and a fresh CAPTCHA per call',
-    () async {
-      final requests = <http.Request>[];
-      final client = SupabaseClient(
-        'http://localhost:54321',
-        'public-test-key',
-        authOptions: const AuthClientOptions(
-          authFlowType: AuthFlowType.implicit,
-          autoRefreshToken: false,
-        ),
-        httpClient: MockClient((request) async {
-          requests.add(request);
-          if (request.url.path.endsWith('/otp')) {
-            return http.Response(
-              jsonEncode({
-                'code': 422,
-                'error_code': 'signup_disabled',
-                'msg': 'Signups not allowed',
-              }),
-              422,
-            );
-          }
-          return http.Response('{}', 200);
-        }),
-      );
-      var challenges = 0;
-      final repository = SupabaseAuthRepository(
-        client,
-        'http://127.0.0.1:4173/',
-        requestChallenge: () async => 'challenge-${++challenges}',
-      );
-      await repository.requestLink(' Member@Example.Test ');
-      expect(requests.map((r) => r.url.path), [
-        '/auth/v1/otp',
-        '/auth/v1/resend',
-      ]);
-      final first = jsonDecode(requests[0].body) as Map;
-      final second = jsonDecode(requests[1].body) as Map;
-      expect(first['create_user'], isFalse);
-      expect(first['email'], 'member@example.test');
-      expect(first['gotrue_meta_security']['captcha_token'], 'challenge-1');
-      expect(second['type'], 'signup');
-      expect(second['gotrue_meta_security']['captcha_token'], 'challenge-2');
-      expect(
-        requests.every(
-          (r) =>
-              r.url.queryParameters['redirect_to'] == 'http://127.0.0.1:4173/',
-        ),
-        isTrue,
-      );
-      await client.dispose();
-    },
-  );
+  for (final callback in ['http://127.0.0.1:4173/', productionAuthCallback]) {
+    test(
+      'unconfirmed fallback uses exact $callback and a fresh CAPTCHA per call',
+      () async {
+        final requests = <http.Request>[];
+        final client = SupabaseClient(
+          'http://localhost:54321',
+          'public-test-key',
+          authOptions: const AuthClientOptions(
+            authFlowType: AuthFlowType.implicit,
+            autoRefreshToken: false,
+          ),
+          httpClient: MockClient((request) async {
+            requests.add(request);
+            if (request.url.path.endsWith('/otp')) {
+              return http.Response(
+                jsonEncode({
+                  'code': 422,
+                  'error_code': 'signup_disabled',
+                  'msg': 'Signups not allowed',
+                }),
+                422,
+              );
+            }
+            return http.Response('{}', 200);
+          }),
+        );
+        var challenges = 0;
+        final repository = SupabaseAuthRepository(
+          client,
+          callback,
+          requestChallenge: () async => 'challenge-${++challenges}',
+        );
+        await repository.requestLink(' Member@Example.Test ');
+        expect(requests.map((r) => r.url.path), [
+          '/auth/v1/otp',
+          '/auth/v1/resend',
+        ]);
+        final first = jsonDecode(requests[0].body) as Map;
+        final second = jsonDecode(requests[1].body) as Map;
+        expect(first['create_user'], isFalse);
+        expect(first['email'], 'member@example.test');
+        expect(first['gotrue_meta_security']['captcha_token'], 'challenge-1');
+        expect(second['type'], 'signup');
+        expect(second['gotrue_meta_security']['captcha_token'], 'challenge-2');
+        expect(
+          requests.every(
+            (r) => r.url.queryParameters['redirect_to'] == callback,
+          ),
+          isTrue,
+        );
+        await client.dispose();
+      },
+    );
+  }
   test(
     'network and rate failures do not trigger confirmation retries',
     () async {
