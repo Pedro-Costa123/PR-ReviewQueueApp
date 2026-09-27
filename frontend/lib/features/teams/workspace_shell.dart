@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../shared/theme_controller.dart';
-import '../../shared/widgets.dart';
 import '../queue/queue_repository.dart';
 
 class WorkspaceShell extends StatelessWidget {
@@ -33,8 +32,6 @@ class WorkspaceShell extends StatelessWidget {
             style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
           ),
           actions: [
-            if (constraints.maxWidth >= 500) const Tag('LOCAL PREVIEW'),
-            const SizedBox(width: 8),
             IconButton(
               tooltip: theme.mode == ThemeMode.dark
                   ? 'Switch to light mode'
@@ -72,7 +69,7 @@ class WorkspaceShell extends StatelessWidget {
                     child: Text(
                       connected
                           ? 'PRIVATE WORKSPACE · Access is limited to your active teams.'
-                          : 'DEMO QUEUES · Fictional entries. Queue saving is not connected.',
+                          : 'READ-ONLY DEMO · These entries are fictional. Sign in with an invited account to add PRs, comment and review with your team.',
                       style: const TextStyle(fontSize: 12),
                     ),
                   ),
@@ -180,7 +177,7 @@ class WorkspaceShell extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           _NavItem(
-            label: 'Sign-in preview',
+            label: 'Sign in',
             icon: Icons.login,
             selected: path == '/',
             onTap: () => navigate('/'),

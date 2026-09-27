@@ -526,6 +526,12 @@ class _EntryQueueState extends State<EntryQueue> {
       kind,
     );
     return TextButton.icon(
+      iconAlignment: IconAlignment.end,
+      style: TextButton.styleFrom(
+        padding: EdgeInsets.zero,
+        alignment: Alignment.centerLeft,
+        minimumSize: const Size(48, 48),
+      ),
       onPressed: normalized == null
           ? null
           : () => openEnterpriseLink(normalized),
@@ -856,6 +862,11 @@ class _EntryQueueState extends State<EntryQueue> {
           ],
           if (member != null)
             TextButton(
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.zero,
+                alignment: Alignment.centerLeft,
+                minimumSize: const Size(48, 48),
+              ),
               onPressed: _busy
                   ? null
                   : () => widget.viewProfile(entry['submitter_id'] as String),
@@ -1086,10 +1097,6 @@ class _EntryEditorState extends State<EntryEditor> {
                           null
                       ? 'Use an allowed Jira /browse/PROJECT-123 link.'
                       : null,
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Links are saved as resource URLs without query parameters or fragments.',
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(

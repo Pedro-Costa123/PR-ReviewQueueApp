@@ -262,6 +262,12 @@ class _EntryActivityState extends State<EntryActivity> {
         Align(
           alignment: Alignment.centerLeft,
           child: TextButton.icon(
+            iconAlignment: IconAlignment.end,
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              alignment: Alignment.centerLeft,
+              minimumSize: const Size(48, 48),
+            ),
             onPressed: () {
               setState(() => _open = !_open);
               if (_open && _data == null && !_busy) _load();
@@ -273,10 +279,7 @@ class _EntryActivityState extends State<EntryActivity> {
           ),
         ),
         if (_open) ...[
-          const Text(
-            'Local notes and review signals only. Nothing is posted to GitHub or Jira, and no PR is marked merged. Signals may become outdated as code changes.',
-          ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Align(
             alignment: Alignment.centerLeft,
             child: OutlinedButton.icon(
@@ -293,19 +296,47 @@ class _EntryActivityState extends State<EntryActivity> {
               child: Semantics(liveRegion: true, child: Text(_message!)),
             ),
           if (data != null) ...[
+            const SizedBox(height: 24),
+            Text('Reviews', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 12),
-            Text(
-              'Reviewed, looks good: ${data['looks_good_count']} · Comments left on PR: ${data['comments_left_count']}',
-            ),
-            if (active && data['submitter_id'] == widget.repository.userId)
-              const Text('You can comment, but cannot review your own entry.'),
-            if (!active) const Text('This entry is read-only.'),
             Wrap(
-              spacing: 8,
-              runSpacing: 8,
+              spacing: 24,
+              runSpacing: 12,
+              children: [
+                Text(
+                  'Reviewed, looks good: ${data['looks_good_count']}',
+                  style: const TextStyle(height: 1.5),
+                ),
+                Text(
+                  'Comments left on PR: ${data['comments_left_count']}',
+                  style: const TextStyle(height: 1.5),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            if (active && data['submitter_id'] == widget.repository.userId)
+              const Padding(
+                padding: EdgeInsets.only(bottom: 16),
+                child: Text(
+                  'You can comment, but cannot review your own entry.',
+                  style: TextStyle(height: 1.5),
+                ),
+              ),
+            if (!active)
+              const Padding(
+                padding: EdgeInsets.only(bottom: 16),
+                child: Text('This entry is read-only.'),
+              ),
+            Wrap(
+              spacing: 12,
+              runSpacing: 12,
               children: [
                 for (final signal in ['looks_good', 'comments_left'])
                   FilterChip(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
                     avatar: Icon(
                       signal == 'looks_good' ? Icons.check : Icons.close,
                       size: 18,
@@ -344,7 +375,7 @@ class _EntryActivityState extends State<EntryActivity> {
             ),
             for (final review in reviews)
               Padding(
-                padding: const EdgeInsets.only(top: 4),
+                padding: const EdgeInsets.only(top: 16),
                 child: Wrap(
                   spacing: 8,
                   crossAxisAlignment: WrapCrossAlignment.center,
@@ -359,18 +390,19 @@ class _EntryActivityState extends State<EntryActivity> {
                   ],
                 ),
               ),
+            const SizedBox(height: 16),
             _pages(
               false,
               (data['looks_good_count'] as int) +
                   (data['comments_left_count'] as int),
             ),
-            const SizedBox(height: 16),
+            const Divider(height: 40),
             Text(
               'Comments (${data['comments_count']})',
               style: Theme.of(context).textTheme.titleMedium,
             ),
             if (active) ...[
-              const SizedBox(height: 12),
+              const SizedBox(height: 20),
               TextField(
                 controller: _body,
                 focusNode: _inputFocus,
@@ -386,9 +418,10 @@ class _EntryActivityState extends State<EntryActivity> {
                   helperMaxLines: 2,
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               Wrap(
                 spacing: 8,
+                runSpacing: 12,
                 children: [
                   FilledButton(
                     onPressed: enabled ? _save : null,

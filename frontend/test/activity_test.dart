@@ -136,15 +136,11 @@ void main() {
       await click(tester, 'Comments and reviews');
       await click(tester, 'Reviewed, looks good');
       expect(repo.reviewVersion, 4);
-      expect(
-        find.text('Reviewed, looks good: 1 · Comments left on PR: 0'),
-        findsOneWidget,
-      );
+      expect(find.text('Reviewed, looks good: 1'), findsOneWidget);
+      expect(find.text('Comments left on PR: 0'), findsOneWidget);
       await click(tester, 'Comments left on PR');
-      expect(
-        find.text('Reviewed, looks good: 0 · Comments left on PR: 1'),
-        findsOneWidget,
-      );
+      expect(find.text('Reviewed, looks good: 0'), findsOneWidget);
+      expect(find.text('Comments left on PR: 1'), findsOneWidget);
       await click(tester, 'Clear my signal');
       expect(repo.data['my_signal'], isNull);
       expect(repo.writes, 3);

@@ -1,8 +1,17 @@
 # Ordered implementation backlog
 
-Updated: 2026-09-26. **Execute one selected item, verify it, update the docs, and stop.** Do not turn this file into a single full-app implementation prompt.
+Updated: 2026-09-27. **Execute one selected item, verify it, update the docs, and stop.** Do not turn this file into a single full-app implementation prompt.
 
-The owner selected **OPS02**: explain and script first team/admin creation through
+The owner selected **UI01**: pilot wording, entry alignment and repeated team
+refresh fixes. Dependencies: existing P06-P11 UI and current P13 checkpoint.
+Acceptance: remove the preview badge and requested helper paragraphs, make the
+read-only demo/sign-in boundary clear, align entry controls, and keep one team
+selector/queue after repeated refreshes and team switches. Verify Flutter checks
+and desktop/narrow browser and keyboard behavior. This item stops at local review;
+the owner subsequently authorized production deployment on 2026-09-27. Release
+verification is in progress; P13 human pilot gates remain separate.
+
+The preceding **OPS02** explained and scripted first team/admin creation through
 the Supabase website. The owner explicitly approved operator-vouched Auto confirm
 for the first admin. Scope: a SQL Editor wrapper around the existing bootstrap
 function and dashboard instructions; no migration or production execution.
@@ -58,6 +67,28 @@ P13 and stop at its review boundary. See `STATUS.md` (local operator notes) and 
 | PUB02 | Production examples, public READMEs and local-only operator records | Complete; ready for owner review, no visibility change | PUB01 |
 | OPS01 | Explicit workspace/Auth reset and new team/admin bootstrap | Complete locally; ready for review, no production execution | P03-P12 schema and current P13 checkpoint |
 | OPS02 | Supabase website first-team/admin setup | Complete locally; ready for review, no migration or production execution | Existing P03 bootstrap and current P13 deployment |
+| UI01 | Pilot wording, mobile spacing, entry alignment and repeated team refresh fixes | Complete locally; owner-authorized production release in progress | P06-P11 UI and current P13 checkpoint |
+
+## UI01 - Pilot UI corrections
+
+Removed the unconditional local-preview badge and requested sign-in, activity and
+URL-storage helper text. Demo copy now explains that an invited sign-in is required
+to add PRs, comment and review with a team. Entry author/link/activity controls use
+consistent left padding with 48-pixel minimum targets. The selector and queue now
+have distinct widget keys; their former duplicate keys broke reconciliation during
+refresh. A connected-workspace regression covers repeated refresh and team switching.
+
+Owner screenshot follow-up: separate wrapping review counts, spaced review controls,
+more readable explanatory text and a divider before comments reduce mobile crowding.
+The activity toggle has 12-pixel padding so its focus/hover outline does not touch
+the label, as requested in the second mobile follow-up.
+
+Flutter analysis, all 60 tests, a release web build and desktop/narrow Chrome
+inspection passed. The final mobile spacing changes also passed the 20 focused
+activity/entry/onboarding tests. Keyboard activity controls and editor cancellation
+were checked using isolated fictional browser fixtures. No backend, provider,
+dependency or deployment changes.
+Next: owner review of UI01; remaining P13 human pilot gates stay pending.
 
 ## OPS02 - Dashboard first-admin setup
 

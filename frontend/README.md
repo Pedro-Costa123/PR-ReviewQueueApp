@@ -64,4 +64,7 @@ The configured origin and sender remain deployment-specific.
 The demo stores its theme preference. Authenticated builds use sessionStorage
 with memory fallback; the SDK can synchronize open same-origin tabs. See
 [AUTH](../docs/AUTH.md) for those limits. Backend authorization remains mandatory.
-Generic Flutter icons and the known pilot label/font issues remain unchanged.
+Generic Flutter icons and the known fallback-font issues remain. UI01 removes the
+preview badge, clarifies the demo sign-in requirement, aligns entry controls,
+adds breathing room to mobile activity panels and fixes repeated team refreshes
+locally; deployment is separate.

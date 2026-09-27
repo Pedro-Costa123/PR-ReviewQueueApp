@@ -94,7 +94,8 @@ in `docs/`; historical checkpoints describe the evidence collected at that time.
 The multi-day pilot is incomplete. Email delivery can reach Junk or hit provider
 rate limits. The current pilot uses fictional enterprise hosts and disposable
 data; hosted disaster recovery and real enterprise navigation are not established.
-The live UI still has a local-preview label and some fallback-font issues.
+The live UI still has some fallback-font issues. The preview-label and wording
+corrections are implemented locally and await a separate deployment.
 Free-tier service limits may affect availability.
 
 ## License

@@ -57,14 +57,14 @@ class _SignInPageState extends State<SignInPage> {
               child: const Text('Sign out'),
             ),
           ] else ...[
-            Text(
-              auth.production
-                  ? 'Use your invited work email. Complete verification when prompted to request your sign-in link.'
-                  : auth.hostedTrial
-                  ? 'Developer sign-in trial. Use an invited trial email. Complete verification when prompted to request your link.'
-                  : 'Local authentication preview. Use a provisioned @example.test address; links appear in the local inbox.',
-            ),
-            const SizedBox(height: 16),
+            if (!auth.production) ...[
+              Text(
+                auth.hostedTrial
+                    ? 'Developer sign-in trial. Use an invited trial email. Complete verification when prompted to request your link.'
+                    : 'Local authentication preview. Use a provisioned @example.test address; links appear in the local inbox.',
+              ),
+              const SizedBox(height: 16),
+            ],
             TextFormField(
               controller: _email,
               enabled: !auth.busy,
@@ -127,13 +127,13 @@ class _SignInPageState extends State<SignInPage> {
                 const SizedBox(height: 12),
                 if (widget.auth == null)
                   const Text(
-                    'Work-email magic links are planned. Sign-in is not connected and this preview does not collect email addresses.',
+                    'Sign-in is unavailable in this offline demo. Use the connected app with an invited account to work with your team.',
                   ),
                 const SizedBox(height: 24),
                 if (widget.auth == null)
                   const FilledButton(
                     onPressed: null,
-                    child: Text('Magic-link sign-in · coming later'),
+                    child: Text('Sign-in unavailable in this demo'),
                   ),
                 if (widget.auth != null) _authForm(widget.auth!),
                 const SizedBox(height: 12),
@@ -144,17 +144,6 @@ class _SignInPageState extends State<SignInPage> {
                 ),
               ],
             ),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            widget.auth == null
-                ? 'Fictional people and entries. No account or authentication session is created.'
-                : widget.auth!.production
-                ? 'Sign in to open your teams and profile.'
-                : widget.auth!.hostedTrial
-                ? 'Controlled developer trial. Sign in to open your teams and profile.'
-                : 'Local mail only. Sign in to open your teams and profile.',
-            style: TextStyle(fontSize: 12),
           ),
         ],
       ),

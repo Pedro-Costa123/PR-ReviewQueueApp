@@ -4,6 +4,8 @@ import 'package:pr_review_queue/features/teams/onboarding_page.dart';
 import 'package:pr_review_queue/features/teams/onboarding_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'entry_test.dart' show TestEntries;
+
 class TestOnboarding implements OnboardingRepository {
   @override
   String get userId => 'self';
@@ -75,13 +77,21 @@ class TestOnboarding implements OnboardingRepository {
   ) async {}
 }
 
-Future<void> show(WidgetTester tester, TestOnboarding repo) async {
+Future<void> show(
+  WidgetTester tester,
+  TestOnboarding repo, {
+  TestEntries? entries,
+}) async {
   await tester.binding.setSurfaceSize(const Size(800, 1400));
   await tester.pumpWidget(
     MaterialApp(
       home: Scaffold(
         body: SingleChildScrollView(
-          child: OnboardingPage(repository: repo, signOut: () async {}),
+          child: OnboardingPage(
+            repository: repo,
+            signOut: () async {},
+            entries: entries,
+          ),
         ),
       ),
     ),
@@ -90,6 +100,32 @@ Future<void> show(WidgetTester tester, TestOnboarding repo) async {
 }
 
 void main() {
+  testWidgets('repeated refresh keeps one team selector and connected queue', (
+    tester,
+  ) async {
+    final repo = TestOnboarding();
+    await show(tester, repo, entries: TestEntries());
+    for (var i = 0; i < 3; i++) {
+      expect(tester.takeException(), isNull);
+      expect(find.text('Your team'), findsOneWidget);
+      expect(find.text('Review queue'), findsOneWidget);
+      expect(find.text('Durable PR'), findsOneWidget);
+      await tester.tap(find.text('Refresh teams'));
+      await tester.pumpAndSettle();
+    }
+    expect(tester.takeException(), isNull);
+    expect(find.text('Your team'), findsOneWidget);
+    expect(find.text('Durable PR'), findsOneWidget);
+    await tester.tap(find.text('Atlas'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Orbit').last);
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(find.text('Your team'), findsOneWidget);
+    expect(find.text('Durable PR'), findsNothing);
+    expect(find.text('No entries in this view.'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
+  });
   testWidgets(
     'first login claims once and requires profile completion before team controls',
     (tester) async {

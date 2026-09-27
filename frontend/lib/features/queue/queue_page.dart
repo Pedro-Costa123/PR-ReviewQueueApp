@@ -59,7 +59,7 @@ class QueuePage extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         const Text(
-          'Sprint goal first, then priority. Entry actions and admin reordering come in later steps.',
+          'Sprint goal first, then priority. Sign in to manage your team’s queue.',
         ),
         const SizedBox(height: 24),
         if (entries.isEmpty)
@@ -72,7 +72,7 @@ class QueuePage extends StatelessWidget {
                 Text('A little breathing room'),
                 SizedBox(height: 8),
                 Text(
-                  'This fictional team has no entries yet. Adding pull requests will be available once the backend is connected.',
+                  'This fictional team has no entries yet. Sign in to add pull requests to your own team’s queue.',
                 ),
               ],
             ),
@@ -243,6 +243,11 @@ class _EntryCard extends StatelessWidget {
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   TextButton(
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      alignment: Alignment.centerLeft,
+                      minimumSize: const Size(48, 48),
+                    ),
                     onPressed: () =>
                         context.go('/teams/$teamId/profiles/${profile.id}'),
                     child: Text(profile.name),

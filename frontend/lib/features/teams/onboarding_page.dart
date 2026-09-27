@@ -301,7 +301,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
           ),
         if (_teams.isNotEmpty && _me!['name'] != null) ...[
           DropdownButtonFormField<String>(
-            key: ValueKey(_teamId),
+            key: ValueKey('team-selector-$_teamId'),
             initialValue: _teamId,
             isExpanded: true,
             decoration: const InputDecoration(
@@ -327,7 +327,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
           const SizedBox(height: 16),
           if (widget.entries != null && !_busy)
             EntryQueue(
-              key: ValueKey(_teamId),
+              key: ValueKey('team-queue-$_teamId'),
               repository: widget.entries!,
               teamId: _teamId!,
               admin: _admin,

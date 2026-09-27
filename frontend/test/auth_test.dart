@@ -40,7 +40,7 @@ class FakeAuth implements AuthRepository {
 
 void main() {
   testWidgets(
-    'production copy describes invited email and still waits for confirmation',
+    'production sign-in is concise and still waits for confirmation',
     (tester) async {
       final repository = FakeAuth();
       final controller = AuthController(repository, production: true);
@@ -51,10 +51,7 @@ void main() {
           ),
         ),
       );
-      expect(
-        find.textContaining('Use your invited work email'),
-        findsOneWidget,
-      );
+      expect(find.textContaining('Use your invited work email'), findsNothing);
       expect(find.textContaining('Local mail only'), findsNothing);
       expect(repository.requests, 0);
       await tester.pumpWidget(const SizedBox());
