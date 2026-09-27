@@ -7,9 +7,9 @@ refresh fixes. Dependencies: existing P06-P11 UI and current P13 checkpoint.
 Acceptance: remove the preview badge and requested helper paragraphs, make the
 read-only demo/sign-in boundary clear, align entry controls, and keep one team
 selector/queue after repeated refreshes and team switches. Verify Flutter checks
-and desktop/narrow browser and keyboard behavior. This item stops at local review;
-the owner subsequently authorized production deployment on 2026-09-27. Release
-verification is in progress; P13 human pilot gates remain separate.
+and desktop/narrow browser and keyboard behavior. The owner subsequently authorized
+production deployment on 2026-09-27. UI01 is now deployed and verified; P13 human
+pilot gates remain separate. Stop at UI01 review.
 
 The preceding **OPS02** explained and scripted first team/admin creation through
 the Supabase website. The owner explicitly approved operator-vouched Auto confirm
@@ -67,7 +67,7 @@ P13 and stop at its review boundary. See `STATUS.md` (local operator notes) and 
 | PUB02 | Production examples, public READMEs and local-only operator records | Complete; ready for owner review, no visibility change | PUB01 |
 | OPS01 | Explicit workspace/Auth reset and new team/admin bootstrap | Complete locally; ready for review, no production execution | P03-P12 schema and current P13 checkpoint |
 | OPS02 | Supabase website first-team/admin setup | Complete locally; ready for review, no migration or production execution | Existing P03 bootstrap and current P13 deployment |
-| UI01 | Pilot wording, mobile spacing, entry alignment and repeated team refresh fixes | Complete locally; owner-authorized production release in progress | P06-P11 UI and current P13 checkpoint |
+| UI01 | Pilot wording, mobile spacing, entry alignment and repeated team refresh fixes | Deployed and verified; ready for owner review | P06-P11 UI and current P13 checkpoint |
 
 ## UI01 - Pilot UI corrections
 
@@ -86,8 +86,16 @@ the label, as requested in the second mobile follow-up.
 Flutter analysis, all 60 tests, a release web build and desktop/narrow Chrome
 inspection passed. The final mobile spacing changes also passed the 20 focused
 activity/entry/onboarding tests. Keyboard activity controls and editor cancellation
-were checked using isolated fictional browser fixtures. No backend, provider,
-dependency or deployment changes.
+were checked using isolated fictional browser fixtures.
+
+**Released 2026-09-27:** owner commit `ba91825`, including the updated favicon.
+Two clean production builds matched and passed artifact verification. Fresh release
+checks passed all 60 Flutter tests, 15 callback/Turnstile/policy tests and three
+local HTTP checks. Seven live asset hashes and security headers match the package;
+HTTPS redirect, missing-path denial, desktop/mobile sign-in, keyboard demo navigation
+and preview-host sign-in denial passed. Backend/configuration stayed unchanged.
+Live signed-in mutations and email delivery were not rerun for this frontend-only
+release; previous fictional UI checks remain their evidence.
 Next: owner review of UI01; remaining P13 human pilot gates stay pending.
 
 ## OPS02 - Dashboard first-admin setup

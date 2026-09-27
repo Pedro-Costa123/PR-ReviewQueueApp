@@ -66,5 +66,5 @@ with memory fallback; the SDK can synchronize open same-origin tabs. See
 [AUTH](../docs/AUTH.md) for those limits. Backend authorization remains mandatory.
 Generic Flutter icons and the known fallback-font issues remain. UI01 removes the
 preview badge, clarifies the demo sign-in requirement, aligns entry controls,
-adds breathing room to mobile activity panels and fixes repeated team refreshes
-locally; deployment is separate.
+adds breathing room to mobile activity panels and fixes repeated team refreshes.
+These corrections and the updated favicon were deployed on 2026-09-27.
