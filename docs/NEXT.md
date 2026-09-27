@@ -2,7 +2,15 @@
 
 Updated: 2026-09-26. **Execute one selected item, verify it, update the docs, and stop.** Do not turn this file into a single full-app implementation prompt.
 
-The owner selected **OPS01**: an operator script to reset production workspace
+The owner selected **OPS02**: explain and script first team/admin creation through
+the Supabase website. The owner explicitly approved operator-vouched Auto confirm
+for the first admin. Scope: a SQL Editor wrapper around the existing bootstrap
+function and dashboard instructions; no migration or production execution.
+Acceptance: create one team/admin/audit atomically, retain existing data, reject
+missing/unconfirmed identities and API callers, and document the trust exception.
+P13 human pilot gates remain unchanged.
+
+The preceding **OPS01** supplied an operator script to reset production workspace
 data, keep one specified verified admin and create a named team. The owner
 confirmed that all other login accounts should also be deleted. This authorizes
 implementation and local verification, not execution against production.
@@ -49,6 +57,23 @@ P13 and stop at its review boundary. See `STATUS.md` (local operator notes) and 
 | PUB01 | Public-source repository/history audit | Complete; findings ready for owner review | Current P13 checkpoint |
 | PUB02 | Production examples, public READMEs and local-only operator records | Complete; ready for owner review, no visibility change | PUB01 |
 | OPS01 | Explicit workspace/Auth reset and new team/admin bootstrap | Complete locally; ready for review, no production execution | P03-P12 schema and current P13 checkpoint |
+| OPS02 | Supabase website first-team/admin setup | Complete locally; ready for review, no migration or production execution | Existing P03 bootstrap and current P13 deployment |
+
+## OPS02 - Dashboard first-admin setup
+
+Completed locally: `backend/operator/create-team-admin.sql` calls the existing
+private bootstrap in one transaction, using the team name and copied Auth UUID.
+Dashboard instructions remain in ignored `ADMIN_SETUP.md` (local operator notes).
+The owner explicitly approved manually confirmed email for this first admin only;
+normal invitation/email verification remains the path for subsequent users.
+
+Rolled-back local SQL checks passed for one team/admin/audit and missing/unverified
+identity plus anonymous/authenticated/service-role denials. Original data counts
+are unchanged. A proposed first-login eligibility migration was discarded at the
+owner's request, its empty local table/history entry removed and original mail
+function restored. No migration, application change, production action or mail send
+remains in this item. Next: owner follows the dashboard instructions; P13 human
+pilot gates remain pending. Stop at this review boundary.
 
 ## OPS01 - Operator workspace reset
 

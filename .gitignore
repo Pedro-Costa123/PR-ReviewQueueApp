@@ -70,5 +70,6 @@ playwright-report/
 /docs/DECISIONS.md
 /docs/PUBLICATION_REVIEW.md
 /docs/RESET.md
+/docs/ADMIN_SETUP.md
 
 # Track application lockfiles, source, sanitized examples, and public guides.

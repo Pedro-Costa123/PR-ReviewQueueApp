@@ -98,6 +98,12 @@ idempotent outcomes; clients cannot access operational tables.
 
 ## Explicit operator bootstrap
 
+For the owner-approved first admin created through the Supabase website, follow
+`docs/ADMIN_SETUP.md` (local operator notes) and use
+[`operator/create-team-admin.sql`](operator/create-team-admin.sql). It calls the
+existing bootstrap function; no migration is needed. The first-admin manual
+email-confirmation exception is described in that guide.
+
 `operator/bootstrap.sql` creates a team and its first admin in one transaction,
 with an audit event. It requires a privileged SQL operator and an **existing,
 verified Auth user ID**. No visitor, client, service-role API, username, or email
@@ -111,9 +117,12 @@ Get-Content -Raw operator/bootstrap.sql | docker exec -i supabase_db_pr-review-q
 
 The command deliberately creates a new team each time; record its returned ID.
 The first-admin constraint is deferred until commit, so a team cannot be left
-without an admin. An Auth identity must be verified through the supported
-onboarding flow before bootstrapping real use. Never manually mark a real email
-verified just to satisfy this check. Do not run the fictional demonstration against a hosted database. Missing/unverified identities and API attempts are covered by tests.
+without an admin. Normally, the Auth identity must be verified through the
+supported onboarding flow. The owner-approved first-admin exception above lets
+the operator vouch for that email using the dashboard's Auto confirm option.
+Other users still require the normal invitation/verification flow. Do not run
+the fictional demonstration against a hosted database. Missing/unverified
+identities and API attempts are covered by tests.
 
 ## Production workspace reset
 

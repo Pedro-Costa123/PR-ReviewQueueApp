@@ -206,6 +206,14 @@ Supabase supports magic links and PKCE and provides CAPTCHA and rate controls. T
 
 ## Team isolation and mutations
 
+The owner approved manual email confirmation for the first admin on 2026-09-26:
+the operator vouches for the exact address through Supabase's Auto confirm option,
+then uses the existing private bootstrap function in SQL Editor. This is an
+explicit trust exception, not evidence of mailbox-link verification. No grants,
+mail eligibility rules or schema change; subsequent users retain the normal
+invitation and email verification flow. The [SQL Editor script](../backend/operator/create-team-admin.sql)
+calls the existing bootstrap; `ADMIN_SETUP.md` contains local operator instructions.
+
 - Every read and write checks active membership in the owning team. Profiles require a shared active team; never reveal a person's unrelated memberships.
 - A removed member loses team data access on the next database request, even if their JWT has not expired. Prevent deleted memberships or old invitations from silently recreating access.
 - Enforce immutable submitter/comment author/review author. Only submitter/team admin can delete entries; only team admins reorder or invite.
